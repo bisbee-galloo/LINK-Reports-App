@@ -1,0 +1,4080 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>LINK SP — Advertising Reports</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href='https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css' rel='stylesheet'/>
+<script src='https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js'></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+
+<style>
+/* ── CSS CUSTOM PROPERTIES ── */
+:root {
+  --font-primary: 'Proxima Nova', 'Montserrat', sans-serif;
+  --red: #e8382d;
+  --red-dark: #c92e24;
+  --dark-hdr: #1a1c24;
+  --silver: #c0bfcc;
+  --green: #22c55e;
+  --bg: #f5f6f9;
+  --text: #1a1c24;
+  --text-muted: #6b7080;
+  --text-faint: #adb4c0;
+  --glass-bg: rgba(255,255,255,0.72);
+  --glass-border: rgba(255,255,255,0.9);
+  --glass-shadow: 0 2px 8px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,1);
+  --glass-hover-border: rgba(232,56,45,0.3);
+  --glass-hover-shadow: 0 4px 16px rgba(0,0,0,0.09), 0 0 0 1px rgba(232,56,45,0.1), inset 0 1px 0 rgba(255,255,255,1);
+  --stripe: rgba(0,0,0,0.05);
+  --input-bg: rgba(255,255,255,0.6);
+  --input-border: rgba(0,0,0,0.09);
+}
+
+/* ── RESET ── */
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{overflow-x:hidden;max-width:100%;width:100%}
+body{font-family:var(--font-primary);background:var(--bg);color:var(--text);min-height:100vh}
+button{font-family:var(--font-primary);cursor:pointer}
+input,textarea,select{font-family:var(--font-primary)}
+
+/* ── BACKGROUND ── */
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 65% 50% at 5% 8%, rgba(232,56,45,0.07) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 40% at 92% 92%, rgba(200,205,220,0.4) 0%, transparent 55%),
+    linear-gradient(160deg,#f5f6f9 0%,#eceef3 100%);
+}
+
+/* ── AUTH SCREEN ── */
+#auth-screen{
+  position:fixed;inset:0;z-index:9999;
+  background:var(--dark-hdr);
+  display:flex;align-items:center;justify-content:center;flex-direction:column;gap:0;
+}
+#auth-screen::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 60% 50% at 15% 20%, rgba(232,56,45,0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 40% at 85% 80%, rgba(232,56,45,0.06) 0%, transparent 55%);
+}
+.auth-box{
+  position:relative;z-index:1;
+  width:360px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:16px;
+  padding:40px 36px;
+  backdrop-filter:blur(20px);
+}
+
+.auth-title{font-size:18px;font-weight:800;color:white;text-align:center;margin-bottom:4px;letter-spacing:-.4px}
+.auth-sub{font-size:10px;font-weight:500;letter-spacing:1.8px;text-transform:uppercase;color:rgba(255,255,255,0.35);text-align:center;margin-bottom:32px}
+.auth-label{font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:8px;display:block}
+.auth-input{
+  width:100%;padding:12px 16px;border-radius:8px;
+  background:rgba(255,255,255,0.07);
+  border:1px solid rgba(255,255,255,0.12);
+  color:white;font-size:14px;font-weight:500;
+  outline:none;transition:border-color .2s;
+  letter-spacing:2px;
+}
+.auth-input::placeholder{color:rgba(255,255,255,0.2);letter-spacing:0}
+.auth-input:focus{border-color:rgba(232,56,45,0.6)}
+.auth-btn{
+  width:100%;margin-top:20px;padding:13px;border-radius:8px;
+  background:var(--red);color:white;border:none;
+  font-size:12px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;
+  transition:background .2s,transform .1s;
+}
+.auth-btn:hover{background:var(--red-dark)}
+.auth-btn:active{transform:scale(.98)}
+.auth-error{
+  margin-top:12px;text-align:center;font-size:11px;font-weight:600;
+  color:rgba(232,56,45,0.9);display:none;
+}
+.auth-error.show{display:block}
+
+/* ── MAIN APP ── */
+#app{position:relative;z-index:1;display:none}
+#app.visible{display:block}
+
+/* ── HEADER ── */
+.hdr{
+  background:var(--dark-hdr);
+  border-bottom:1px solid rgba(0,0,0,0.15);
+  padding:0 36px;
+  display:flex;align-items:center;justify-content:space-between;
+  height:70px;position:sticky;top:0;z-index:200;
+}
+.hdr-l{display:flex;align-items:center;gap:16px}
+.logo-box{
+  width:120px;height:36px;border-radius:7px;
+  background:rgba(255,255,255,0.09);
+  border:1px solid rgba(255,255,255,0.15);
+  display:flex;align-items:center;justify-content:center;
+  font-size:8px;color:rgba(255,255,255,0.35);text-align:center;line-height:1.4;
+  cursor:pointer;transition:all .2s;overflow:hidden;flex-shrink:0;
+  position:relative;
+}
+.logo-box:hover{border-color:rgba(232,56,45,0.6);color:rgba(255,255,255,0.7)}
+.logo-box img{width:100%;height:100%;object-fit:contain;display:none}
+.logo-upload{display:none}
+.hdr-title{font-size:16px;font-weight:700;letter-spacing:-.2px;color:white}
+.hdr-sub{font-size:10px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:#b9bbb6;margin-top:2px}
+.hdr-r{display:flex;align-items:center;gap:9px}
+.btn{padding:7px 17px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:.4px;border:none;transition:all .2s}
+.btn-red{background:var(--red);color:white}
+.btn-red:hover{background:var(--red-dark)}
+.btn-ghost{background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.8);border:1px solid rgba(255,255,255,0.15)}
+.btn-ghost:hover{background:rgba(255,255,255,0.18)}
+.btn-icon{background:none;border:none;color:rgba(255,255,255,0.45);font-size:16px;cursor:pointer;padding:7px 9px;line-height:1;transition:color .2s}
+.btn-icon:hover{color:rgba(255,255,255,0.85)}
+
+/* ── PERIOD BAR ── */
+.pbar{
+  padding:9px 36px;
+  background:rgba(255,255,255,0.6);
+  border-bottom:1px solid rgba(0,0,0,0.07);
+  display:flex;align-items:center;gap:16px;
+  backdrop-filter:blur(12px);
+}
+.ppill{
+  background:rgba(255,255,255,0.8);border:1px solid rgba(0,0,0,0.09);
+  border-radius:6px;padding:5px 13px;font-size:12px;color:var(--text-muted);
+}
+.ppill b{color:var(--text);font-weight:700}
+.ldot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 6px rgba(34,197,94,0.6);display:inline-block;margin-right:6px;vertical-align:middle}
+.ldot.offline{background:#e8382d;box-shadow:0 0 6px rgba(232,56,45,0.6)}
+
+/* ── MAIN LAYOUT ── */
+.main{padding:26px 36px 56px;display:flex;flex-direction:column;gap:32px;max-width:1220px;margin:0 auto}
+
+/* ── SECTION HEADER ── */
+.sh{display:flex;align-items:center;gap:12px;margin-bottom:15px}
+.sh h2{font-size:11.5px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#363636;white-space:nowrap}
+.sh-line{flex:1;height:1px;background:rgba(0,0,0,0.08)}
+.sh-bar{width:3px;height:15px;border-radius:2px;background:var(--red);flex-shrink:0}
+
+/* ── GLASS CARD ── */
+.glass{
+  background:var(--glass-bg);
+  backdrop-filter:blur(20px) saturate(180%);
+  -webkit-backdrop-filter:blur(20px) saturate(180%);
+  border:1px solid var(--glass-border);
+  border-radius:13px;
+  box-shadow:var(--glass-shadow);
+  transition:border-color .25s,box-shadow .25s;
+}
+.glass:hover{
+  border-color:var(--glass-hover-border);
+  box-shadow:var(--glass-hover-shadow);
+}
+
+/* ── KPI CARDS ── */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+#tmpl-meta-ads .kpi-grid-3{grid-template-columns:repeat(3,1fr)}
+.kpi{
+  padding:26px 28px 22px;position:relative;overflow:hidden;
+  height:158px;display:flex;flex-direction:column;justify-content:space-between;
+}
+.kpi::before{
+  content:'';position:absolute;inset:0;border-radius:13px;
+  background:radial-gradient(ellipse 80% 60% at 0% 0%, rgba(232,56,45,0.055) 0%, transparent 70%);
+  pointer-events:none;
+}
+.kpi::after{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  border-radius:13px 13px 0 0;
+  background:linear-gradient(90deg,rgba(232,56,45,0.9) 0%, rgba(232,56,45,0.15) 60%, transparent 100%);
+}
+.kpi-tag{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#6e324c}
+.kpi-val{font-size:44px;font-weight:800;letter-spacing:-2px;line-height:1;color:var(--text);margin:2px 0 0}
+.kpi-trend{display:flex;align-items:center;gap:8px}
+.tup{background:rgba(34,197,94,0.12);color:#15803d;border:1px solid rgba(34,197,94,0.3);border-radius:5px;padding:2px 8px;font-size:22px;font-weight:800;letter-spacing:-.5px;line-height:1}
+.tdn{background:rgba(232,56,45,0.1);color:#c92e24;border:1px solid rgba(232,56,45,0.25);border-radius:5px;padding:2px 8px;font-size:22px;font-weight:800;letter-spacing:-.5px;line-height:1}
+.tneutral{background:rgba(0,0,0,0.05);color:var(--text);border:1px solid rgba(0,0,0,0.12);border-radius:5px;padding:2px 8px;font-size:22px;font-weight:800;letter-spacing:-.5px;line-height:1}
+.tlbl{font-size:10px;color:var(--text-muted);letter-spacing:.8px;text-transform:uppercase;font-weight:600}
+
+/* ── ROW GRIDS ── */
+.row-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:stretch}
+.row-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;align-items:stretch}
+
+/* ── BASE CARD ── */
+.card{display:flex;flex-direction:column;padding:22px 24px;overflow:hidden}
+
+/* ── CARD TITLE ── */
+.ctitle{
+  flex-shrink:0;font-size:11px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;
+  color:#6e324c;margin-bottom:16px;display:flex;align-items:center;gap:8px;
+}
+.ctitle::before{content:'';width:3px;height:12px;border-radius:2px;background:var(--red);display:inline-block;flex-shrink:0}
+.ctitle-center{justify-content:center}
+.ctitle-center::before{display:none}
+
+/* ── NOTE CARDS ── */
+.note-card{display:flex;flex-direction:column;padding:22px 24px 18px;overflow:hidden}
+.note-textarea{
+  flex:1;min-height:0;width:100%;
+  background:transparent;border:none;border-top:1px solid rgba(0,0,0,0.07);
+  border-radius:0;padding:14px 2px 0;
+  font-size:14px;font-family:var(--font-primary);
+  color:var(--text);line-height:1.8;resize:none;outline:none;
+  overflow-y:auto;overflow-x:hidden;
+  scrollbar-width:thin;scrollbar-color:rgba(232,56,45,0.3) transparent;
+}
+.note-textarea::-webkit-scrollbar{width:3px}
+.note-textarea::-webkit-scrollbar-track{background:transparent}
+.note-textarea::-webkit-scrollbar-thumb{background:rgba(232,56,45,0.35);border-radius:2px}
+.note-textarea::placeholder{color:var(--text-faint)}
+
+/* ── NOTES EDIT/SAVE PATTERN ── */
+.note-section{position:relative}
+.note-edit-btn{
+  position:absolute;top:0;right:0;
+  background:none;border:none;
+  font-size:9px;font-weight:700;letter-spacing:1.2px;
+  text-transform:uppercase;color:var(--text-faint);
+  cursor:pointer;padding:6px 10px;
+  font-family:var(--font-primary);
+  transition:color .2s;z-index:2;
+}
+.note-edit-btn:hover{color:var(--red)}
+.note-actions{
+  display:none;gap:6px;padding:6px 2px 2px;
+  justify-content:flex-end;flex-shrink:0;
+}
+.note-actions.visible{display:flex}
+.note-save-btn{
+  padding:5px 14px;border-radius:6px;font-size:10px;font-weight:700;
+  letter-spacing:.5px;border:none;background:var(--red);color:white;
+  cursor:pointer;font-family:var(--font-primary);transition:background .2s;
+}
+.note-save-btn:hover{background:var(--red-dark)}
+.note-cancel-btn{
+  padding:5px 14px;border-radius:6px;font-size:10px;font-weight:700;
+  letter-spacing:.5px;border:1px solid rgba(0,0,0,0.12);
+  background:transparent;color:var(--text-muted);
+  cursor:pointer;font-family:var(--font-primary);transition:all .2s;
+}
+.note-cancel-btn:hover{background:rgba(0,0,0,0.05)}
+.note-view{
+  padding:14px 2px;
+  font-size:14px;font-family:var(--font-primary);
+  color:var(--text);line-height:1.8;
+  white-space:pre-wrap;word-break:break-word;
+  flex:1;min-height:0;overflow-y:auto;
+  scrollbar-width:thin;scrollbar-color:rgba(232,56,45,0.3) transparent;
+}
+.note-view:empty{display:none}
+.note-card.editing .note-view{display:none!important}
+.note-card.editing .note-textarea{display:block!important}
+.note-card.editing .note-actions{display:flex!important}
+.note-card:not(.editing) .note-textarea{display:none!important}
+.note-card:not(.editing) .note-actions{display:none!important}
+
+/* ── BAR ROWS ── */
+.bar-list{display:flex;flex-direction:column;gap:0;flex:1;min-height:0}
+.brow{display:flex;align-items:center;gap:10px;flex:1}
+.bkw{font-size:11px;color:var(--text-muted);width:155px;flex-shrink:0;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bkw-sm{font-size:11px;color:var(--text-muted);width:50px;flex-shrink:0;text-align:right;font-family:monospace;letter-spacing:.5px}
+.btrack{flex:1;height:20px;background:rgba(0,0,0,0.05);border-radius:5px;overflow:hidden}
+.bfill{height:100%;border-radius:5px;display:flex;align-items:center;justify-content:flex-end;padding-right:8px;font-size:9px;font-weight:700;color:white;transition:width .6s ease}
+
+/* ── MAP ── */
+.map-body{
+  flex:1;min-height:0;border-radius:9px;overflow:hidden;
+  border:1px solid rgba(0,0,0,0.08);position:relative;
+}
+.map-placeholder{
+  background:linear-gradient(150deg,#dde2ec 0%,#e8eaf0 100%);
+  display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;
+}
+.map-placeholder-icon{font-size:24px;opacity:.3}
+.map-placeholder-text{font-size:10px;color:rgba(0,0,0,0.3);letter-spacing:1.8px;text-transform:uppercase}
+.mapboxgl-map{width:100%;height:100%}
+
+/* ── DONUT ── */
+.donut-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:0;gap:16px}
+.dnut-wrap{position:relative;width:130px;height:130px;flex-shrink:0}
+.dnut-wrap canvas{width:130px!important;height:130px!important}
+.dleg{width:100%;text-align:center;padding:0 4px}
+.dleg-table{border-collapse:collapse;table-layout:fixed;margin:0 auto;display:inline-table}
+.dleg-table td{width:62px;padding:3px 4px;font-size:10.5px;font-weight:600;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;vertical-align:middle}
+.dleg-table td.dleg-pct{font-weight:800;color:var(--text);text-align:center}
+.dleg-table td.dleg-lbl{display:flex;align-items:center;gap:5px}
+.dldt{width:8px;height:8px;border-radius:2px;flex-shrink:0;display:inline-block}
+
+/* ── SPINNER ── */
+.spinner{
+  display:inline-block;width:14px;height:14px;border-radius:50%;
+  border:2px solid rgba(255,255,255,0.25);border-top-color:white;
+  animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.refreshing .spinner{display:inline-block}
+.spinning-icon{display:inline-block;animation:spin .7s linear infinite}
+
+/* ═══════════════════════════════════════════
+   SETTINGS PANEL
+═══════════════════════════════════════════ */
+#settings-overlay{
+  display:none;position:fixed;inset:0;z-index:500;
+  background:rgba(15,16,22,0.7);backdrop-filter:blur(6px);
+  align-items:center;justify-content:center;
+}
+#settings-overlay.open{display:flex}
+.settings-panel{
+  background:#1e2030;border:1px solid rgba(255,255,255,0.1);border-radius:16px;
+  width:780px;max-height:88vh;display:flex;flex-direction:column;overflow:hidden;
+  box-shadow:0 24px 80px rgba(0,0,0,0.5);
+}
+.sp-header{
+  padding:20px 28px;border-bottom:1px solid rgba(255,255,255,0.08);
+  display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
+}
+.sp-title{font-size:14px;font-weight:800;color:white;letter-spacing:-.2px}
+.sp-close{background:none;border:none;color:rgba(255,255,255,0.4);font-size:20px;line-height:1;cursor:pointer;padding:4px;transition:color .2s}
+.sp-close:hover{color:white}
+.sp-tabs{display:flex;padding:0 28px;border-bottom:1px solid rgba(255,255,255,0.08);flex-shrink:0}
+.sp-tab{
+  padding:12px 18px;font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;
+  color:rgba(255,255,255,0.35);border:none;background:none;cursor:pointer;
+  border-bottom:2px solid transparent;transition:all .2s;margin-bottom:-1px;
+}
+.sp-tab.active{color:white;border-bottom-color:var(--red)}
+.sp-body{flex:1;overflow-y:auto;padding:24px 28px;scrollbar-width:thin;scrollbar-color:rgba(232,56,45,0.4) rgba(255,255,255,0.05)}
+.sp-body::-webkit-scrollbar{width:4px}
+.sp-body::-webkit-scrollbar-track{background:rgba(255,255,255,0.03)}
+.sp-body::-webkit-scrollbar-thumb{background:rgba(232,56,45,0.4);border-radius:2px}
+
+/* Settings form elements */
+.sp-section{margin-bottom:28px}
+.sp-section-title{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,0.06)}
+.sp-row{display:grid;gap:12px;margin-bottom:12px}
+.sp-row.cols-2{grid-template-columns:1fr 1fr}
+.sp-row.cols-3{grid-template-columns:1fr 1fr 1fr}
+.sp-field{display:flex;flex-direction:column;gap:6px}
+.sp-label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.4)}
+.sp-input{
+  padding:9px 13px;border-radius:7px;font-size:12px;font-weight:500;
+  background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);
+  color:white;outline:none;transition:border-color .2s;
+}
+.sp-input::placeholder{color:rgba(255,255,255,0.2)}
+.sp-input:focus{border-color:rgba(232,56,45,0.5)}
+.sp-input.mono{font-family:monospace;letter-spacing:.5px;font-size:11px}
+.sp-textarea{
+  padding:9px 13px;border-radius:7px;font-size:11px;
+  background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);
+  color:white;outline:none;resize:vertical;min-height:60px;
+  font-family:monospace;letter-spacing:.3px;line-height:1.6;
+  transition:border-color .2s;
+}
+.sp-textarea:focus{border-color:rgba(232,56,45,0.5)}
+.sp-hint{font-size:10px;color:rgba(255,255,255,0.35);line-height:1.5;margin-top:2px}
+.sp-info-row{display:flex;align-items:baseline;gap:12px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.06)}
+.sp-info-row:last-child{border-bottom:none}
+.sp-info-label{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.3);width:100px;flex-shrink:0}
+.sp-info-value{font-size:12px;color:rgba(255,255,255,0.8);font-weight:500;flex:1;line-height:1.5}
+.sp-logo-row{display:flex;align-items:center;gap:16px;margin-top:4px}
+.sp-logo-preview{
+  width:120px;height:36px;border-radius:7px;
+  background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;flex-shrink:0;
+}
+.sp-logo-preview img{width:100%;height:100%;object-fit:contain}
+.sp-logo-btns{display:flex;flex-direction:column;gap:7px}
+.sp-btn{
+  padding:8px 18px;border-radius:7px;font-size:11px;font-weight:700;
+  letter-spacing:.5px;border:none;cursor:pointer;transition:all .2s;
+}
+.sp-btn-red{background:var(--red);color:white}
+.sp-btn-red:hover{background:var(--red-dark)}
+.sp-btn-ghost{background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.12)}
+.sp-btn-ghost:hover{background:rgba(255,255,255,0.14)}
+.sp-btn-danger{background:rgba(232,56,45,0.12);color:rgba(232,56,45,0.9);border:1px solid rgba(232,56,45,0.2)}
+.sp-btn-danger:hover{background:rgba(232,56,45,0.22)}
+.sp-actions{display:flex;gap:10px;justify-content:flex-end;padding-top:14px;margin-top:4px;border-top:1px solid rgba(255,255,255,0.07)}
+
+/* Client list */
+.client-list{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.client-item{
+  background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);
+  border-radius:9px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;
+  cursor:pointer;transition:all .2s;
+}
+.client-item:hover{border-color:rgba(232,56,45,0.3);background:rgba(232,56,45,0.04)}
+.client-item.active{border-color:rgba(232,56,45,0.5);background:rgba(232,56,45,0.07)}
+.client-item-name{font-size:13px;font-weight:700;color:white}
+.client-item-meta{font-size:10px;color:rgba(255,255,255,0.3);margin-top:2px}
+.client-item-actions{display:flex;gap:8px}
+
+/* Cell mapping table */
+.mapping-table{width:100%;border-collapse:separate;border-spacing:0 6px}
+.mapping-table th{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.3);text-align:left;padding:0 10px 6px;border-bottom:1px solid rgba(255,255,255,0.07)}
+.mapping-table td{padding:4px 6px;vertical-align:middle}
+.mapping-table td:first-child{font-size:11px;color:rgba(255,255,255,0.6);padding-left:10px;white-space:nowrap}
+.mapping-table td:last-child{padding-right:10px}
+.mapping-table tr:hover td{background:rgba(255,255,255,0.02)}
+.map-input{
+  padding:6px 10px;border-radius:5px;font-size:11px;font-family:monospace;letter-spacing:.5px;
+  background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);
+  color:white;outline:none;width:100%;transition:border-color .2s;
+}
+.map-input:focus{border-color:rgba(232,56,45,0.5)}
+.map-input::placeholder{color:rgba(255,255,255,0.18)}
+
+/* Toast notification */
+#toast{
+  position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:#1e2030;border:1px solid rgba(255,255,255,0.12);border-radius:9px;
+  padding:10px 20px;font-size:12px;font-weight:600;color:white;
+  z-index:9998;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap;
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#toast.success{border-color:rgba(34,197,94,0.4);color:#22c55e}
+#toast.error{border-color:rgba(232,56,45,0.4);color:#e8382d}
+
+/* ── FOOTER ── */
+.report-footer{
+  background:var(--dark-hdr);
+  border-top:3px solid var(--red);
+  padding:28px 36px;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:32px;
+}
+.footer-text{
+  display:flex;flex-direction:column;gap:5px;
+}
+.footer-authorized{
+  font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  color:rgba(255,255,255,0.35);margin-bottom:4px;
+}
+.footer-client{
+  font-size:15px;font-weight:800;color:white;letter-spacing:-.2px;
+}
+.footer-authors{
+  font-size:11px;font-weight:500;color:rgba(255,255,255,0.5);line-height:1.7;margin-top:2px;
+}
+.footer-authors b{color:rgba(255,255,255,0.8);font-weight:700}
+.footer-logo{
+  width:120px;height:36px;border-radius:7px;
+  background:rgba(255,255,255,0.07);
+  border:1px solid rgba(255,255,255,0.12);
+  display:flex;align-items:center;justify-content:center;
+  font-size:8px;color:rgba(255,255,255,0.25);text-align:center;line-height:1.5;
+  flex-shrink:0;overflow:hidden;
+}
+.footer-logo img{width:100%;height:100%;object-fit:contain;display:none}
+
+/* ── EMPTY STATES ── */
+.empty-state{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:8px;min-height:60px;
+}
+.empty-state-icon{font-size:18px;opacity:.25}
+.empty-state-msg{font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--text-faint);text-align:center;line-height:1.6}
+.empty-state-hint{font-size:9.5px;color:var(--text-faint);opacity:.7;text-align:center}
+.kpi-val-empty{font-size:28px;font-weight:700;color:var(--text-faint);letter-spacing:-.5px}
+
+/* ── LOADING OVERLAY ── */
+#load-overlay{
+  position:fixed;inset:0;z-index:8000;
+  background:linear-gradient(160deg,#f5f6f9 0%,#eceef3 100%);
+  display:flex;align-items:center;justify-content:center;
+  opacity:1;transition:opacity .4s ease;
+  pointer-events:all;
+}
+#load-overlay.fade-out{opacity:0;pointer-events:none}
+#load-overlay.hidden{display:none}
+.load-card{
+  background:rgba(255,255,255,0.82);
+  border:1px solid rgba(255,255,255,0.95);
+  border-radius:16px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.06),0 12px 32px rgba(0,0,0,0.07);
+  padding:40px 44px 36px;
+  width:320px;
+  display:flex;flex-direction:column;align-items:center;
+}
+.load-logo{
+  width:160px;height:44px;border-radius:8px;
+  background:#1a1c24;
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:20px;overflow:hidden;
+}
+.load-logo img{width:100%;height:100%;object-fit:contain}
+.load-logo-text{
+  font-size:9px;font-weight:700;color:rgba(255,255,255,0.5);
+  text-align:center;line-height:1.3;letter-spacing:.5px;
+}
+.load-client{
+  font-size:12px;font-weight:700;letter-spacing:1.8px;
+  text-transform:uppercase;color:#1a1c24;
+  margin-bottom:28px;text-align:center;
+}
+.load-spinner-wrap{width:44px;height:44px;margin-bottom:18px}
+.load-spinner{
+  width:44px;height:44px;border-radius:50%;
+  border:3px solid rgba(232,56,45,0.15);
+  border-top-color:#e8382d;
+  animation:load-spin .9s linear infinite;
+}
+@keyframes load-spin{to{transform:rotate(360deg)}}
+.load-stage{
+  font-size:11px;font-weight:600;letter-spacing:.8px;
+  color:#6b7080;text-align:center;
+  margin-bottom:18px;min-height:16px;
+  transition:opacity .2s;
+}
+.load-track{
+  width:100%;height:3px;
+  background:rgba(232,56,45,0.12);
+  border-radius:2px;overflow:hidden;
+  margin-bottom:14px;
+}
+.load-fill{
+  height:100%;border-radius:2px;background:#e8382d;
+  width:0%;transition:width .5s cubic-bezier(0.4,0,0.2,1);
+}
+.load-dots{display:flex;gap:5px;justify-content:center}
+.load-dot{
+  width:5px;height:5px;border-radius:50%;
+  background:rgba(232,56,45,0.2);
+  transition:background .3s;
+}
+.load-dot.active{background:#e8382d}
+
+/* ── TEMPLATE NAVIGATION ── */
+.tmpl-nav{
+  padding:8px 36px;
+  background:rgba(255,255,255,0.5);
+  border-bottom:1px solid rgba(0,0,0,0.06);
+  display:flex;align-items:center;gap:8px;
+  backdrop-filter:blur(12px);
+}
+.tmpl-toggle{
+  display:flex;background:rgba(0,0,0,0.05);border-radius:8px;padding:3px;gap:3px;
+}
+.tmpl-btn{
+  padding:6px 18px;border-radius:6px;font-size:11px;font-weight:700;
+  letter-spacing:.5px;border:none;background:transparent;
+  color:var(--text-muted);cursor:pointer;transition:all .2s;
+  font-family:var(--font-primary);
+}
+.tmpl-btn.active{background:var(--dark-hdr);color:white}
+.tmpl-btn:hover:not(.active){background:rgba(0,0,0,0.08)}
+.tmpl-select{
+  padding:6px 12px;border-radius:6px;font-size:11px;font-weight:700;
+  letter-spacing:.5px;border:1px solid rgba(0,0,0,0.12);
+  background:rgba(255,255,255,0.8);color:var(--text);
+  cursor:pointer;font-family:var(--font-primary);outline:none;
+}
+
+/* ── TEMPLATE CONTENT AREAS ── */
+.tmpl-content{display:none}
+.tmpl-content.active{display:flex;flex-direction:column;gap:32px}
+
+/* ── AUDIENCE TABLE ── */
+.audience-table-wrap{overflow-x:auto;flex:1;min-height:0}
+.audience-table{width:100%;border-collapse:collapse;font-size:11.5px}
+.audience-table th{
+  font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+  color:#6e324c;padding:8px 12px;border-bottom:2px solid rgba(232,56,45,0.15);
+  text-align:left;white-space:nowrap;
+}
+.audience-table th:first-child{width:35%}
+.audience-table td{
+  padding:10px 12px;border-bottom:1px solid rgba(0,0,0,0.05);
+  color:var(--text);vertical-align:middle;
+}
+.audience-table tr:last-child td{border-bottom:none}
+.audience-table tr:hover td{background:rgba(232,56,45,0.03)}
+.audience-table td:first-child{font-weight:600;color:var(--text)}
+.audience-table td:not(:first-child){color:var(--text-muted);font-weight:500}
+.audience-empty{
+  flex:1;display:flex;align-items:center;justify-content:center;
+  font-size:11px;color:var(--text-faint);
+}
+
+/* ── TOP CONTENT CARDS ── */
+.content-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.content-card{
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.creative-wrap{
+  position:relative;cursor:pointer;overflow:hidden;
+  border-radius:9px 9px 0 0;
+  background:linear-gradient(150deg,#dde2ec,#e8eaf0);
+  aspect-ratio:4/3;
+}
+.creative-wrap img{width:100%;height:100%;object-fit:cover;display:block}
+.creative-ph{
+  width:100%;height:100%;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:8px;
+}
+.creative-ph-icon{
+  width:36px;height:36px;border-radius:50%;
+  background:rgba(232,56,45,0.12);
+  display:flex;align-items:center;justify-content:center;
+}
+.creative-ph-text{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(0,0,0,0.3)}
+.rank-badge{
+  position:absolute;top:10px;left:10px;
+  background:var(--dark-hdr);color:white;
+  font-size:9px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;
+  padding:3px 9px;border-radius:4px;
+}
+.expand-btn{
+  position:absolute;bottom:8px;right:8px;
+  background:rgba(0,0,0,0.5);color:white;border:none;
+  border-radius:4px;padding:4px 8px;font-size:10px;cursor:pointer;
+  font-family:var(--font-primary);font-weight:700;
+  transition:background .2s;display:none;
+}
+.replace-btn{
+  position:absolute;top:8px;right:8px;
+  background:rgba(0,0,0,0.5);color:white;border:none;
+  border-radius:4px;padding:4px 8px;font-size:10px;cursor:pointer;
+  font-family:var(--font-primary);font-weight:700;
+  transition:background .2s;display:none;
+}
+.creative-wrap:hover .expand-btn,
+.creative-wrap:hover .replace-btn{display:block}
+.expand-btn:hover,.replace-btn:hover{background:rgba(0,0,0,0.75)}
+.content-card-body{
+  padding:14px 16px;
+  background:var(--glass-bg);
+  backdrop-filter:blur(20px);
+  border:1px solid var(--glass-border);
+  border-top:none;
+  border-radius:0 0 13px 13px;
+  flex:1;
+}
+.content-card-title{
+  font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;
+  color:#6e324c;margin-bottom:12px;
+  display:flex;align-items:center;gap:6px;
+}
+.content-card-title::before{content:'';width:3px;height:10px;border-radius:2px;background:var(--red);flex-shrink:0}
+.content-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.content-metric{
+  background:rgba(0,0,0,0.03);border-radius:6px;padding:8px 10px;
+}
+.content-metric-label{font-size:8.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#6e324c;margin-bottom:3px}
+.content-metric-value{font-size:18px;font-weight:800;letter-spacing:-.5px;color:var(--text);line-height:1}
+.content-metric-trend{font-size:9px;font-weight:700;margin-top:2px}
+
+
+
+/* Mapbox popup styling */
+.map-popup .mapboxgl-popup-content{
+  background:rgba(255,255,255,0.95);
+  border:1px solid rgba(232,56,45,0.2);
+  border-radius:7px;padding:8px 12px;
+  box-shadow:0 4px 16px rgba(0,0,0,0.12);
+}
+.map-popup .mapboxgl-popup-tip{display:none}
+
+/* Map loading overlay */
+.map-loading{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  background:rgba(245,246,249,0.7);backdrop-filter:blur(4px);z-index:10;border-radius:9px;
+  font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-faint);
+  gap:10px;pointer-events:none;
+}
+
+/* ══════════════════════════════════════
+   MOBILE — TABLET (≤768px)
+══════════════════════════════════════ */
+@media (max-width: 768px) {
+  /* Header */
+  .hdr{padding:0 16px;height:60px}
+  .hdr-title{font-size:13px}
+  .hdr-sub{font-size:9px}
+  .logo-box{width:100px;height:32px}
+  .btn{padding:6px 12px;font-size:10px}
+
+  /* Period bar */
+  .pbar{padding:8px 16px;gap:10px;flex-wrap:wrap}
+  .ppill{font-size:10px}
+
+  /* Main layout */
+  .main{padding:16px 16px 40px;gap:24px;max-width:100%}
+
+  /* KPI grid — 2 columns on tablet */
+  .kpi-grid{grid-template-columns:1fr 1fr;gap:10px}
+  #tmpl-meta-ads .kpi-grid-3{grid-template-columns:repeat(2,1fr)}
+  .kpi{height:158px;padding:16px 16px 12px;overflow:hidden}
+  .kpi-val{font-size:32px}
+  .kpi-tag{font-size:8px;letter-spacing:1px;white-space:normal;line-height:1.3;word-break:break-word}
+
+  /* All 2-col and 3-col grids collapse to 1 column */
+  .row-2{grid-template-columns:1fr}
+  .row-3{grid-template-columns:1fr}
+
+  /* Cards — remove fixed heights, let content breathe */
+  .glass.card[style*="height"],
+  .glass.note-card[style*="height"]{height:auto!important}
+
+  /* Prevent ALL elements from overflowing viewport */
+  *{max-width:100%;box-sizing:border-box}
+  img,canvas,iframe{max-width:100%}
+  .hdr,.pbar,.main,.report-footer,.wrap{width:100%;max-width:100vw}
+
+  /* Note textareas */
+  .note-textarea{min-height:120px}
+
+  /* Bar lists */
+  .bar-list{min-height:200px}
+
+  /* Maps — handled by toggle (see below) */
+  .map-body{min-height:280px}
+
+  /* Donuts — already collapse via row-3 → 1col */
+  .donut-body{min-height:260px}
+
+  /* Section headers */
+  .sh h2{font-size:10px;letter-spacing:2px}
+
+  /* Footer */
+  .report-footer{padding:20px 16px;gap:16px}
+  .footer-client{font-size:13px}
+
+  /* Template nav */
+  .tmpl-nav{padding:8px 16px}
+  .tmpl-btn{padding:5px 12px;font-size:10px}
+
+  /* Content grid — stack on tablet */
+  .content-grid{grid-template-columns:1fr}
+
+  /* Audience table — allow horizontal scroll on small screens */
+  .audience-table-wrap{overflow-x:auto}
+  .audience-table{min-width:360px}
+}
+
+/* ══════════════════════════════════════
+   MOBILE — PHONE (≤480px)
+══════════════════════════════════════ */
+@media (max-width: 480px) {
+  /* Header — tighter */
+  .hdr{padding:0 12px}
+  .hdr-title{font-size:12px;letter-spacing:-.1px}
+  .btn-ghost{display:none}
+
+  /* Period bar */
+  #last-refreshed{display:none}
+  .pbar{flex-wrap:wrap}
+
+  /* Main */
+  .main{padding:12px 12px 32px;gap:16px}
+
+  /* KPI grid — 2 columns, shrink values */
+  .kpi{height:132px;padding:14px 14px 12px}
+  .kpi-val{font-size:28px;letter-spacing:-1px}
+  .kpi-tag{font-size:8.5px}
+  .tup,.tdn{font-size:18px}
+
+  /* Bar chart labels — narrower on phone */
+  .bkw{width:110px;font-size:10px}
+  .bkw-sm{width:42px;font-size:10px}
+
+  /* Donut cards */
+  .dnut-wrap{width:110px;height:110px}
+  .dnut-wrap canvas{width:110px!important;height:110px!important}
+
+  /* Footer */
+  .report-footer{flex-direction:column;align-items:flex-start;gap:12px}
+  .footer-logo{align-self:flex-end}
+
+  /* KPI tags even smaller on phone */
+  .kpi-tag{font-size:7.5px}
+  .kpi{height:148px}
+}
+
+/* ── MAP TOGGLE (mobile only) ── */
+.map-toggle-bar{
+  display:none;
+  gap:8px;margin-bottom:10px;flex-shrink:0;
+}
+.map-toggle-btn{
+  flex:1;padding:7px 12px;border-radius:7px;font-size:11px;font-weight:700;
+  letter-spacing:.5px;border:1px solid rgba(232,56,45,0.25);
+  background:rgba(255,255,255,0.6);color:var(--text-muted);
+  cursor:pointer;transition:all .2s;font-family:var(--font-primary);
+}
+.map-toggle-btn.active{background:#e8382d;color:white;border-color:#e8382d}
+.map-panel{display:block}
+.map-panel.hidden{display:none}
+
+@media (max-width: 768px) {
+  .map-toggle-bar{display:flex}
+  /* On mobile the two map cards are already stacked (row-2 → 1col).
+     We use JS to show/hide them via .hidden class */
+}
+
+/* Print */
+@media print{
+  /* Hide interactive UI */
+  #settings-overlay,#toast,#auth-screen,#load-overlay,
+  .hdr .hdr-r,#logout-btn,#settings-btn,
+  #refresh-btn,.btn-ghost,.btn-icon{display:none!important}
+
+  /* Page setup — suppress browser-generated header/footer (URL, title) */
+  @page{
+    margin:12mm 10mm;
+    /* These suppress the default header/footer in supporting browsers */
+    @top-center{content:none}
+    @bottom-center{content:none}
+  }
+  html,body{background:white!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  body::before{display:none!important}
+
+  /* Header */
+  .hdr{
+    position:relative!important;
+    background:#1a1c24!important;
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+    padding:0 24px;
+  }
+
+  /* Remove backdrop-filter — not supported in print */
+  .glass,.pbar{
+    backdrop-filter:none!important;
+    -webkit-backdrop-filter:none!important;
+  }
+
+  /* Cards get solid white backgrounds */
+  .glass{
+    background:#ffffff!important;
+    border:1px solid #e0e0e0!important;
+    box-shadow:none!important;
+  }
+
+  /* Period bar */
+  .pbar{
+    background:#f5f6f5!important;
+    border-bottom:1px solid #e0e0e0!important;
+  }
+
+  /* KPI cards — force background and accent bar */
+  .kpi{background:#ffffff!important}
+  .kpi::before{display:none!important}
+  .kpi::after{
+    background:linear-gradient(90deg,#e8382d,transparent)!important;
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+  }
+
+  /* Trend badges */
+  .tup{
+    background:rgba(34,197,94,0.12)!important;
+    border:1px solid rgba(34,197,94,0.3)!important;
+    color:#15803d!important;
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+  }
+  .tdn{
+    background:rgba(232,56,45,0.1)!important;
+    border:1px solid rgba(232,56,45,0.25)!important;
+    color:#c92e24!important;
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+  }
+
+  /* Bar fills — force red color to print */
+  .bfill{
+    background:#e8382d!important;
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+  }
+  .btrack{background:#eeeeee!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+
+  /* Textareas — expand to show all content */
+  .note-textarea{
+    overflow:visible!important;
+    height:auto!important;
+    min-height:60px!important;
+    border:none!important;
+    background:transparent!important;
+  }
+  .note-card,.card{overflow:visible!important;height:auto!important}
+
+  /* Maps */
+  .map-body{min-height:260px!important}
+
+  /* Prevent cards from breaking across pages */
+  .glass,.kpi,.card,.note-card{page-break-inside:avoid;break-inside:avoid}
+  .sh{page-break-after:avoid;break-after:avoid}
+
+  /* Template nav — hide toggle, show only active template */
+  .tmpl-nav{display:none!important}
+  .tmpl-content{display:none!important}
+  .tmpl-content.active{display:flex!important;flex-direction:column!important;gap:24px!important}
+
+  /* Top Content — force 3-col grid in print */
+  .content-grid{
+    display:grid!important;
+    grid-template-columns:repeat(3,1fr)!important;
+    gap:8px!important;
+  }
+  .content-card{page-break-inside:avoid;break-inside:avoid}
+  .creative-wrap{page-break-inside:avoid;break-inside:avoid}
+  .content-metrics{grid-template-columns:repeat(3,1fr)!important;gap:4px!important}
+  .content-metric{padding:5px 6px!important}
+  .content-metric-label{font-size:7px!important;letter-spacing:.8px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .content-metric-value{font-size:13px!important}
+  .content-card-body{padding:8px 10px!important}
+  .content-card-title{font-size:8px!important;margin-bottom:6px!important}
+  .rank-badge{font-size:8px!important;padding:2px 6px!important}
+
+  /* Demographics — force 2-col side by side in print */
+  #tmpl-meta-ads .row-2{
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+  }
+
+  /* KPI grid — maintain 3-col for meta */
+  #tmpl-meta-ads .kpi-grid{
+    grid-template-columns:repeat(3,1fr)!important;
+  }
+
+  /* Remove expand/replace buttons from print */
+  .expand-btn,.replace-btn{display:none!important}
+
+  /* Footer — pull up close to content */
+  .report-footer{
+    background:#1a1c24!important;
+    border-top:3px solid #e8382d!important;
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+    margin-top:0!important;
+    page-break-before:avoid;
+    break-before:avoid;
+  }
+  .main{padding-bottom:16px!important}
+  .footer-client{color:white!important}
+  .footer-authors{color:rgba(255,255,255,0.6)!important}
+  .footer-authors b{color:rgba(255,255,255,0.85)!important}
+  .footer-authorized{color:rgba(255,255,255,0.4)!important}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     AUTH SCREEN
+══════════════════════════════════════ -->
+<div id="auth-screen">
+  <div class="auth-box">
+    <div class="auth-title">Client Report</div>
+    <div class="auth-sub">LINK Strategic Partners</div>
+    <label class="auth-label">Access Password</label>
+    <input class="auth-input" type="password" id="auth-pw-input" placeholder="Enter your password" autocomplete="current-password"/>
+    <div class="auth-error" id="auth-error">Incorrect password. Please try again.</div>
+    <button class="auth-btn" id="auth-btn">Access Report →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     MAIN APP
+══════════════════════════════════════ -->
+<div id="app">
+
+  <!-- HEADER -->
+  <div class="hdr">
+    <div class="hdr-l">
+      <div class="logo-box" id="logo-box" title="Click to upload logo">
+        <img id="logo-img" src="" alt=""/>
+        <span id="logo-text">LOGO</span>
+        <input type="file" class="logo-upload" id="logo-upload" accept="image/*"/>
+      </div>
+      <div>
+        <div class="hdr-title" id="hdr-title">Google Search Snapshot Report</div>
+        <div class="hdr-sub" id="hdr-sub">Loading…</div>
+      </div>
+    </div>
+    <div class="hdr-r">
+      <button class="btn btn-red" id="refresh-btn">↻ Refresh</button>
+      <button class="btn btn-ghost" onclick="window.print()">⬇ Export PDF</button>
+      <button class="btn-icon" id="settings-btn" title="Settings">⚙</button>
+      <button class="btn-icon" id="logout-btn" title="Sign out" style="font-size:13px">⏻</button>
+    </div>
+  </div>
+
+  <!-- PERIOD BAR -->
+  <div class="pbar">
+    <div class="ppill">Reporting Period: <b id="period-text">—</b></div>
+    <span id="conn-status"><span class="ldot offline" id="conn-dot"></span><span style="font-size:10px;color:var(--text-muted)" id="conn-label">Not connected</span></span>
+    <span style="font-size:10px;color:var(--text-faint);margin-left:auto" id="last-refreshed">—</span>
+  </div>
+
+  <!-- TEMPLATE NAVIGATION (shown only if client has multiple report types) -->
+  <div class="tmpl-nav" id="tmpl-nav" style="display:none">
+    <div class="tmpl-toggle" id="tmpl-toggle"></div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="main">
+
+    <!-- ═══ GOOGLE SEARCH TEMPLATE ═══ -->
+    <div class="tmpl-content active" id="tmpl-google-search">
+
+    <!-- KPIs -->
+    <div>
+      <div class="sh"><div class="sh-bar"></div><h2>Top Line Campaign Performance</h2><div class="sh-line"></div></div>
+      <div class="kpi-grid">
+        <div class="glass kpi">
+          <div class="kpi-tag">Ad Clicks</div>
+          <div class="kpi-val" id="kpi-clicks">—</div>
+          <div class="kpi-trend"><span id="kpi-clicks-trend" class="tup" style="display:none"></span><span class="tlbl" id="kpi-clicks-tlbl"></span></div>
+        </div>
+        <div class="glass kpi">
+          <div class="kpi-tag">Impressions</div>
+          <div class="kpi-val" id="kpi-impressions">—</div>
+          <div class="kpi-trend"><span id="kpi-impressions-trend" class="tup" style="display:none"></span><span class="tlbl" id="kpi-impressions-tlbl"></span></div>
+        </div>
+        <div class="glass kpi">
+          <div class="kpi-tag">Avg. Click-Through Rate (CTR)</div>
+          <div class="kpi-val" id="kpi-ctr">—</div>
+          <div class="kpi-trend"><span id="kpi-ctr-trend" class="tdn" style="display:none"></span><span class="tlbl" id="kpi-ctr-tlbl"></span></div>
+        </div>
+        <div class="glass kpi">
+          <div class="kpi-tag">Avg. Cost-Per-Click (CPC)</div>
+          <div class="kpi-val" id="kpi-cpc">—</div>
+          <div class="kpi-trend"><span id="kpi-cpc-trend" class="tup" style="display:none"></span><span class="tlbl" id="kpi-cpc-tlbl"></span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PERFORMANCE NOTES (conditional) -->
+    <div id="gs-notes-performance-section" style="display:none">
+      <div class="sh"><div class="sh-bar"></div><h2 id="gs-notes-performance-title">Performance Notes</h2><div class="sh-line"></div></div>
+<div class="glass note-card note-section" style="height:188px">
+        <button class="note-edit-btn" onclick="enterNoteEdit('notes-performance')">Edit</button>
+        <div class="note-view" id="notes-performance-view"></div>
+        <textarea class="note-textarea" id="notes-performance" placeholder="Add notes here…"></textarea>
+        <div class="note-actions">
+          <button class="note-cancel-btn" onclick="cancelNoteEdit('notes-performance')">Cancel</button>
+          <button class="note-save-btn" onclick="saveNoteEdit('notes-performance')">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- AUDIENCE SEGMENTATION (conditional) -->
+    <div id="gs-audience-section" style="display:none">
+      <div class="sh"><div class="sh-bar"></div><h2>Audience Segmentation</h2><div class="sh-line"></div></div>
+      <div class="glass card" style="height:300px">
+        <div class="ctitle">Audience Performance</div>
+        <div class="audience-table-wrap" id="gs-audience-table-wrap">
+          <div class="audience-empty">No audience data configured</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AUDIENCE INSIGHTS (conditional) -->
+    <div id="gs-notes-audience-section" style="display:none">
+      <div class="sh"><div class="sh-bar"></div><h2 id="gs-notes-audience-title">Audience Insights</h2><div class="sh-line"></div></div>
+<div class="glass note-card note-section" style="height:188px">
+        <button class="note-edit-btn" onclick="enterNoteEdit('notes-audience')">Edit</button>
+        <div class="note-view" id="notes-audience-view"></div>
+        <textarea class="note-textarea" id="notes-audience" placeholder="Add notes here…"></textarea>
+        <div class="note-actions">
+          <button class="note-cancel-btn" onclick="cancelNoteEdit('notes-audience')">Cancel</button>
+          <button class="note-save-btn" onclick="saveNoteEdit('notes-audience')">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- KEYWORD ANALYSIS -->
+    <div>
+      <div class="sh"><div class="sh-bar"></div><h2>Keyword Analysis &amp; Insights</h2><div class="sh-line"></div></div>
+      <div class="row-2">
+        <div class="glass card" style="height:360px">
+          <div class="ctitle">Top Keywords by Clicks</div>
+          <div class="bar-list" id="kw-bar-list">
+            <div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--text-faint)">No data — configure cell mapping in Settings</div>
+          </div>
+        </div>
+        <div class="glass note-card note-section" id="gs-notes-keywords-card" style="height:360px;display:none">
+          <div class="ctitle" id="gs-notes-keywords-title">Keyword Insights</div>
+          <button class="note-edit-btn" onclick="enterNoteEdit('notes-keywords')">Edit</button>
+          <div class="note-view" id="notes-keywords-view"></div>
+          <textarea class="note-textarea" id="notes-keywords" placeholder="Add notes here…"></textarea>
+          <div class="note-actions">
+            <button class="note-cancel-btn" onclick="cancelNoteEdit('notes-keywords')">Cancel</button>
+            <button class="note-save-btn" onclick="saveNoteEdit('notes-keywords')">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GEOGRAPHIC — MAPS + BAR CHARTS PAIRED -->
+    <div>
+      <div class="sh"><div class="sh-bar"></div><h2>Geographic Performance</h2><div class="sh-line"></div></div>
+      <!-- Mobile toggle — only visible on small screens -->
+      <div class="map-toggle-bar" id="map-toggle-bar">
+        <button class="map-toggle-btn active" id="map-toggle-clicks" onclick="showMap('clicks')">Ad Clicks</button>
+        <button class="map-toggle-btn" id="map-toggle-impressions" onclick="showMap('impressions')">Ad Impressions</button>
+      </div>
+
+      <!-- Clicks row: map + bar chart paired -->
+      <div class="map-panel" id="map-panel-clicks" style="margin-bottom:14px">
+        <div class="row-2">
+          <div class="glass card" style="height:320px">
+            <div class="ctitle">Ad Clicks By Zip Code (1.1)</div>
+            <div class="map-body map-placeholder" id="map-clicks">
+              <div class="map-placeholder-icon">🗺</div>
+              <div class="map-placeholder-text">Mapbox · Clicks Heat</div>
+            </div>
+          </div>
+          <div class="glass card" style="height:320px">
+            <div class="ctitle">Ad Clicks By Zip Code (1.2)</div>
+            <div class="bar-list" id="zip-clicks-bars">
+              <div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--text-faint)">No data</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Impressions row: map + bar chart paired -->
+      <div class="map-panel" id="map-panel-impressions">
+        <div class="row-2">
+          <div class="glass card" style="height:320px">
+            <div class="ctitle">Ad Impressions By Zip Code (1.1)</div>
+            <div class="map-body map-placeholder" id="map-impressions">
+              <div class="map-placeholder-icon">🗺</div>
+              <div class="map-placeholder-text">Mapbox · Impressions Heat</div>
+            </div>
+          </div>
+          <div class="glass card" style="height:320px">
+            <div class="ctitle">Ad Impressions By Zip Code (1.2)</div>
+            <div class="bar-list" id="zip-impressions-bars">
+              <div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--text-faint)">No data</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DEMOGRAPHICS -->
+    <div>
+      <div class="sh"><div class="sh-bar"></div><h2>Campaign Demographic Data</h2><div class="sh-line"></div></div>
+      <div class="row-3">
+        <div class="glass card" style="height:290px">
+          <div class="ctitle ctitle-center">Gender Distribution</div>
+          <div class="donut-body">
+            <div class="dnut-wrap"><canvas id="donut-gender"></canvas></div>
+            <div class="dleg" id="dleg-gender"></div>
+          </div>
+        </div>
+        <div class="glass card" style="height:290px">
+          <div class="ctitle ctitle-center">Age Distribution</div>
+          <div class="donut-body">
+            <div class="dnut-wrap"><canvas id="donut-age"></canvas></div>
+            <div class="dleg" id="dleg-age"></div>
+          </div>
+        </div>
+        <div class="glass card" style="height:290px">
+          <div class="ctitle ctitle-center">Income Distribution</div>
+          <div class="donut-body" id="donut-income-body">
+            <div class="dnut-wrap"><canvas id="donut-income"></canvas></div>
+            <div class="dleg" id="dleg-income"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FINAL THOUGHTS (conditional) -->
+    <div id="gs-notes-final-section" style="display:none">
+      <div class="sh"><div class="sh-bar"></div><h2 id="gs-notes-final-title">Final Thoughts</h2><div class="sh-line"></div></div>
+<div class="glass note-card note-section" style="height:255px">
+        <button class="note-edit-btn" onclick="enterNoteEdit('notes-final')">Edit</button>
+        <div class="note-view" id="notes-final-view"></div>
+        <textarea class="note-textarea" id="notes-final" placeholder="Add notes here…"></textarea>
+        <div class="note-actions">
+          <button class="note-cancel-btn" onclick="cancelNoteEdit('notes-final')">Cancel</button>
+          <button class="note-save-btn" onclick="saveNoteEdit('notes-final')">Save</button>
+        </div>
+      </div>
+    </div>
+
+    </div><!-- /tmpl-google-search -->
+
+    <!-- ═══ META ADS TEMPLATE ═══ -->
+    <div class="tmpl-content" id="tmpl-meta-ads">
+
+    <!-- META KPIs — 3x2 grid -->
+    <div>
+      <div class="sh"><div class="sh-bar"></div><h2>Top Line Campaign Performance</h2><div class="sh-line"></div></div>
+      <div class="kpi-grid kpi-grid-3" id="meta-kpi-grid">
+        <div class="glass kpi">
+          <div class="kpi-tag">Ad Clicks</div>
+          <div class="kpi-val" id="meta-kpi-clicks">—</div>
+          <div class="kpi-trend"><span id="meta-kpi-clicks-trend" class="tup" style="display:none"></span><span class="tlbl" id="meta-kpi-clicks-tlbl"></span></div>
+        </div>
+        <div class="glass kpi">
+          <div class="kpi-tag">Reach</div>
+          <div class="kpi-val" id="meta-kpi-reach">—</div>
+          <div class="kpi-trend"><span id="meta-kpi-reach-trend" class="tup" style="display:none"></span><span class="tlbl" id="meta-kpi-reach-tlbl"></span></div>
+        </div>
+        <div class="glass kpi">
+          <div class="kpi-tag">Impressions</div>
+          <div class="kpi-val" id="meta-kpi-impr">—</div>
+          <div class="kpi-trend"><span id="meta-kpi-impr-trend" class="tup" style="display:none"></span><span class="tlbl" id="meta-kpi-impr-tlbl"></span></div>
+        </div>
+        <div class="glass kpi">
+          <div class="kpi-tag">Avg. Click-Through Rate (CTR)</div>
+          <div class="kpi-val" id="meta-kpi-ctr">—</div>
+          <div class="kpi-trend"><span id="meta-kpi-ctr-trend" class="tdn" style="display:none"></span><span class="tlbl" id="meta-kpi-ctr-tlbl"></span></div>
+        </div>
+        <div class="glass kpi">
+          <div class="kpi-tag">Avg. Cost-Per-Click (CPC)</div>
+          <div class="kpi-val" id="meta-kpi-cpc">—</div>
+          <div class="kpi-trend"><span id="meta-kpi-cpc-trend" class="tup" style="display:none"></span><span class="tlbl" id="meta-kpi-cpc-tlbl"></span></div>
+        </div>
+        <div class="glass kpi">
+          <div class="kpi-tag">Avg. Frequency</div>
+          <div class="kpi-val" id="meta-kpi-freq">—</div>
+          <div class="kpi-trend"><span id="meta-kpi-freq-trend" class="tneutral" style="display:none"></span><span class="tlbl" id="meta-kpi-freq-tlbl"></span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- META PERFORMANCE NOTES (conditional) -->
+    <div id="meta-notes-performance-section" style="display:none">
+      <div class="sh"><div class="sh-bar"></div><h2 id="meta-notes-performance-title">Performance Notes</h2><div class="sh-line"></div></div>
+<div class="glass note-card note-section" style="height:188px">
+        <button class="note-edit-btn" onclick="enterNoteEdit('meta-notes-performance')">Edit</button>
+        <div class="note-view" id="meta-notes-performance-view"></div>
+        <textarea class="note-textarea" id="meta-notes-performance" placeholder="Add notes here…"></textarea>
+        <div class="note-actions">
+          <button class="note-cancel-btn" onclick="cancelNoteEdit('meta-notes-performance')">Cancel</button>
+          <button class="note-save-btn" onclick="saveNoteEdit('meta-notes-performance')">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- AUDIENCE SEGMENTATION (conditional) -->
+    <div id="meta-audience-section" style="display:none">
+      <div class="sh"><div class="sh-bar"></div><h2>Audience Segmentation</h2><div class="sh-line"></div></div>
+      <div class="glass card" style="height:300px">
+        <div class="ctitle">Audience Performance</div>
+        <div class="audience-table-wrap" id="meta-audience-table-wrap">
+          <div class="audience-empty">No audience data configured</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AUDIENCE INSIGHTS NOTES (conditional — label controls visibility) -->
+    <div id="meta-audience-notes-section" style="display:none">
+      <div class="sh"><div class="sh-bar"></div><h2 id="meta-notes-audience-title">Audience Insights</h2><div class="sh-line"></div></div>
+      <div class="glass note-card note-section" style="height:188px">
+        <button class="note-edit-btn" onclick="enterNoteEdit('meta-notes-audience')">Edit</button>
+        <div class="note-view" id="meta-notes-audience-view"></div>
+        <textarea class="note-textarea" id="meta-notes-audience" placeholder="Add notes here…"></textarea>
+        <div class="note-actions">
+          <button class="note-cancel-btn" onclick="cancelNoteEdit('meta-notes-audience')">Cancel</button>
+          <button class="note-save-btn" onclick="saveNoteEdit('meta-notes-audience')">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOP CONTENT (conditional) -->
+    <div id="meta-content-section" style="display:none">
+      <div class="sh"><div class="sh-bar"></div><h2>Top Content</h2><div class="sh-line"></div></div>
+      <div class="content-grid" id="meta-content-grid"></div>
+    </div>
+
+    <!-- META DEMOGRAPHICS -->
+    <div>
+      <div class="sh"><div class="sh-bar"></div><h2>Campaign Demographic Data</h2><div class="sh-line"></div></div>
+      <div class="row-2">
+        <div class="glass card" style="height:290px">
+          <div class="ctitle ctitle-center">Gender Distribution</div>
+          <div class="donut-body">
+            <div class="dnut-wrap"><canvas id="meta-donut-gender"></canvas></div>
+            <div class="dleg" id="meta-dleg-gender"></div>
+          </div>
+        </div>
+        <div class="glass card" style="height:290px">
+          <div class="ctitle ctitle-center">Age Distribution</div>
+          <div class="donut-body">
+            <div class="dnut-wrap"><canvas id="meta-donut-age"></canvas></div>
+            <div class="dleg" id="meta-dleg-age"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- META FINAL THOUGHTS (conditional) -->
+    <div id="meta-notes-final-section" style="display:none">
+      <div class="sh"><div class="sh-bar"></div><h2 id="meta-notes-final-title">Final Thoughts</h2><div class="sh-line"></div></div>
+      <div class="glass note-card note-section" style="height:255px">
+        <button class="note-edit-btn" onclick="enterNoteEdit('meta-notes-final')">Edit</button>
+        <div class="note-view" id="meta-notes-final-view"></div>
+        <textarea class="note-textarea" id="meta-notes-final" placeholder="Add notes here…"></textarea>
+        <div class="note-actions">
+          <button class="note-cancel-btn" onclick="cancelNoteEdit('meta-notes-final')">Cancel</button>
+          <button class="note-save-btn" onclick="saveNoteEdit('meta-notes-final')">Save</button>
+        </div>
+      </div>
+    </div>
+
+    </div><!-- /tmpl-meta-ads -->
+
+  </div><!-- /main -->
+
+  <!-- FOOTER -->
+  <div class="report-footer">
+    <div class="footer-text">
+      <div class="footer-authorized">Report Authorized by</div>
+      <div class="footer-client" id="footer-client">LINK Strategic Partners</div>
+      <div class="footer-authors" id="footer-authors"> </div>
+    </div>
+    <div class="footer-logo" id="footer-logo-box">
+      <img id="footer-logo-img" src="data:image/png;base64,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" alt="LINK Strategic Partners" style="display:block;width:100%;height:100%;object-fit:contain"/>
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+<!-- ══════════════════════════════════════
+     SETTINGS PANEL
+══════════════════════════════════════ -->
+<!-- LOADING OVERLAY -->
+<div id="load-overlay" class="hidden">
+  <div class="load-card">
+    <div class="load-logo" id="load-logo">
+      <span class="load-logo-text">LINK<br>SP</span>
+    </div>
+    <div class="load-client" id="load-client">Loading…</div>
+    <div class="load-spinner-wrap">
+      <div class="load-spinner"></div>
+    </div>
+    <div class="load-stage" id="load-stage">Verifying access…</div>
+    <div class="load-track">
+      <div class="load-fill" id="load-fill"></div>
+    </div>
+    <div class="load-dots">
+      <div class="load-dot" id="ld0"></div>
+      <div class="load-dot" id="ld1"></div>
+      <div class="load-dot" id="ld2"></div>
+      <div class="load-dot" id="ld3"></div>
+      <div class="load-dot" id="ld4"></div>
+    </div>
+  </div>
+</div>
+
+<div id="settings-overlay">
+  <div class="settings-panel">
+    <div class="sp-header">
+      <div class="sp-title">Settings</div>
+      <button class="sp-close" id="sp-close">✕</button>
+    </div>
+    <div class="sp-tabs">
+      <button class="sp-tab active" data-tab="general">General</button>
+      <button class="sp-tab" data-tab="developer">Developer</button>
+    </div>
+    <div class="sp-body">
+
+      <!-- ── GENERAL TAB ── -->
+      <div id="tab-general">
+
+        <div class="sp-section">
+          <div class="sp-section-title">Report Info</div>
+          <div id="sp-report-info">
+            <div class="sp-info-row"><span class="sp-info-label">Client</span><span class="sp-info-value" id="sp-info-client">—</span></div>
+            <div class="sp-info-row"><span class="sp-info-label">Report title</span><span class="sp-info-value" id="sp-info-title">—</span></div>
+            <div class="sp-info-row"><span class="sp-info-label">Reporting period</span><span class="sp-info-value" id="sp-info-period">—</span></div>
+            <div class="sp-info-row"><span class="sp-info-label">Report date</span><span class="sp-info-value" id="sp-info-date">—</span></div>
+            <div class="sp-info-row"><span class="sp-info-label">Authors</span><span class="sp-info-value" id="sp-info-authors">—</span></div>
+          </div>
+        </div>
+
+        <div class="sp-section">
+          <div class="sp-section-title">Client Logo</div>
+          <div class="sp-hint" style="margin-bottom:12px">Displayed in the report header. Stored locally on this device.</div>
+          <div class="sp-logo-row">
+            <div class="sp-logo-preview" id="sp-logo-preview">
+              <span style="font-size:10px;color:var(--text-faint)">No logo</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <button class="sp-btn sp-btn-red" id="sp-logo-upload-btn">Upload logo</button>
+              <button class="sp-btn sp-btn-ghost" id="sp-logo-clear-btn">Remove</button>
+            </div>
+          </div>
+          <input type="file" id="sp-logo-file" accept="image/*" style="display:none"/>
+        </div>
+
+      </div>
+
+      <!-- ── DEVELOPER TAB ── -->
+      <div id="tab-developer" style="display:none">
+
+        <div class="sp-section">
+          <div class="sp-section-title">App Version</div>
+          <div class="sp-hint"><span id="sp-version"></span></div>
+        </div>
+
+        <div class="sp-section">
+          <div class="sp-section-title">Current client config</div>
+          <div class="sp-hint" style="margin-bottom:12px">Fields loaded from Google Sheets for the active client.</div>
+          <div id="current-config-display"></div>
+        </div>
+
+        <div class="sp-section">
+          <div class="sp-section-title">API key overrides</div>
+          <div class="sp-hint" style="margin-bottom:12px">Built-in keys are embedded at deploy time. Only override here for local testing.</div>
+          <div class="sp-row">
+            <div class="sp-field">
+              <label class="sp-label">Google Sheets API key</label>
+              <input class="sp-input mono" id="api-sheets-key" placeholder="AIzaSy…" type="password" autocomplete="off"/>
+            </div>
+          </div>
+          <div class="sp-row" style="margin-top:10px">
+            <div class="sp-field">
+              <label class="sp-label">Mapbox access token</label>
+              <input class="sp-input mono" id="api-mapbox-token" placeholder="pk.eyJ1…" type="password" autocomplete="off"/>
+            </div>
+          </div>
+          <div class="sp-actions">
+            <button class="sp-btn sp-btn-red" id="api-save">Save keys</button>
+          </div>
+        </div>
+
+      </div>
+
+    </div><!-- /sp-body -->
+  </div><!-- /settings-panel -->
+</div><!-- /settings-overlay -->
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script>
+/* ═══════════════════════════════════════════════
+   LINK SP REPORT APP — Core Logic
+═══════════════════════════════════════════════ */
+
+// ── FIELD DEFINITIONS for cell mapping ──
+const FIELD_DEFS = [
+  // KPI values
+  {id:'kpi_clicks',       label:'KPI · Ad Clicks (value)',          group:'KPIs'},
+  {id:'kpi_clicks_trend', label:'KPI · Ad Clicks (trend, e.g. ↑ 8.5%)', group:'KPIs'},
+  {id:'kpi_impr',         label:'KPI · Impressions (value)',         group:'KPIs'},
+  {id:'kpi_impr_trend',   label:'KPI · Impressions (trend)',         group:'KPIs'},
+  {id:'kpi_ctr',          label:'KPI · CTR (value)',                 group:'KPIs'},
+  {id:'kpi_ctr_trend',    label:'KPI · CTR (trend)',                 group:'KPIs'},
+  {id:'kpi_cpc',          label:'KPI · CPC (value)',                 group:'KPIs'},
+  {id:'kpi_cpc_trend',    label:'KPI · CPC (trend)',                 group:'KPIs'},
+  {id:'kpi_tlbl',         label:'KPI · Trend label (all 4)',         group:'KPIs'},
+  // Period
+  {id:'period',           label:'Reporting Period text',             group:'Header'},
+  // Keywords — expects range A:B (keyword, clicks)
+  {id:'kw_range',         label:'Keywords range (col A: keyword, col B: clicks)', group:'Keywords'},
+  // Zip impressions — expects range A:B (zip, impressions)
+  {id:'zip_impr_range',   label:'Zip Impressions range (col A: zip, col B: value)', group:'Geographic'},
+  // Zip clicks — expects range A:B (zip, clicks)
+  {id:'zip_clicks_range', label:'Zip Clicks range (col A: zip, col B: value)', group:'Geographic'},
+  // Demographics — single cells or ranges
+  {id:'demo_gender',      label:'Gender demo range (col A: label, col B: pct)', group:'Demographics'},
+  {id:'demo_age',         label:'Age demo range (col A: label, col B: pct)',    group:'Demographics'},
+  {id:'demo_income',      label:'Income demo range (col A: label, col B: pct)', group:'Demographics'},
+];
+
+// ── VERSION ──
+const APP_VERSION = '2.7.7';
+
+// ── STATE ──
+let currentClient = null;
+
+// Note textarea ID → localStorage key mapping (module-level for saveNoteEdit)
+const NOTE_KEYS = {
+  'notes-performance':     'performance',
+  'notes-keywords':        'keywords',
+  'notes-audience':        'audience',
+  'notes-final':           'final',
+  'meta-notes-performance':'meta_performance',
+  'meta-notes-audience':   'meta_audience',
+  'meta-notes-final':      'meta_final',
+};
+let activeTemplate = 'google-search'; // currently active report template
+// !! REPLACE THESE WITH YOUR ACTUAL KEYS !!
+// Google Sheets API key (restricted to your domain in Google Cloud Console)
+const BUILT_IN_SHEETS_KEY   = 'AIzaSyD396BfBfctnB8WYGpon8fsi83NDyoexiU';
+// Mapbox token (restricted to your domain in Mapbox account)
+const BUILT_IN_MAPBOX_TOKEN = 'pk.eyJ1IjoiYnN0ZXJuIiwiYSI6ImNtbjJkYXA5azEyODkyd3B6bmV3cmg0dTIifQ.5uR2fbhIJQ7s7cHp45yrig';
+let sheetsApiKey = '';
+let mapboxToken = '';
+let mapImpressions = null;
+let mapClicks = null;
+let donutCharts = {};
+
+// ── STORAGE HELPERS (localStorage — for API keys, logos, notes, session only) ──
+const LS = {
+  get: k => { try { return JSON.parse(localStorage.getItem(k)) } catch(e) { return null }},
+  set: (k,v) => localStorage.setItem(k, JSON.stringify(v)),
+  del: k => localStorage.removeItem(k),
+};
+
+// API keys — localStorage overrides built-in keys (for local testing)
+function getApiKeys() {
+  const stored = LS.get('link_v2_api_keys') || {};
+  return {
+    sheetsApiKey: stored.sheetsApiKey || BUILT_IN_SHEETS_KEY,
+    mapboxToken:  stored.mapboxToken  || BUILT_IN_MAPBOX_TOKEN,
+  };
+}
+function saveApiKeys(k) { LS.set('link_v2_api_keys', k); }
+
+// Notes — localStorage per client (device-specific analyst edits)
+function getNotes(clientId) { return LS.get('link_v2_notes_' + clientId) || {}; }
+function saveNotes(clientId, n) { LS.set('link_v2_notes_' + clientId, n); }
+
+// Logos — localStorage (binary, too large for sheets)
+function getClientLogo(clientId) { return localStorage.getItem('link_v2_logo_' + clientId) || ''; }
+function saveClientLogo(clientId, dataUrl) { localStorage.setItem('link_v2_logo_' + clientId, dataUrl); }
+function clearClientLogo(clientId) { localStorage.removeItem('link_v2_logo_' + clientId); }
+function getFooterLogo() { return localStorage.getItem('link_v2_footer_logo') || ''; }
+function saveFooterLogo(dataUrl) { localStorage.setItem('link_v2_footer_logo', dataUrl); }
+
+// ── CLIENT REGISTRY ──
+// Clients are loaded dynamically from a Google Sheet at startup.
+// Set REGISTRY_SHEET_ID to your registry sheet ID.
+// The registry sheet should have a tab named _registry with columns:
+// A: Client ID, B: Display Name, C: Sheet ID, D: Report Type, E: Config Tab, F: Label
+const REGISTRY_SHEET_ID = '1WHZfRUtqivzaXTDBqo6Td_uCw8IvPF2fHWOLa0LB1u0';
+
+// Populated at load time from the registry sheet
+let CLIENT_REGISTRY = [];
+
+// Fallback registry — used if sheet fetch fails
+// Add at least one entry here as a backup
+const FALLBACK_REGISTRY = [
+  // {
+  //   id: 'acme',
+  //   displayName: 'Acme Corporation',
+  //   sheetId: 'SHEET_ID_HERE',
+  //   reports: [
+  //     { type: 'google-search', configTab: '_config_google', label: 'Google Search' },
+  //   ],
+  // },
+];
+
+// ── SHARED CONFIG FIELD MAP (_config tab) ──
+const SHARED_CONFIG_FIELD_MAP = {
+  'Client name':            'name',
+  'Client password':        'password',
+  'Report title':           'reportTitle',
+  'Report date':            'reportDate',
+  'Reporting period text':  'period_text',
+  'Author1 name':           'author1Name',
+  'Author1 title':          'author1Title',
+  'Author2 name':           'author2Name',
+  'Author2 title':          'author2Title',
+};
+const SHARED_VALUE_FIELDS = new Set([
+  'name','password','reportTitle','reportDate','period_text',
+  'author1Name','author1Title','author2Name','author2Title',
+]);
+
+// ── GOOGLE SEARCH CONFIG FIELD MAP (_config_google tab) ──
+const CONFIG_FIELD_MAP = {
+  'Report tab title':                               'reportTabTitle',
+  'KPI - ad clicks (value)':                       'kpi_clicks',
+  'KPI - ad clicks (trend)':                       'kpi_clicks_trend',
+  'KPI - impressions (value)':                     'kpi_impr',
+  'KPI - impressions (trend)':                     'kpi_impr_trend',
+  'KPI - CTR (value)':                             'kpi_ctr',
+  'KPI - CTR (trend)':                             'kpi_ctr_trend',
+  'KPI - CPC (value)':                             'kpi_cpc',
+  'KPI - CPC (trend)':                             'kpi_cpc_trend',
+  'KPI - trend label (all)':                       'kpi_tlbl',
+  'Audience segmentation range':                   'audience_range',
+  'Keywords range (col A: keyword, col B: clicks)':'kw_range',
+  'Zip impressions range (col A: zip, col B: value)':'zip_impr_range',
+  'Zip clicks range (col A: zip, col B: value)':   'zip_clicks_range',
+  'Gender demo range (col A: label, col B: pct)':  'demo_gender',
+  'Age demo range (col A: label, col B: pct)':     'demo_age',
+  'Income demo range (col A: label, col B: pct)':  'demo_income',
+  'Performance notes label':                       'notes_performance_label',
+  'Audience insights label':                       'notes_audience_label',
+  'Keyword insights label':                        'notes_keywords_label',
+  'Final thoughts label':                          'notes_final_label',
+};
+const CONFIG_VALUE_FIELDS = new Set([
+  'reportTabTitle','kpi_tlbl',
+  'notes_performance_label','notes_audience_label',
+  'notes_keywords_label','notes_final_label',
+]);
+const CONFIG_MAPPING_FIELDS = new Set([
+  'kpi_clicks','kpi_clicks_trend','kpi_impr','kpi_impr_trend',
+  'kpi_ctr','kpi_ctr_trend','kpi_cpc','kpi_cpc_trend',
+  'kw_range','zip_impr_range','zip_clicks_range',
+  'demo_gender','demo_age','demo_income','audience_range',
+]);
+
+// ── META CONFIG FIELD MAP (_config_meta tab) ──
+const META_CONFIG_FIELD_MAP = {
+  'Report tab title':                               'reportTabTitle',
+  'KPI - ad clicks (value)':                       'kpi_clicks',
+  'KPI - ad clicks (trend)':                       'kpi_clicks_trend',
+  'KPI - reach (value)':                           'kpi_reach',
+  'KPI - reach (trend)':                           'kpi_reach_trend',
+  'KPI - impressions (value)':                     'kpi_impr',
+  'KPI - impressions (trend)':                     'kpi_impr_trend',
+  'KPI - CTR (value)':                             'kpi_ctr',
+  'KPI - CTR (trend)':                             'kpi_ctr_trend',
+  'KPI - CPC (value)':                             'kpi_cpc',
+  'KPI - CPC (trend)':                             'kpi_cpc_trend',
+  'KPI - frequency (value)':                       'kpi_freq',
+  'KPI - frequency (trend)':                       'kpi_freq_trend',
+  'KPI - trend label (all)':                       'kpi_tlbl',
+  'Top content 1 label':                           'content1_label',
+  'Top content 2 label':                           'content2_label',
+  'Top content 3 label':                           'content3_label',
+  'Top content metric labels':                     'content_metric_labels',
+  'Audience segmentation range':                   'audience_range',
+  'Top content 1 metrics range':                   'content1_range',
+  'Top content 2 metrics range':                   'content2_range',
+  'Top content 3 metrics range':                   'content3_range',
+  'Gender demo range (col A: label, col B: pct)':  'demo_gender',
+  'Age demo range (col A: label, col B: pct)':     'demo_age',
+  'Performance notes label':                       'notes_performance_label',
+  'Audience insights label':                       'notes_audience_label',
+  'Final thoughts label':                          'notes_final_label',
+};
+const META_VALUE_FIELDS = new Set([
+  'reportTabTitle','kpi_tlbl',
+  'content1_label','content2_label','content3_label','content_metric_labels',
+  'notes_performance_label','notes_audience_label','notes_final_label',
+]);
+const META_MAPPING_FIELDS = new Set([
+  'kpi_clicks','kpi_clicks_trend','kpi_reach','kpi_reach_trend',
+  'kpi_impr','kpi_impr_trend','kpi_ctr','kpi_ctr_trend',
+  'kpi_cpc','kpi_cpc_trend','kpi_freq','kpi_freq_trend',
+  'audience_range','content1_range','content2_range','content3_range',
+  'demo_gender','demo_age',
+]);
+
+// ── FETCH CONFIG FROM SHEET ──
+
+/* ══════════════════════════════════════
+   LOADING OVERLAY
+══════════════════════════════════════ */
+const LOAD_STAGES = [
+  { text: 'Verifying access…',  pct: 12  },
+  { text: 'Loading reports…',   pct: 35  },
+  { text: 'Loading data…',      pct: 62  },
+  { text: 'Loading maps…',      pct: 85  },
+  { text: 'Ready',              pct: 100 },
+];
+
+function showLoadOverlay(clientName) {
+  const overlay = document.getElementById('load-overlay');
+  overlay.classList.remove('hidden', 'fade-out');
+
+  // Set client name
+  document.getElementById('load-client').textContent = clientName || 'Loading…';
+
+  // Loading overlay uses hardcoded LINK SP logo
+  const logoEl = document.getElementById('load-logo');
+  if (logoEl) logoEl.innerHTML = '<img src="data:image/png;base64,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" alt="LINK Strategic Partners" style="width:100%;height:100%;object-fit:contain"/>';
+
+  setLoadStage(0);
+}
+
+function setLoadStage(idx) {
+  const stage = LOAD_STAGES[idx];
+  if (!stage) return;
+  document.getElementById('load-stage').textContent = stage.text;
+  document.getElementById('load-fill').style.width = stage.pct + '%';
+  for (let i = 0; i < LOAD_STAGES.length; i++) {
+    const dot = document.getElementById('ld' + i);
+    if (dot) dot.classList.toggle('active', i <= idx);
+  }
+}
+
+function hideLoadOverlay() {
+  const overlay = document.getElementById('load-overlay');
+  setLoadStage(4); // show Ready
+  setTimeout(() => {
+    overlay.classList.add('fade-out');
+    setTimeout(() => overlay.classList.add('hidden'), 420);
+  }, 600);
+}
+
+/* ══════════════════════════════════════
+   CLIENT REGISTRY — fetched from Google Sheet
+══════════════════════════════════════ */
+async function fetchRegistry() {
+  // Returns true if registry loaded successfully, false if using fallback
+  if (!REGISTRY_SHEET_ID || REGISTRY_SHEET_ID === 'REPLACE_WITH_REGISTRY_SHEET_ID') {
+    console.warn('[Registry] No registry sheet ID configured — using fallback');
+    CLIENT_REGISTRY = FALLBACK_REGISTRY;
+    return false;
+  }
+
+  const keys = getApiKeys();
+  const key = keys.sheetsApiKey;
+  if (!key || key.trim() === '') {
+    console.warn('[Registry] No API key — using fallback registry');
+    CLIENT_REGISTRY = FALLBACK_REGISTRY;
+    return false;
+  }
+
+  try {
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${REGISTRY_SHEET_ID}/values/_registry!A:F?key=${encodeURIComponent(key)}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('Registry fetch failed: ' + res.status);
+    const data = await res.json();
+    const rows = (data.values || []).slice(1); // skip header row
+
+    if (!rows.length) {
+      console.warn('[Registry] Empty registry sheet — using fallback');
+      CLIENT_REGISTRY = FALLBACK_REGISTRY;
+      return false;
+    }
+
+    // Build CLIENT_REGISTRY from rows
+    // Col A: Client ID, B: Display Name, C: Sheet ID, D: Report Type, E: Config Tab, F: Label
+    const clientMap = {};
+    rows.forEach(row => {
+      const id          = (row[0] || '').trim();
+      const displayName = (row[1] || '').trim();
+      const sheetId     = (row[2] || '').trim();
+      const reportType  = (row[3] || '').trim();
+      const configTab   = (row[4] || '').trim();
+      const label       = (row[5] || '').trim();
+
+      if (!id || !sheetId || !reportType) return; // skip incomplete rows
+
+      if (!clientMap[id]) {
+        clientMap[id] = { id, displayName, sheetId, reports: [] };
+      }
+      if (reportType && configTab) {
+        clientMap[id].reports.push({ type: reportType, configTab, label: label || reportType });
+      }
+    });
+
+    CLIENT_REGISTRY = Object.values(clientMap);
+    console.log('[Registry] Loaded', CLIENT_REGISTRY.length, 'client(s)');
+    return true;
+  } catch(e) {
+    console.warn('[Registry] Fetch failed:', e.message, '— using fallback');
+    CLIENT_REGISTRY = FALLBACK_REGISTRY;
+    return false;
+  }
+}
+
+async function fetchSharedConfig(sheetId) {
+  // Fetches the shared _config tab — client name, password, authors, dates
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent('_config!A:B')}?key=${sheetsApiKey}`;
+  const res = await fetch(url);
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error?.message || 'Failed to fetch shared config');
+  }
+  const data = await res.json();
+  const rows = data.values || [];
+
+  const isValidRef = v => v && v.trim() && !['n/a','na','none','-',''].includes(v.trim().toLowerCase());
+  const toResolve = {};
+  const config = { sheetId };
+
+  rows.forEach(row => {
+    const label = (row[0] || '').trim();
+    const ref   = (row[1] || '').trim();
+    const field = SHARED_CONFIG_FIELD_MAP[label];
+    if (!field || !isValidRef(ref)) return;
+    if (SHARED_VALUE_FIELDS.has(field)) toResolve[field] = ref;
+  });
+
+  if (!Object.keys(toResolve).length) return config;
+
+  const valueRanges = [...new Set(Object.values(toResolve))];
+  const batchUrl = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values:batchGet?${
+    valueRanges.map(r => 'ranges=' + encodeURIComponent(r)).join('&')
+  }&key=${sheetsApiKey}`;
+  const batchRes = await fetch(batchUrl);
+  if (!batchRes.ok) throw new Error('Failed to fetch shared config values');
+  const batchData = await batchRes.json();
+
+  const rangeValues = {};
+  (batchData.valueRanges || []).forEach((vr, i) => {
+    const val = String(vr.values?.[0]?.[0] ?? '').trim();
+    if (valueRanges[i]) rangeValues[valueRanges[i]] = val;
+    if (vr.range) {
+      rangeValues[vr.range] = val;
+      const cellOnly = vr.range.includes('!') ? vr.range.split('!').pop() : vr.range;
+      rangeValues[cellOnly] = val;
+    }
+  });
+
+  Object.entries(toResolve).forEach(([field, ref]) => {
+    const cellOnly = ref.includes('!') ? ref.split('!').pop() : ref;
+    const value = rangeValues[ref] || rangeValues[cellOnly] || '';
+    if (value && !['n/a','na','none','-'].includes(value.toLowerCase())) {
+      config[field] = value;
+    }
+  });
+
+  return config;
+}
+
+async function fetchClientConfig(sheetId, configTab, fieldMap, valueFields, mappingFields) {
+  if (!sheetsApiKey) throw new Error('No API key configured');
+  // Default to Google Search config if not specified
+  configTab    = configTab    || '_config_google';
+  fieldMap     = fieldMap     || CONFIG_FIELD_MAP;
+  valueFields  = valueFields  || CONFIG_VALUE_FIELDS;
+  mappingFields= mappingFields|| CONFIG_MAPPING_FIELDS;
+
+  // Step 1: Read config tab A:B — column A is the label, column B is the range reference
+  const configRange = configTab + '!A:B';
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(configRange)}?key=${sheetsApiKey}`;
+  const res = await fetch(url);
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error?.message || 'Failed to fetch config');
+  }
+  const data = await res.json();
+  const rows = data.values || [];
+
+  const isValidRef = v => v && v.trim() && !['n/a','na','none','-'].includes(v.trim().toLowerCase());
+
+  // Separate into: fields to resolve now vs fields to keep as range references
+  const toResolve = {};   // field → range (will be fetched)
+  const config = { sheetId };
+
+  rows.forEach(row => {
+    const label = (row[0] || '').trim();
+    const ref   = (row[1] || '').trim();
+    const field = fieldMap[label];
+    if (!field || !isValidRef(ref)) return;
+
+    if (mappingFields.has(field)) {
+      config[field] = ref;
+    } else if (valueFields.has(field)) {
+      // Queue for resolution
+      toResolve[field] = ref;
+    }
+  });
+
+  // Step 2: Batch-fetch only the value fields (name, password, title, etc.)
+  const valueRanges = [...new Set(Object.values(toResolve))];
+  if (valueRanges.length) {
+    const batchUrl = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values:batchGet?${
+      valueRanges.map(r => 'ranges=' + encodeURIComponent(r)).join('&')
+    }&key=${sheetsApiKey}`;
+
+    const batchRes = await fetch(batchUrl);
+    if (!batchRes.ok) {
+      const err = await batchRes.json();
+      throw new Error(err.error?.message || 'Failed to fetch config values');
+    }
+    const batchData = await batchRes.json();
+
+    // Build range → value lookup using both index and returned range name for reliability
+    const rangeValues = {};
+    (batchData.valueRanges || []).forEach((vr, i) => {
+      // Map by index (primary) and by normalized returned range (fallback)
+      const val = String(vr.values?.[0]?.[0] ?? '').trim();
+      if (valueRanges[i]) rangeValues[valueRanges[i]] = val;
+      // Also store by the range string Google returns (may differ in casing/sheet name format)
+      if (vr.range) {
+        // Extract just the cell ref part after the ! 
+        const returnedRef = vr.range;
+        rangeValues[returnedRef] = val;
+        // Also store without sheet prefix in case of mismatch
+        const cellOnly = returnedRef.includes('!') ? returnedRef.split('!').pop() : returnedRef;
+        rangeValues[cellOnly] = val;
+      }
+    });
+
+    // Assign resolved values to config — try multiple range key formats
+    Object.entries(toResolve).forEach(([field, ref]) => {
+      const cellOnly = ref.includes('!') ? ref.split('!').pop() : ref;
+      const value = rangeValues[ref] || rangeValues[cellOnly] || '';
+      if (value && !['n/a','na','none','-'].includes(value.toLowerCase())) {
+        config[field] = value;
+      }
+    });
+  }
+
+  return config;
+}
+
+// ── TOAST ──
+function toast(msg, type='') {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.className = 'show ' + type;
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.className = '', 2800);
+}
+
+/* ══════════════════════════════════════
+   AUTH
+══════════════════════════════════════ */
+async function tryLogin(pw) {
+  pw = pw.trim();
+  if (!pw) return;
+
+  const keys = getApiKeys();
+  sheetsApiKey = keys.sheetsApiKey || '';
+  mapboxToken  = keys.mapboxToken  || '';
+
+  // If key is completely missing, show helpful error
+  if (!sheetsApiKey || sheetsApiKey.trim() === '') {
+    showAuthError('API key not configured — enter it in Settings → API Keys');
+    return;
+  }
+
+  // Ensure registry is loaded before attempting login
+  if (window._registryPromise) {
+    await window._registryPromise;
+    window._registryPromise = null;
+  }
+  if (!CLIENT_REGISTRY.length) {
+    showAuthError('Client registry unavailable — please try again');
+    return;
+  }
+
+  const btn = document.getElementById('auth-btn');
+  btn.textContent = 'Checking…';
+  btn.disabled = true;
+
+  // Try each client — validate password against shared _config tab
+  let matched = null;
+  for (const entry of CLIENT_REGISTRY) {
+    try {
+      const shared = await fetchSharedConfig(entry.sheetId);
+      const storedPw = (shared.password || '').trim();
+      if (storedPw && storedPw === pw) {
+        matched = { ...shared, id: entry.id, sheetId: entry.sheetId, reports: entry.reports || [] };
+        break;
+      }
+    } catch(e) {
+      console.warn('[Auth] Shared config fetch failed for', entry.id, ':', e.message);
+    }
+  }
+
+  btn.textContent = 'Access Report →';
+  btn.disabled = false;
+
+  if (!matched) {
+    showAuthError('Incorrect password. Please try again.');
+    return;
+  }
+
+  LS.set('link_v2_session', { id: matched.id, sheetId: matched.sheetId });
+
+  // Show loading overlay immediately
+  showLoadOverlay(matched.name || matched.displayName || '');
+  setLoadStage(0);
+
+  // Boot client with full parallel load
+  await bootClientWithLoad(matched);
+}
+
+function showAuthError(msg) {
+  const el = document.getElementById('auth-error');
+  el.textContent = msg;
+  el.classList.add('show');
+  document.getElementById('auth-pw-input').style.borderColor = 'rgba(232,56,45,0.6)';
+}
+
+/* ══════════════════════════════════════
+   PARALLEL DATA LOAD WITH PROGRESS
+══════════════════════════════════════ */
+async function bootClientWithLoad(client) {
+  // Stage 1 already shown (Verifying access) — now show Loading reports
+  setLoadStage(1);
+
+  // Fetch all report-specific configs in parallel
+  // Shared fields (name, password, authors, dates) already on client from fetchSharedConfig
+  const reports = client.reports || [];
+
+  const configPromises = reports.map(async r => {
+    try {
+      if (r.type === 'google-search') {
+        const cfg = await fetchClientConfig(client.sheetId, r.configTab,
+          CONFIG_FIELD_MAP, CONFIG_VALUE_FIELDS, CONFIG_MAPPING_FIELDS);
+        return { ...cfg, _reportType: 'google-search' };
+      }
+      if (r.type === 'meta-ads') {
+        const cfg = await fetchClientConfig(client.sheetId, r.configTab,
+          META_CONFIG_FIELD_MAP, META_VALUE_FIELDS, META_MAPPING_FIELDS);
+        return { ...cfg, _reportType: 'meta-ads' };
+      }
+    } catch(e) {
+      console.warn('[Load] Config fetch failed for', r.type, ':', e.message);
+    }
+    return null;
+  });
+
+  const configs = await Promise.all(configPromises);
+
+  // Merge Google Search config onto client
+  const gsCfg = configs.find(c => c && c._reportType === 'google-search');
+  if (gsCfg) {
+    [...CONFIG_VALUE_FIELDS, ...CONFIG_MAPPING_FIELDS].forEach(f => {
+      if (gsCfg[f] !== undefined) client[f] = gsCfg[f];
+    });
+    // Update tab title in registry label if set
+    if (gsCfg.reportTabTitle) {
+      const gsReport = reports.find(r => r.type === 'google-search');
+      if (gsReport) gsReport.label = gsCfg.reportTabTitle;
+    }
+  }
+
+  // Store meta config on client object
+  const metaCfg = configs.find(c => c && c._reportType === 'meta-ads');
+  if (metaCfg) {
+    client._metaConfig = metaCfg;
+    client._metaLoaded = false;
+    // Update tab title if set
+    if (metaCfg.reportTabTitle) {
+      const metaReport = reports.find(r => r.type === 'meta-ads');
+      if (metaReport) metaReport.label = metaCfg.reportTabTitle;
+    }
+  }
+
+  // Boot the client UI
+  bootClient(client);
+
+  // Stage 2 — Loading data
+  setLoadStage(2);
+
+  // Fetch all data in parallel
+  const dataPromises = [];
+
+  // Google Search data
+  dataPromises.push(fetchSheetDataAsync(client));
+
+  // Meta data (if applicable)
+  if (metaCfg) {
+    dataPromises.push(fetchMetaDataAsync(client, metaCfg));
+  }
+
+  await Promise.all(dataPromises);
+
+  // Stage 3 — Loading maps (if Google Search has zip data)
+  const hasMapData = !!(client._zipImpr || client._zipClicks);
+  if (hasMapData) {
+    setLoadStage(3);
+    // Maps init already triggered in bootClient — wait briefly for boundaries
+    await new Promise(r => setTimeout(r, 800));
+  }
+
+  // After all data loaded — restore income canvas if Google Search was inactive
+  // and re-render its donuts to ensure correct state
+  if (activeTemplate !== 'google-search') {
+    // Restore income canvas which may have been affected during parallel load
+    const donutDefs2 = [
+      { canvasId: 'donut-gender',  legId: 'dleg-gender',  bodyId: null },
+      { canvasId: 'donut-age',     legId: 'dleg-age',     bodyId: null },
+      { canvasId: 'donut-income',  legId: 'dleg-income',  bodyId: 'donut-income-body' },
+    ];
+    donutDefs2.forEach(({ canvasId, legId, bodyId }) => {
+      if (!document.getElementById(canvasId)) {
+        let body = bodyId
+          ? document.getElementById(bodyId)
+          : document.getElementById(legId)?.closest('.donut-body');
+        if (body) {
+          body.innerHTML = `<div class="dnut-wrap"><canvas id="${canvasId}"></canvas></div><div class="dleg" id="${legId}"></div>`;
+        }
+      }
+      if (donutCharts[canvasId]) { try { donutCharts[canvasId].destroy(); } catch(e){} delete donutCharts[canvasId]; }
+    });
+    // Re-apply Google Search data using stored range index (no extra API call)
+    if (client._gsMapping && client._gsRangeIndex) {
+      applySheetData(client._gsMapping, client._gsRangeIndex);
+    }
+  }
+
+  // Done
+  hideLoadOverlay();
+}
+
+async function fetchSheetDataAsync(client) {
+  // Same as fetchSheetData but returns a promise and stores zip data for map check
+  if (!sheetsApiKey || !client.sheetId) return;
+
+  const MAPPING_FIELDS = [...CONFIG_MAPPING_FIELDS];
+  const mapping = {};
+  MAPPING_FIELDS.forEach(f => { if (client[f]) mapping[f] = client[f].trim(); });
+  if (!Object.keys(mapping).length) return;
+
+  try {
+    const rangesToFetch = [...new Set(Object.values(mapping).filter(Boolean))];
+    const rangesParam = rangesToFetch.map(r => 'ranges=' + encodeURIComponent(r)).join('&');
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${client.sheetId}/values:batchGet?${rangesParam}&key=${sheetsApiKey}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('Sheet data fetch failed');
+    const data = await res.json();
+
+    const rangeIndex = {};
+    (data.valueRanges || []).forEach((vr, i) => {
+      rangeIndex[rangesToFetch[i]] = vr.values || [];
+      if (vr.range) {
+        rangeIndex[vr.range] = vr.values || [];
+        const cellOnly = vr.range.includes('!') ? vr.range.split('!').pop() : vr.range;
+        rangeIndex[cellOnly] = vr.values || [];
+      }
+    });
+
+    // Store zip data reference for map stage check
+    const zipImpr = mapping.zip_impr_range ? rangeIndex[mapping.zip_impr_range] : null;
+    const zipClicks = mapping.zip_clicks_range ? rangeIndex[mapping.zip_clicks_range] : null;
+    client._zipImpr = zipImpr;
+    client._zipClicks = zipClicks;
+
+    // Store for reuse if we need to re-apply after Meta loads
+    client._gsMapping = mapping;
+    client._gsRangeIndex = rangeIndex;
+
+    applySheetData(mapping, rangeIndex);
+    setConnStatus(true, 'Connected to Google Sheets');
+  } catch(e) {
+    console.error('[Load] Google data fetch failed:', e.message);
+    setConnStatus(false, 'Data load failed');
+  }
+}
+
+async function fetchMetaDataAsync(client, metaCfg) {
+  if (!sheetsApiKey || !client.sheetId) return;
+
+  const RANGE_FIELDS = [
+    'kpi_clicks','kpi_clicks_trend','kpi_reach','kpi_reach_trend',
+    'kpi_impr','kpi_impr_trend','kpi_ctr','kpi_ctr_trend',
+    'kpi_cpc','kpi_cpc_trend','kpi_freq','kpi_freq_trend',
+    'audience_range','content1_range','content2_range','content3_range',
+    'demo_gender','demo_age',
+  ];
+
+  const rangesToFetch = [];
+  RANGE_FIELDS.forEach(f => { if (metaCfg[f]) rangesToFetch.push(metaCfg[f]); });
+  if (!rangesToFetch.length) {
+    applyMetaData(metaCfg, {});
+    client._metaLoaded = true;
+    return;
+  }
+
+  try {
+    const uniqueRanges = [...new Set(rangesToFetch)];
+    const params = uniqueRanges.map(r => 'ranges=' + encodeURIComponent(r)).join('&');
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${client.sheetId}/values:batchGet?${params}&key=${sheetsApiKey}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('Meta data fetch failed');
+    const data = await res.json();
+
+    const rangeIndex = {};
+    (data.valueRanges || []).forEach((vr, i) => {
+      const key = uniqueRanges[i];
+      rangeIndex[key] = vr.values || [];
+      if (vr.range) {
+        rangeIndex[vr.range] = vr.values || [];
+        const cellOnly = vr.range.includes('!') ? vr.range.split('!').pop() : vr.range;
+        rangeIndex[cellOnly] = vr.values || [];
+      }
+    });
+
+    // Set _metaConfig BEFORE calling applyMetaData so buildContentCard can read it
+    client._metaConfig = metaCfg;
+    currentClient._metaConfig = metaCfg;
+    applyMetaData(metaCfg, rangeIndex);
+    client._metaLoaded = true;
+  } catch(e) {
+    console.error('[Load] Meta data fetch failed:', e.message);
+    client._metaLoaded = true;
+  }
+}
+
+function bootClient(client) {
+  currentClient = client;
+  document.getElementById('auth-screen').style.display = 'none';
+  document.getElementById('app').classList.add('visible');
+
+  // Load API keys
+  const keys = getApiKeys();
+  sheetsApiKey = keys.sheetsApiKey || '';
+  mapboxToken  = keys.mapboxToken  || '';
+
+  // ── RESET ALL STALE STATE FROM PREVIOUS CLIENT ──
+
+  // Reset Google Search KPIs
+  ['kpi-clicks','kpi-impressions','kpi-ctr','kpi-cpc'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = '—';
+  });
+  ['kpi-clicks-trend','kpi-impressions-trend','kpi-ctr-trend','kpi-cpc-trend'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.style.display = 'none'; el.textContent = ''; }
+  });
+
+  // Reset Meta KPIs
+  ['meta-kpi-clicks','meta-kpi-reach','meta-kpi-impr','meta-kpi-ctr','meta-kpi-cpc','meta-kpi-freq'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = '—';
+  });
+  ['meta-kpi-clicks-trend','meta-kpi-reach-trend','meta-kpi-impr-trend',
+   'meta-kpi-ctr-trend','meta-kpi-cpc-trend','meta-kpi-freq-trend'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.style.display = 'none'; el.textContent = ''; }
+  });
+
+  // Reset Meta loaded state so fresh data is fetched for new client
+  currentClient._metaLoaded = false;
+  currentClient._metaConfig = null;
+
+  // Hide all conditional sections until data loads
+  ['gs-notes-performance-section','gs-notes-audience-section','gs-notes-final-section',
+   'gs-audience-section','gs-notes-keywords-card',
+   'meta-notes-performance-section','meta-audience-notes-section','meta-notes-final-section',
+   'meta-audience-section','meta-content-section'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  });
+
+  // Reset audience tables
+  const gsAudWrap = document.getElementById('gs-audience-table-wrap');
+  if (gsAudWrap) gsAudWrap.innerHTML = '<div class="audience-empty">No audience data configured</div>';
+  const metaAudWrap = document.getElementById('meta-audience-table-wrap');
+  if (metaAudWrap) metaAudWrap.innerHTML = '<div class="audience-empty">No audience data configured</div>';
+
+  // Reset top content grid
+  const contentGrid = document.getElementById('meta-content-grid');
+  if (contentGrid) contentGrid.innerHTML = '';
+
+  // Header — uses shared config fields
+  const reportTitle = client.reportTitle || 'Advertising Report';
+  document.getElementById('hdr-title').textContent = reportTitle;
+  document.getElementById('hdr-sub').textContent = client.name || '—';
+  document.getElementById('period-text').textContent = client.period_text || '—';
+  document.title = reportTitle + ' — ' + (client.name || 'LINK SP');
+
+  // Logo + footer
+  applyLogo(client.id);
+  applyFooter(client);
+  applyFooterLogo();
+
+  // Notes — restore all note views and textareas
+  const notes = getNotes(client.id);
+  Object.entries(NOTE_KEYS).forEach(([id, key]) => {
+    initNoteView(id, notes[key] || '');
+  });
+  // Ensure all note cards start in view mode (not editing)
+  document.querySelectorAll('.note-card').forEach(c => c.classList.remove('editing'));
+
+  // Init template navigation
+  initTemplateNav(client.reports || []);
+
+  // Restore Google Search donut canvases using stable parent IDs
+  const donutDefs = [
+    { canvasId: 'donut-gender',  legId: 'dleg-gender',  bodyId: null },
+    { canvasId: 'donut-age',     legId: 'dleg-age',     bodyId: null },
+    { canvasId: 'donut-income',  legId: 'dleg-income',  bodyId: 'donut-income-body' },
+  ];
+  donutDefs.forEach(({ canvasId, legId, bodyId }) => {
+    if (!document.getElementById(canvasId)) {
+      // Find parent: use bodyId if available, else traverse from legend
+      let body = bodyId
+        ? document.getElementById(bodyId)
+        : document.getElementById(legId)?.closest('.donut-body');
+      if (body) {
+        body.innerHTML = `<div class="dnut-wrap"><canvas id="${canvasId}"></canvas></div><div class="dleg" id="${legId}"></div>`;
+      }
+    }
+    if (donutCharts[canvasId]) {
+      try { donutCharts[canvasId].destroy(); } catch(e){}
+      delete donutCharts[canvasId];
+    }
+  });
+
+  // Render placeholder donuts for Google Search only
+  renderDonuts(
+    [{label:'Male',pct:52},{label:'Female',pct:46}],
+    [{label:'25–34',pct:28},{label:'35–44',pct:24},{label:'45–54',pct:18},{label:'18–24',pct:15},{label:'55+',pct:15}],
+    [{label:'60–80th',pct:28},{label:'40–60th',pct:25},{label:'20–40th',pct:18},{label:'0–20th',pct:12},{label:'Top 10%',pct:17}]
+  );
+
+  // Data fetching is handled by bootClientWithLoad (parallel)
+  // bootClient only sets up UI — data arrives separately
+  setConnStatus(false, 'Loading…');
+
+  // Init maps
+  if (mapboxToken) {
+    if (!mapImpressions || !mapClicks) {
+      initMaps();
+    } else {
+      setTimeout(() => {
+        if (mapClicks) mapClicks.resize();
+        if (mapImpressions) mapImpressions.resize();
+      }, 100);
+    }
+  }
+}
+
+function logout() {
+  LS.del('link_v2_session');
+  currentClient = null;
+  activeTemplate = 'google-search';
+
+  // Reset map state so next client gets fresh maps
+  if (mapImpressions) { try { mapImpressions.remove(); } catch(e){} mapImpressions = null; }
+  if (mapClicks)      { try { mapClicks.remove();      } catch(e){} mapClicks = null; }
+  mapsInitialized = false;
+  pendingMapData = null;
+
+  // Destroy donut charts
+  Object.values(donutCharts).forEach(c => { try { c.destroy(); } catch(e){} });
+  donutCharts = {};
+
+  document.getElementById('auth-screen').style.display = 'flex';
+  document.getElementById('app').classList.remove('visible');
+  document.getElementById('auth-pw-input').value = '';
+  document.getElementById('auth-error').classList.remove('show');
+
+  // Reset template nav
+  const toggle = document.getElementById('tmpl-toggle');
+  if (toggle) toggle.innerHTML = '';
+  document.getElementById('tmpl-nav').style.display = 'none';
+  document.querySelectorAll('.tmpl-content').forEach(el => el.classList.remove('active'));
+  document.getElementById('tmpl-google-search').classList.add('active');
+}
+
+// Check for existing session on load
+window.addEventListener('DOMContentLoaded', async () => {
+  const keys = getApiKeys();
+  sheetsApiKey = keys.sheetsApiKey || '';
+  mapboxToken  = keys.mapboxToken  || '';
+
+  // Show auth screen immediately — don't wait for registry
+  document.getElementById('auth-screen').style.display = 'flex';
+
+  // Auth event listeners
+  document.getElementById('auth-btn').addEventListener('click', () => {
+    tryLogin(document.getElementById('auth-pw-input').value);
+  });
+  document.getElementById('auth-pw-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') tryLogin(e.target.value);
+    document.getElementById('auth-error').classList.remove('show');
+    e.target.style.borderColor = '';
+  });
+
+  // Fetch registry in parallel — resolves before or during password entry
+  const registryPromise = fetchRegistry();
+
+  // Session restore — wait for registry first since we need client data
+  const session = LS.get('link_v2_session');
+  if (session && session.sheetId && sheetsApiKey && sheetsApiKey.trim() !== '') {
+    await registryPromise;
+    try {
+      const entry = CLIENT_REGISTRY.find(c => c.id === session.id);
+      const shared = await fetchSharedConfig(session.sheetId);
+      if (shared.name) {
+        showLoadOverlay(shared.name || '');
+        setLoadStage(1);
+        await bootClientWithLoad({ ...shared, id: session.id, sheetId: session.sheetId, reports: entry ? entry.reports : [] });
+        return;
+      }
+    } catch(e) {
+      console.warn('Session restore failed:', e.message);
+      LS.del('link_v2_session');
+      hideLoadOverlay();
+    }
+  }
+
+  // Store registry promise so tryLogin can await it if needed
+  window._registryPromise = registryPromise;
+
+});
+
+/* ══════════════════════════════════════
+   FOOTER
+══════════════════════════════════════ */
+function applyFooter(client) {
+  document.getElementById('footer-client').textContent = 'LINK Strategic Partners';
+  // Report date in period bar
+  const reportDateEl = document.getElementById('report-date');
+  if (reportDateEl && client.reportDate) reportDateEl.textContent = client.reportDate;
+  const a1n = client.author1Name || '';
+  const a1t = client.author1Title || '';
+  const a2n = client.author2Name || '';
+  const a2t = client.author2Title || '';
+  let html = '';
+  if (a1n) html += `<b>${escHtml(a1n)}</b>${a1t ? ', ' + escHtml(a1t) : ''}`;
+  if (a1n && a2n) html += ', and<br>';
+  if (a2n) html += `<b>${escHtml(a2n)}</b>${a2t ? ', ' + escHtml(a2t) : ''}`;
+  document.getElementById('footer-authors').innerHTML = html ||
+    '<span style="opacity:.4">No authors configured — add in Settings</span>';
+  applyFooterLogo();
+}
+
+function applyFooterLogo() {
+  // Footer logo is hardcoded — no dynamic update needed
+}
+
+/* ══════════════════════════════════════
+   LOGO UPLOAD
+══════════════════════════════════════ */
+function applyLogo(clientId) {
+  const dataUrl = getClientLogo(clientId);
+  const img = document.getElementById('logo-img');
+  const txt = document.getElementById('logo-text');
+  if (!img) return;
+  if (dataUrl) {
+    img.src = dataUrl; img.style.display = 'block';
+    if (txt) txt.style.display = 'none';
+  } else {
+    img.style.display = 'none';
+    if (txt) txt.style.display = '';
+  }
+}
+
+// Logo listeners — moved inside DOMContentLoaded in settings block below
+
+/* ══════════════════════════════════════
+   GOOGLE SHEETS DATA FETCH
+══════════════════════════════════════ */
+async function fetchSheetData() {
+  if (!currentClient || !sheetsApiKey || !currentClient.sheetId) return;
+
+  // Build mapping from client config object (loaded from _config sheet tab)
+  // Only include mapping fields — value fields (kpi_tlbl, period_text etc.)
+  // are already resolved at login and stored directly on currentClient
+  const MAPPING_FIELDS = [...CONFIG_MAPPING_FIELDS];
+  const mapping = {};
+  MAPPING_FIELDS.forEach(f => {
+    if (currentClient[f]) mapping[f] = currentClient[f].trim();
+  });
+
+  if (!Object.keys(mapping).length) {
+    setConnStatus(false, 'No cell mapping in sheet config');
+    return;
+  }
+
+  setRefreshing(true);
+
+  const results = {};
+  const sheetId = currentClient.sheetId;
+
+  // Collect all unique ranges to fetch
+  const rangesToFetch = [...new Set(Object.values(mapping).filter(Boolean))];
+  if (!rangesToFetch.length) {
+    setRefreshing(false);
+    setConnStatus(false, 'No ranges mapped');
+    return;
+  }
+
+  try {
+    // Batch fetch using batchGet
+    const rangesParam = rangesToFetch.map(r => 'ranges=' + encodeURIComponent(r)).join('&');
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values:batchGet?${rangesParam}&key=${sheetsApiKey}`;
+    const res = await fetch(url);
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error?.message || 'Sheets API error');
+    }
+    const data = await res.json();
+
+    // Build a lookup: range → values
+    const rangeData = {};
+    (data.valueRanges || []).forEach(vr => {
+      // normalize the range key (Sheets may return different casing)
+      const key = (vr.range || '').split('!').pop() || vr.range;
+      rangeData[vr.range] = vr.values || [];
+    });
+
+    // Map range responses back by iterating valueRanges in order
+    const rangeIndex = {};
+    (data.valueRanges || []).forEach((vr, i) => {
+      rangeIndex[rangesToFetch[i]] = vr.values || [];
+    });
+
+    // Apply data to UI
+    applySheetData(mapping, rangeIndex);
+    setConnStatus(true, 'Connected to Google Sheets');
+    setLastRefreshed();
+    toast('Data refreshed', 'success');
+  } catch(err) {
+    console.error(err);
+    setConnStatus(false, 'Error: ' + err.message);
+    toast('Refresh failed: ' + err.message, 'error');
+  } finally {
+    setRefreshing(false);
+  }
+}
+
+/* ══════════════════════════════════════
+   TEMPLATE NAVIGATION
+══════════════════════════════════════ */
+function initTemplateNav(reports) {
+  const nav = document.getElementById('tmpl-nav');
+  const toggle = document.getElementById('tmpl-toggle');
+  toggle.innerHTML = '';
+
+  if (!reports || reports.length <= 1) {
+    nav.style.display = 'none';
+    const type = (reports && reports[0] && reports[0].type) || 'google-search';
+    switchTemplate(type, reports);
+    return;
+  }
+
+  nav.style.display = 'flex';
+
+  if (reports.length === 2) {
+    reports.forEach(r => {
+      const btn = document.createElement('button');
+      btn.className = 'tmpl-btn' + (r.type === activeTemplate ? ' active' : '');
+      btn.textContent = r.label;
+      btn.dataset.type = r.type;
+      btn.onclick = () => switchTemplate(r.type, reports);
+      toggle.appendChild(btn);
+    });
+  } else {
+    const sel = document.createElement('select');
+    sel.className = 'tmpl-select';
+    reports.forEach(r => {
+      const opt = document.createElement('option');
+      opt.value = r.type;
+      opt.textContent = r.label;
+      if (r.type === activeTemplate) opt.selected = true;
+      sel.appendChild(opt);
+    });
+    sel.onchange = () => switchTemplate(sel.value, reports);
+    toggle.appendChild(sel);
+  }
+
+  switchTemplate(reports[0].type, reports);
+}
+
+function switchTemplate(type, reports) {
+  activeTemplate = type;
+
+  document.querySelectorAll('.tmpl-content').forEach(el => el.classList.remove('active'));
+  const panel = document.getElementById('tmpl-' + type);
+  if (panel) panel.classList.add('active');
+
+  document.querySelectorAll('.tmpl-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.type === type);
+  });
+
+  // Header title always shows reportTitle from shared _config
+  const titleEl = document.getElementById('hdr-title');
+  if (titleEl && currentClient) {
+    const reportTitle = currentClient.reportTitle || 'Advertising Report';
+    titleEl.textContent = reportTitle;
+    document.title = reportTitle + ' — ' + (currentClient.name || 'LINK SP');
+  }
+
+  // Meta data is pre-loaded by bootClientWithLoad — no lazy loading needed
+  // loadMetaTemplate() is kept as fallback for manual refresh
+  if (type === 'meta-ads' && currentClient && !currentClient._metaLoaded) {
+    loadMetaTemplate();
+  }
+
+  if (type === 'google-search') {
+    if (mapClicks) setTimeout(() => mapClicks.resize(), 100);
+    if (mapImpressions) setTimeout(() => mapImpressions.resize(), 100);
+  }
+}
+
+function applySheetData(mapping, rangeIndex) {
+  function val(fieldId) {
+    const range = mapping[fieldId];
+    if (!range) return null;
+    const rows = rangeIndex[range];
+    if (!rows || !rows.length) return null;
+    return rows[0][0] ?? null;
+  }
+  function rows(fieldId) {
+    const range = mapping[fieldId];
+    if (!range) return null;
+    return rangeIndex[range] || null;
+  }
+
+  // KPIs — kpi_tlbl resolved from report config, period_text from shared config
+  const trendLbl = currentClient.kpi_tlbl || '';
+  setKpiVal('kpi-clicks', val('kpi_clicks'));
+  setKpiTrend('kpi-clicks-trend', 'kpi-clicks-tlbl', val('kpi_clicks_trend'), trendLbl);
+  setKpiVal('kpi-impressions', val('kpi_impr'));
+  setKpiTrend('kpi-impressions-trend', 'kpi-impressions-tlbl', val('kpi_impr_trend'), trendLbl);
+  setKpiVal('kpi-ctr', val('kpi_ctr'));
+  setKpiTrend('kpi-ctr-trend', 'kpi-ctr-tlbl', val('kpi_ctr_trend'), trendLbl);
+  setKpiVal('kpi-cpc', val('kpi_cpc'));
+  setKpiTrend('kpi-cpc-trend', 'kpi-cpc-tlbl', val('kpi_cpc_trend'), trendLbl, true);
+
+  // Period — also resolved at login
+  document.getElementById('period-text').textContent = currentClient.period_text || currentClient.period || '—';
+
+  // Keywords — renderKeywordBars handles null/empty internally
+  const kwRows = rows('kw_range');
+  renderKeywordBars(kwRows);
+
+  // Zip bars — renderZipBars handles null/empty internally
+  const zipImpr = rows('zip_impr_range');
+  const zipClicks = rows('zip_clicks_range');
+  renderZipBars('zip-impressions-bars', zipImpr);
+  renderZipBars('zip-clicks-bars', zipClicks);
+  if ((zipImpr && zipImpr.length) || (zipClicks && zipClicks.length)) {
+    if (mapboxToken) updateMaps(zipImpr, zipClicks);
+  }
+
+  // Demographics — renderDonuts handles null per-chart internally
+  const genderRows = rows('demo_gender');
+  const ageRows = rows('demo_age');
+  const incomeRows = rows('demo_income');
+  renderDonuts(
+    genderRows ? parseDemo(genderRows) : null,
+    ageRows    ? parseDemo(ageRows)    : null,
+    incomeRows ? parseDemo(incomeRows) : null
+  );
+
+  // Audience segmentation (Google Search)
+  const audienceRows = rows('audience_range');
+  const gsAudienceSection = document.getElementById('gs-audience-section');
+  if (gsAudienceSection) {
+    if (audienceRows && audienceRows.length > 1) {
+      gsAudienceSection.style.display = '';
+      const wrap = document.getElementById('gs-audience-table-wrap');
+      if (wrap) renderAudienceTable(audienceRows, wrap);
+    } else {
+      gsAudienceSection.style.display = 'none';
+    }
+  }
+
+  // Update Google Search tab title in toggle if reportTabTitle is set
+  if (currentClient.reportTabTitle) {
+    const gsReport = (currentClient.reports || []).find(r => r.type === 'google-search');
+    if (gsReport) {
+      gsReport.label = currentClient.reportTabTitle;
+      document.querySelectorAll('.tmpl-btn').forEach(btn => {
+        if (btn.dataset.type === 'google-search') btn.textContent = currentClient.reportTabTitle;
+      });
+      const sel = document.querySelector('.tmpl-select');
+      if (sel) [...sel.options].forEach(opt => {
+        if (opt.value === 'google-search') opt.textContent = currentClient.reportTabTitle;
+      });
+    }
+  }
+
+  // Conditional notes sections — driven by label fields from config
+  applyNotesSection('gs-notes-performance-section', 'gs-notes-performance-title', currentClient.notes_performance_label);
+  applyNotesSection('gs-notes-audience-section',    'gs-notes-audience-title',    currentClient.notes_audience_label);
+  applyNotesSection('gs-notes-final-section',       'gs-notes-final-title',       currentClient.notes_final_label);
+
+  // Keyword notes card — inline conditional (lives inside row-2 alongside bar chart)
+  const kwNotesCard = document.getElementById('gs-notes-keywords-card');
+  if (kwNotesCard) {
+    const kwLabel = currentClient.notes_keywords_label;
+    const skip = !kwLabel || ['n/a','na','none','-',''].includes(String(kwLabel).trim().toLowerCase());
+    kwNotesCard.style.display = skip ? 'none' : '';
+    if (!skip) {
+      const titleEl = document.getElementById('gs-notes-keywords-title');
+      if (titleEl) titleEl.textContent = kwLabel;
+    }
+  }
+}
+
+/* ══════════════════════════════════════
+   NOTES EDIT / SAVE PATTERN
+══════════════════════════════════════ */
+function enterNoteEdit(id) {
+  const card = document.getElementById(id)?.closest('.note-card');
+  if (!card) return;
+  card.classList.add('editing');
+  const ta = document.getElementById(id);
+  if (ta) { ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); }
+}
+
+function cancelNoteEdit(id) {
+  const card = document.getElementById(id)?.closest('.note-card');
+  if (!card) return;
+  card.classList.remove('editing');
+  // Revert textarea to last saved value (shown in view)
+  const view = document.getElementById(id + '-view');
+  const ta = document.getElementById(id);
+  if (ta && view) ta.value = view.textContent;
+}
+
+function saveNoteEdit(id) {
+  const card = document.getElementById(id)?.closest('.note-card');
+  if (!card) return;
+  card.classList.remove('editing');
+  const ta = document.getElementById(id);
+  const view = document.getElementById(id + '-view');
+  if (!ta || !currentClient) return;
+  const val = ta.value;
+  // Update view
+  if (view) view.textContent = val;
+  // Save to localStorage
+  const n = getNotes(currentClient.id);
+  n[NOTE_KEYS[id]] = val;
+  saveNotes(currentClient.id, n);
+  showToast('Notes saved');
+}
+
+function initNoteView(id, value) {
+  // Set initial view content and sync textarea
+  const view = document.getElementById(id + '-view');
+  const ta = document.getElementById(id);
+  if (view) view.textContent = value || '';
+  if (ta) ta.value = value || '';
+}
+
+// Show/hide a conditional notes section based on label from config
+function applyNotesSection(sectionId, titleId, label) {
+  const section = document.getElementById(sectionId);
+  if (!section) return;
+  const skip = !label || ['n/a','na','none','-',''].includes(String(label).trim().toLowerCase());
+  section.style.display = skip ? 'none' : '';
+  if (!skip && titleId) {
+    const titleEl = document.getElementById(titleId);
+    if (titleEl) titleEl.textContent = label;
+  }
+}
+
+function parseDemo(rows) {
+  return (rows || [])
+    .map(r => ({label: (r[0]||'').trim(), pct: parseFloat(r[1]) || 0}))
+    .filter(r => r.label && r.label !== '');
+}
+
+function setKpiVal(id, val) {
+  const el = document.getElementById(id);
+  if (val !== null && val !== undefined && String(val).trim() !== '') {
+    el.textContent = val;
+    el.className = 'kpi-val';
+  } else {
+    el.textContent = '—';
+    el.className = 'kpi-val kpi-val-empty';
+  }
+}
+
+function setKpiTrend(trendId, lblId, trendVal, lblVal, invert, neutral) {
+  const el = document.getElementById(trendId);
+  const lbl = document.getElementById(lblId);
+  if (trendVal && String(trendVal).trim() !== '') {
+    el.style.display = '';
+    el.textContent = trendVal;
+    if (neutral) {
+      el.className = 'tneutral';
+    } else {
+      const isDown = trendVal.includes('↓') || trendVal.startsWith('-');
+      el.className = (invert ? !isDown : isDown) ? 'tdn' : 'tup';
+    }
+  } else {
+    el.style.display = 'none';
+    lbl.textContent = '';
+  }
+  if (lblVal && String(lblVal).trim() !== '') lbl.textContent = lblVal;
+}
+
+/* ══════════════════════════════════════
+   UI STATE HELPERS
+══════════════════════════════════════ */
+function setConnStatus(online, label) {
+  const dot = document.getElementById('conn-dot');
+  const lbl = document.getElementById('conn-label');
+  dot.className = 'ldot' + (online ? '' : ' offline');
+  lbl.textContent = label || (online ? 'Connected' : 'Disconnected');
+}
+
+function setRefreshing(on) {
+  const btn = document.getElementById('refresh-btn');
+  btn.disabled = on;
+  btn.innerHTML = on ? '<span class="spinner"></span>Refreshing…' : '↻ Refresh';
+}
+
+function setLastRefreshed() {
+  const now = new Date();
+  const t = now.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});
+  document.getElementById('last-refreshed').textContent = 'Last refreshed ' + t;
+}
+
+/* ══════════════════════════════════════
+   KEYWORD BAR CHART
+══════════════════════════════════════ */
+function renderKeywordBars(kwRows) {
+  const container = document.getElementById('kw-bar-list');
+  container.innerHTML = '';
+  const validRows = (kwRows || []).filter(r => r[0] && (parseFloat(r[1]) > 0));
+  if (!validRows.length) {
+    container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📊</div><div class="empty-state-msg">No keyword data</div><div class="empty-state-hint">Configure keyword range in Settings → Cell Mapping</div></div>';
+    return;
+  }
+  const cleanNum = v => parseFloat(String(v).replace(/[$,\s]/g, '')) || 0;
+  const max = Math.max(...validRows.map(r => cleanNum(r[1]))) || 1;
+  validRows.slice(0,10).forEach((row) => {
+    const kw = row[0] || '';
+    const clicks = cleanNum(row[1]);
+    const pct = Math.round((clicks / max) * 100);
+    const div = document.createElement('div');
+    div.className = 'brow';
+    div.innerHTML = `
+      <div class="bkw">${escHtml(kw)}</div>
+      <div class="btrack">
+        <div class="bfill" style="width:${pct}%;background:#e8382d">
+          ${clicks.toLocaleString()}
+        </div>
+      </div>`;
+    container.appendChild(div);
+  });
+}
+
+/* ══════════════════════════════════════
+   ZIP CODE BAR CHARTS
+══════════════════════════════════════ */
+function renderZipBars(containerId, zipRows) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+  const validRows = (zipRows || []).filter(r => r[0] && (parseFloat(r[1]) >= 0));
+  if (!validRows.length) {
+    container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📍</div><div class="empty-state-msg">No geographic data</div><div class="empty-state-hint">Configure zip range in Settings → Cell Mapping</div></div>';
+    return;
+  }
+  const cleanNum = v => parseFloat(String(v).replace(/[$,\s]/g, '')) || 0;
+  const max = Math.max(...validRows.map(r => cleanNum(r[1]))) || 1;
+  validRows.slice(0,10).forEach((row) => {
+    const zip = row[0] || '';
+    const val = cleanNum(row[1]);
+    const pct = Math.round((val / max) * 100);
+    const div = document.createElement('div');
+    div.className = 'brow';
+    div.innerHTML = `
+      <div class="bkw-sm">${escHtml(zip)}</div>
+      <div class="btrack">
+        <div class="bfill" style="width:${pct}%;background:#e8382d">
+          ${val.toLocaleString()}
+        </div>
+      </div>`;
+    container.appendChild(div);
+  });
+}
+
+/* ══════════════════════════════════════
+   DONUT CHARTS (Chart.js)
+══════════════════════════════════════ */
+const DONUT_PALETTE = [
+  '#e8382d',  // LINK red — dominant segment
+  '#94a3b8',  // slate
+  '#1a1c24',  // dark
+  '#cbd5e1',  // light slate
+  '#64748b',  // mid slate
+  '#f1f5f9',  // near white
+  '#c92e24',  // deep red
+  '#475569',  // dark slate
+  '#e2e8f0',  // pale slate
+];
+
+function renderDonuts(
+  genderData, ageData, incomeData,
+  genderCanvasId, genderLegId,
+  ageCanvasId, ageLegId,
+  incomeCanvasId, incomeLegId
+) {
+  // Default IDs for Google Search template
+  genderCanvasId  = genderCanvasId  || 'donut-gender';
+  genderLegId     = genderLegId     || 'dleg-gender';
+  ageCanvasId     = ageCanvasId     || 'donut-age';
+  ageLegId        = ageLegId        || 'dleg-age';
+  incomeCanvasId  = incomeCanvasId  || 'donut-income';
+  incomeLegId     = incomeLegId     || 'dleg-income';
+
+  const hasSheet = !!(currentClient && currentClient.sheetId && sheetsApiKey);
+
+  const genderFallback = hasSheet ? null : [{label:'Male',pct:52},{label:'Female',pct:46}];
+  const ageFallback    = hasSheet ? null : [{label:'25–34',pct:28},{label:'35–44',pct:24},{label:'45–54',pct:18},{label:'18–24',pct:15},{label:'55+',pct:15}];
+  const incomeFallback = hasSheet ? null : [{label:'60–80th',pct:28},{label:'40–60th',pct:25},{label:'20–40th',pct:18},{label:'0–20th',pct:12},{label:'Top 10%',pct:17}];
+
+  renderSingleDonut(genderCanvasId, genderLegId,
+    ((genderData || genderFallback) || []).filter(d => d.label.toLowerCase() !== 'unknown'),
+    {cols:2, maxItems:2});
+  renderSingleDonut(ageCanvasId, ageLegId, ageData || ageFallback, {cols:4, maxItems:6});
+  // Income — only render for Google Search canvas, never for Meta
+  // Restore canvas if it was previously replaced by empty state
+  if (incomeCanvasId === 'donut-income' || (!incomeCanvasId && document.getElementById('donut-income'))) {
+    const targetId = 'donut-income';
+    const targetLegId = 'dleg-income';
+    // Restore canvas if missing
+    const donutBody = document.getElementById(targetId)
+      ? document.getElementById(targetId).closest('.donut-body')
+      : document.getElementById(targetLegId)?.closest('.donut-body');
+    if (donutBody && !document.getElementById(targetId)) {
+      donutBody.innerHTML = `<div class="dnut-wrap"><canvas id="${targetId}"></canvas></div><div class="dleg" id="${targetLegId}"></div>`;
+    }
+    if (document.getElementById(targetId)) {
+      renderSingleDonut(targetId, targetLegId, incomeData || incomeFallback, {cols:4, maxItems:6});
+    }
+  }
+}
+
+function renderSingleDonut(canvasId, legId, data, opts) {
+  const cols = (opts && opts.cols) || 4;
+  const maxItems = (opts && opts.maxItems) || 6;
+
+  if (donutCharts[canvasId]) { donutCharts[canvasId].destroy(); donutCharts[canvasId] = null; }
+
+  // Restore canvas if it was previously replaced by an empty state
+  const donutBody = document.getElementById(canvasId)
+    ? document.getElementById(canvasId).closest('.donut-body')
+    : document.getElementById(legId)?.closest('.donut-body');
+  if (donutBody && !document.getElementById(canvasId)) {
+    donutBody.innerHTML = `<div class="dnut-wrap"><canvas id="${canvasId}"></canvas></div><div class="dleg" id="${legId}"></div>`;
+  }
+
+  // Empty state — no data mapped or returned
+  if (!data || !data.length) {
+    if (donutBody) donutBody.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🍩</div><div class="empty-state-msg">No data</div><div class="empty-state-hint">Configure demographic range in Settings → Cell Mapping</div></div>';
+    return;
+  }
+
+  if (donutCharts[canvasId]) donutCharts[canvasId].destroy();
+  const ctx = document.getElementById(canvasId).getContext('2d');
+  const chartData = data.slice(0, maxItems);
+  const labels = chartData.map(d => d.label);
+  const values = chartData.map(d => d.pct);
+  const colors = chartData.map((_, i) => DONUT_PALETTE[i % DONUT_PALETTE.length]);
+
+  donutCharts[canvasId] = new Chart(ctx, {
+    type: 'doughnut',
+    data: { labels, datasets: [{ data: values, backgroundColor: colors, borderWidth: 0, hoverOffset: 4 }] },
+    options: {
+      cutout: '62%',
+      plugins: { legend: { display: false }, tooltip: { enabled: true } },
+      animation: { duration: 600 },
+    }
+  });
+
+  const leg = document.getElementById(legId);
+  const items = chartData.slice(0, maxItems);
+  let tableRows = '';
+
+  if (cols === 2) {
+    // 2-col table: label | pct — one item per row
+    tableRows = items.map((d, i) => `<tr>
+      <td class="dleg-lbl"><div class="dldt" style="background:${colors[i]}"></div>${escHtml(d.label)}</td>
+      <td class="dleg-pct">${d.pct}%</td>
+    </tr>`).join('');
+  } else {
+    // 4-col table: label | pct | label | pct — items split left/right
+    const half = Math.ceil(items.length / 2);
+    const padded = [...items];
+    while (padded.length < half * 2) padded.push({label:'', pct:''});
+    tableRows = Array.from({length: half}, (_, row) => {
+      const ai = row, bi = row + half;
+      const a = padded[ai], b = padded[bi];
+      const aLbl = a.label ? `<div class="dldt" style="background:${colors[ai]}"></div>${escHtml(a.label)}` : '';
+      const bLbl = b && b.label ? `<div class="dldt" style="background:${colors[bi]}"></div>${escHtml(b.label)}` : '';
+      return `<tr>
+        <td class="dleg-lbl">${aLbl}</td>
+        <td class="dleg-pct">${a.pct !== '' ? a.pct + '%' : ''}</td>
+        <td class="dleg-lbl">${bLbl}</td>
+        <td class="dleg-pct">${b && b.pct !== '' ? b.pct + '%' : ''}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  leg.innerHTML = `<table class="dleg-table"><tbody>${tableRows}</tbody></table>`;
+}
+
+/* ══════════════════════════════════════
+   META ADS TEMPLATE — DATA LOAD + RENDER
+══════════════════════════════════════ */
+async function loadMetaTemplate() {
+  if (!currentClient || !sheetsApiKey) return;
+  const entry = CLIENT_REGISTRY.find(c => c.id === currentClient.id);
+  const metaReport = (entry && entry.reports || []).find(r => r.type === 'meta-ads');
+  if (!metaReport) return;
+
+  try {
+    const config = await fetchClientConfig(
+      currentClient.sheetId,
+      metaReport.configTab,
+      META_CONFIG_FIELD_MAP,
+      META_VALUE_FIELDS,
+      META_MAPPING_FIELDS
+    );
+    currentClient._metaConfig = config;
+    currentClient._metaLoaded = true;
+
+    // Collect range refs to batch fetch
+    const rangesToFetch = [];
+    const RANGE_FIELDS = [
+      'kpi_clicks','kpi_clicks_trend','kpi_reach','kpi_reach_trend',
+      'kpi_impr','kpi_impr_trend','kpi_ctr','kpi_ctr_trend',
+      'kpi_cpc','kpi_cpc_trend','kpi_freq','kpi_freq_trend',
+      'audience_range','content1_range','content2_range','content3_range',
+      'demo_gender','demo_age',
+    ];
+    RANGE_FIELDS.forEach(f => { if (config[f]) rangesToFetch.push(config[f]); });
+
+    if (!rangesToFetch.length) {
+      applyMetaData(config, {});
+      return;
+    }
+
+    const uniqueRanges = [...new Set(rangesToFetch)];
+    const params = uniqueRanges.map(r => 'ranges=' + encodeURIComponent(r)).join('&');
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${currentClient.sheetId}/values:batchGet?${params}&key=${sheetsApiKey}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('Meta data fetch failed');
+    const data = await res.json();
+
+    const rangeIndex = {};
+    (data.valueRanges || []).forEach((vr, i) => {
+      const key = uniqueRanges[i];
+      rangeIndex[key] = vr.values || [];
+      if (vr.range) {
+        rangeIndex[vr.range] = vr.values || [];
+        const cellOnly = vr.range.includes('!') ? vr.range.split('!').pop() : vr.range;
+        rangeIndex[cellOnly] = vr.values || [];
+      }
+    });
+
+    applyMetaData(config, rangeIndex);
+  } catch(e) {
+    console.error('[Meta] Load failed:', e.message);
+    toast('Meta data load failed: ' + e.message, 'error');
+  }
+}
+
+function applyMetaData(config, rangeIndex) {
+  const val = (fieldId) => {
+    const range = config[fieldId];
+    if (!range) return null;
+    const rows = rangeIndex[range];
+    if (!rows || !rows.length) return null;
+    return rows;
+  };
+  const singleVal = (fieldId) => {
+    const rows = val(fieldId);
+    return rows ? String(rows[0][0] || '').trim() : null;
+  };
+
+  // Header stays as reportTitle from shared config — tab title is in the toggle
+  // Update toggle label if reportTabTitle is set
+  if (config.reportTabTitle) {
+    const metaReport = (currentClient.reports || []).find(r => r.type === 'meta-ads');
+    if (metaReport) {
+      metaReport.label = config.reportTabTitle;
+      // Update button/select text in nav
+      document.querySelectorAll('.tmpl-btn').forEach(btn => {
+        if (btn.dataset.type === 'meta-ads') btn.textContent = config.reportTabTitle;
+      });
+      const sel = document.querySelector('.tmpl-select');
+      if (sel) {
+        [...sel.options].forEach(opt => {
+          if (opt.value === 'meta-ads') opt.textContent = config.reportTabTitle;
+        });
+      }
+    }
+  }
+
+  // ── KPIs ──
+  const kpiDefs = [
+    { id: 'clicks', el: 'meta-kpi-clicks', trendEl: 'meta-kpi-clicks-trend', tlblEl: 'meta-kpi-clicks-tlbl', invert: false },
+    { id: 'reach',  el: 'meta-kpi-reach',  trendEl: 'meta-kpi-reach-trend',  tlblEl: 'meta-kpi-reach-tlbl',  invert: false },
+    { id: 'impr',   el: 'meta-kpi-impr',   trendEl: 'meta-kpi-impr-trend',   tlblEl: 'meta-kpi-impr-tlbl',   invert: false },
+    { id: 'ctr',    el: 'meta-kpi-ctr',    trendEl: 'meta-kpi-ctr-trend',    tlblEl: 'meta-kpi-ctr-tlbl',    invert: false },
+    { id: 'cpc',    el: 'meta-kpi-cpc',    trendEl: 'meta-kpi-cpc-trend',    tlblEl: 'meta-kpi-cpc-tlbl',    invert: true  },
+    { id: 'freq',   el: 'meta-kpi-freq',   trendEl: 'meta-kpi-freq-trend',   tlblEl: 'meta-kpi-freq-tlbl',   invert: false, neutral: true },
+  ];
+  const tlbl = config.kpi_tlbl || '';
+  kpiDefs.forEach(k => {
+    const v = singleVal('kpi_' + k.id);
+    const t = singleVal('kpi_' + k.id + '_trend');
+    if (v) document.getElementById(k.el).textContent = v;
+    if (t) setKpiTrend(k.trendEl, k.tlblEl, t, tlbl, k.invert, k.neutral);
+  });
+
+  // ── AUDIENCE SEGMENTATION ──
+  const audienceRows = val('audience_range');
+  const audienceSection = document.getElementById('meta-audience-section');
+  if (audienceRows && audienceRows.length > 1) {
+    audienceSection.style.display = '';
+    renderAudienceTable(audienceRows);
+  } else {
+    audienceSection.style.display = 'none';
+  }
+
+  // ── TOP CONTENT ──
+  const contentDefs = [
+    { rangeField: 'content1_range', labelField: 'content1_label', slot: 1 },
+    { rangeField: 'content2_range', labelField: 'content2_label', slot: 2 },
+    { rangeField: 'content3_range', labelField: 'content3_label', slot: 3 },
+  ];
+  const contentSection = document.getElementById('meta-content-section');
+  const contentGrid = document.getElementById('meta-content-grid');
+  contentGrid.innerHTML = '';
+  let contentCount = 0;
+
+  contentDefs.forEach(c => {
+    const rows = val(c.rangeField);
+    const label = config[c.labelField] || ('Top Creative #' + c.slot);
+    const hasStoredImg = !!localStorage.getItem('link_v2_creative_' + currentClient.id + '_' + c.slot);
+    if ((rows && rows.length) || hasStoredImg) {
+      contentCount++;
+      contentGrid.appendChild(buildContentCard(c.slot, label, rows || [], currentClient.id));
+    }
+  });
+
+  contentSection.style.display = contentCount > 0 ? '' : 'none';
+
+  // ── DEMOGRAPHICS ──
+  const genderRows = val('demo_gender');
+  const ageRows    = val('demo_age');
+  renderDonuts(
+    genderRows ? parseDemo(genderRows) : null,
+    ageRows    ? parseDemo(ageRows)    : null,
+    null,
+    'meta-donut-gender', 'meta-dleg-gender',
+    'meta-donut-age',    'meta-dleg-age',
+    'meta-donut-income', 'meta-dleg-income'
+  );
+
+  // Conditional notes sections — applied last so they appear in correct DOM order
+  applyNotesSection('meta-notes-performance-section', 'meta-notes-performance-title', config.notes_performance_label);
+  applyNotesSection('meta-audience-notes-section',    'meta-notes-audience-title',    config.notes_audience_label);
+  applyNotesSection('meta-notes-final-section',       'meta-notes-final-title',       config.notes_final_label);
+}
+
+function renderAudienceTable(rows, wrap) {
+  wrap = wrap || document.getElementById('meta-audience-table-wrap');
+  if (!rows || rows.length < 2) {
+    wrap.innerHTML = '<div class="audience-empty">No audience data</div>';
+    return;
+  }
+
+  // Find the real header row — skip merged title rows (single cell spanning all cols)
+  // A real header row has multiple non-empty cells
+  let headerIdx = 0;
+  for (let i = 0; i < rows.length; i++) {
+    const nonEmpty = rows[i].filter(c => String(c || '').trim() !== '').length;
+    if (nonEmpty >= 2) { headerIdx = i; break; }
+  }
+
+  const headers = rows[headerIdx];
+  const dataRows = rows.slice(headerIdx + 1).filter(row =>
+    row.some(c => String(c || '').trim() !== '')
+  );
+
+  if (!dataRows.length) {
+    wrap.innerHTML = '<div class="audience-empty">No audience data</div>';
+    return;
+  }
+
+  const thead = headers.map(h => `<th>${escHtml(String(h || ''))}</th>`).join('');
+  const tbody = dataRows.map(row => {
+    const cells = headers.map((_, i) => `<td>${escHtml(String(row[i] || '—'))}</td>`).join('');
+    return `<tr>${cells}</tr>`;
+  }).join('');
+
+  wrap.innerHTML = `<table class="audience-table"><thead><tr>${thead}</tr></thead><tbody>${tbody}</tbody></table>`;
+}
+
+function buildContentCard(slot, label, rows, clientId) {
+  const storedImg = localStorage.getItem('link_v2_creative_' + clientId + '_' + slot) || '';
+
+  // Parse metrics using explicit labels from config (comma-separated)
+  // Each creative range is a single data row: [val1, val2, val3, ...]
+  // Labels come from 'Top Content Metric Labels' in _config_meta
+  let metrics = [];
+  const labelStr = (currentClient && currentClient._metaConfig && currentClient._metaConfig.content_metric_labels) || '';
+  const explicitLabels = labelStr.split(',').map(l => l.trim()).filter(Boolean);
+
+  if (explicitLabels.length && rows && rows.length) {
+    // Single data row with explicit labels from config
+    const values = rows[0] || [];
+    metrics = explicitLabels.slice(0, 6).map((lbl, i) => ({
+      label: lbl,
+      value: String(values[i] || '').trim(),
+      trend: '',
+    })).filter(m => m.value);
+  } else if (rows && rows.length >= 2) {
+    // Fallback: vertical format — each row is [label, value]
+    metrics = rows.slice(0, 6).map(r => ({
+      label: String(r[0] || '').trim(),
+      value: String(r[1] || '').trim(),
+      trend: String(r[2] || '').trim(),
+    })).filter(m => m.label);
+  }
+
+  const metricsHtml = metrics.map(m => {
+    const trendClass = m.trend.startsWith('↑') ? 'tup' : m.trend.startsWith('↓') ? 'tdn' : '';
+    const trendHtml = m.trend ? `<div class="content-metric-trend ${trendClass}">${escHtml(m.trend)}</div>` : '';
+    return `<div class="content-metric">
+      <div class="content-metric-label">${escHtml(m.label)}</div>
+      <div class="content-metric-value">${escHtml(m.value)}</div>
+      ${trendHtml}
+    </div>`;
+  }).join('');
+
+  const imgHtml = storedImg
+    ? `<img src="${storedImg}" alt="${escHtml(label)}" style="width:100%;height:100%;object-fit:cover;display:block"/>`
+    : `<div class="creative-ph">
+        <div class="creative-ph-icon">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#e8382d" stroke-width="1.5">
+            <rect x="1" y="3" width="14" height="10" rx="2"/>
+            <circle cx="5.5" cy="7" r="1"/>
+            <path d="M1 11l4-3 3 2.5 2-1.5 5 4"/>
+          </svg>
+        </div>
+        <span class="creative-ph-text">Click to upload</span>
+      </div>`;
+
+  const card = document.createElement('div');
+  card.className = 'glass content-card';
+  card.innerHTML = `
+    <div class="creative-wrap" id="creative-wrap-${slot}">
+      ${imgHtml}
+      <div class="rank-badge">#${slot}</div>
+      ${storedImg ? '<button class="expand-btn">⤢ Expand</button>' : ''}
+      ${storedImg ? '<button class="replace-btn">↺ Replace</button>' : ''}
+    </div>
+    <div class="content-card-body">
+      <div class="content-card-title">${escHtml(label)}</div>
+      <div class="content-metrics">${metricsHtml}</div>
+    </div>`;
+
+  const wrap = card.querySelector('.creative-wrap');
+  if (storedImg) {
+    // Image uploaded — only buttons act, clicking image does nothing
+    const expandBtn = card.querySelector('.expand-btn');
+    if (expandBtn) expandBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openLightboxSrc(storedImg);
+    });
+    const replaceBtn = card.querySelector('.replace-btn');
+    if (replaceBtn) replaceBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      triggerCreativeUpload(slot, clientId, card);
+    });
+  } else {
+    // No image — click anywhere on wrap to upload
+    wrap.addEventListener('click', () => triggerCreativeUpload(slot, clientId, card));
+  }
+
+  return card;
+}
+
+function triggerCreativeUpload(slot, clientId, card) {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.onchange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const dataUrl = ev.target.result;
+      localStorage.setItem('link_v2_creative_' + clientId + '_' + slot, dataUrl);
+      // Re-render the creative wrap
+      const wrap = card.querySelector('.creative-wrap');
+      wrap.innerHTML = `
+        <img src="${dataUrl}" style="width:100%;height:100%;object-fit:cover;display:block;cursor:pointer"/>
+        <div class="rank-badge">#${slot}</div>
+        <button class="expand-btn">⤢ Expand</button>
+        <button class="replace-btn">↺ Replace</button>`;
+      // Image uploaded — only buttons act on it
+      wrap.onclick = null;
+      wrap.querySelector('.expand-btn').onclick = (ev) => { ev.stopPropagation(); openLightboxSrc(dataUrl); };
+      wrap.querySelector('.replace-btn').onclick = (ev) => { ev.stopPropagation(); triggerCreativeUpload(slot, clientId, card); };
+    };
+    reader.readAsDataURL(file);
+  };
+  input.click();
+}
+
+function openLightboxSrc(src) {
+  // Convert base64 data URL to blob URL — browsers block opening data URLs directly
+  if (src.startsWith('data:')) {
+    const arr = src.split(',');
+    const mime = arr[0].match(/:(.*?);/)[1];
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+    while (n--) u8arr[n] = bstr.charCodeAt(n);
+    const blob = new Blob([u8arr], { type: mime });
+    const blobUrl = URL.createObjectURL(blob);
+    window.open(blobUrl, '_blank');
+  } else {
+    window.open(src, '_blank');
+  }
+}
+
+/* ══════════════════════════════════════
+   MAPBOX MAPS — Census TIGER GeoJSON (free)
+══════════════════════════════════════ */
+
+// Zip prefix → Census state FIPS code (for eric.clst.org state-level files)
+// Keys are 1–3 digit zip prefixes; value is the state abbreviation used in the URL
+const ZIP_STATE_MAP = {
+  '0': 'ct_ri',  // CT/RI share some 0xx prefixes — we use a combined approach
+  '00': 'pr',    // Puerto Rico
+  '006': 'pr','007': 'pr',
+  '008': 'vi',   // USVI
+  '009': 'pr',
+  '01': 'ma','02': 'ma','024': 'ri','028': 'ri','029': 'ri',
+  '03': 'nh','04': 'me','05': 'vt',
+  '06': 'ct','068': 'ny','069': 'ny',
+  '07': 'nj','08': 'nj',
+  '09': 'ny', // military/APO — fallback ny
+  '10': 'ny','11': 'ny','12': 'ny','13': 'ny','14': 'ny',
+  '15': 'pa','16': 'pa','17': 'pa','18': 'pa','19': 'pa',
+  '20': 'dc','202': 'dc','203': 'dc','204': 'dc',
+  '205': 'dc','206': 'dc','207': 'md','208': 'md','209': 'md',
+  '210': 'md','211': 'md','212': 'md','214': 'md','215': 'md',
+  '216': 'md','217': 'md','218': 'md','219': 'md',
+  '220': 'va','221': 'va','222': 'va','223': 'va','224': 'va',
+  '225': 'va','226': 'va','227': 'va','228': 'va','229': 'va',
+  '230': 'va','231': 'va','232': 'va','233': 'va','234': 'va',
+  '235': 'va','236': 'va','237': 'va','238': 'va','239': 'va',
+  '240': 'va','241': 'va','242': 'va','243': 'va','244': 'va',
+  '245': 'va','246': 'va',
+  '247': 'wv','248': 'wv','249': 'wv','250': 'wv','251': 'wv',
+  '252': 'wv','253': 'wv','254': 'wv','255': 'wv','256': 'wv',
+  '257': 'wv','258': 'wv','259': 'wv','260': 'wv','261': 'wv',
+  '262': 'wv','263': 'wv','264': 'wv','265': 'wv','266': 'wv',
+  '267': 'wv','268': 'wv',
+  '270': 'nc','271': 'nc','272': 'nc','273': 'nc','274': 'nc',
+  '275': 'nc','276': 'nc','277': 'nc','278': 'nc','279': 'nc',
+  '280': 'nc','281': 'nc','282': 'nc','283': 'nc','284': 'nc',
+  '285': 'nc','286': 'nc','287': 'nc','288': 'nc','289': 'nc',
+  '290': 'sc','291': 'sc','292': 'sc','293': 'sc','294': 'sc',
+  '295': 'sc','296': 'sc','297': 'sc','298': 'sc','299': 'sc',
+  '300': 'ga','301': 'ga','302': 'ga','303': 'ga','304': 'ga',
+  '305': 'ga','306': 'ga','307': 'ga','308': 'ga','309': 'ga',
+  '310': 'ga','311': 'ga','312': 'ga','313': 'ga','314': 'ga',
+  '315': 'ga','316': 'ga','317': 'ga','318': 'ga','319': 'ga',
+  '320': 'fl','321': 'fl','322': 'fl','323': 'fl','324': 'fl',
+  '325': 'fl','326': 'fl','327': 'fl','328': 'fl','329': 'fl',
+  '330': 'fl','331': 'fl','332': 'fl','333': 'fl','334': 'fl',
+  '335': 'fl','336': 'fl','337': 'fl','338': 'fl','339': 'fl',
+  '340': 'fl','341': 'fl','342': 'fl','344': 'fl','346': 'fl',
+  '347': 'fl','349': 'fl',
+  '350': 'al','351': 'al','352': 'al','354': 'al','355': 'al',
+  '356': 'al','357': 'al','358': 'al','359': 'al','360': 'al',
+  '361': 'al','362': 'al','363': 'al','364': 'al','365': 'al',
+  '366': 'al','367': 'al','368': 'al','369': 'al',
+  '370': 'tn','371': 'tn','372': 'tn','373': 'tn','374': 'tn',
+  '375': 'tn','376': 'tn','377': 'tn','378': 'tn','379': 'tn',
+  '380': 'tn','381': 'tn','382': 'tn','383': 'tn','384': 'tn',
+  '385': 'tn',
+  '386': 'ms','387': 'ms','388': 'ms','389': 'ms','390': 'ms',
+  '391': 'ms','392': 'ms','393': 'ms','394': 'ms','395': 'ms',
+  '396': 'ms','397': 'ms',
+  '398': 'ga','399': 'ga',
+  '400': 'ky','401': 'ky','402': 'ky','403': 'ky','404': 'ky',
+  '405': 'ky','406': 'ky','407': 'ky','408': 'ky','409': 'ky',
+  '410': 'ky','411': 'ky','412': 'ky','413': 'ky','414': 'ky',
+  '415': 'ky','416': 'ky','417': 'ky','418': 'ky',
+  '420': 'ky','421': 'ky','422': 'ky','423': 'ky','424': 'ky',
+  '425': 'ky','426': 'ky','427': 'ky',
+  '430': 'oh','431': 'oh','432': 'oh','433': 'oh','434': 'oh',
+  '435': 'oh','436': 'oh','437': 'oh','438': 'oh','439': 'oh',
+  '440': 'oh','441': 'oh','442': 'oh','443': 'oh','444': 'oh',
+  '445': 'oh','446': 'oh','447': 'oh','448': 'oh','449': 'oh',
+  '450': 'oh','451': 'oh','452': 'oh','453': 'oh','454': 'oh',
+  '455': 'oh','456': 'oh','457': 'oh','458': 'oh',
+  '460': 'in','461': 'in','462': 'in','463': 'in','464': 'in',
+  '465': 'in','466': 'in','467': 'in','468': 'in','469': 'in',
+  '470': 'in','471': 'in','472': 'in','473': 'in','474': 'in',
+  '475': 'in','476': 'in','477': 'in','478': 'in','479': 'in',
+  '480': 'mi','481': 'mi','482': 'mi','483': 'mi','484': 'mi',
+  '485': 'mi','486': 'mi','487': 'mi','488': 'mi','489': 'mi',
+  '490': 'mi','491': 'mi','492': 'mi','493': 'mi','494': 'mi',
+  '495': 'mi','496': 'mi','497': 'mi','498': 'mi','499': 'mi',
+  '500': 'ia','501': 'ia','502': 'ia','503': 'ia','504': 'ia',
+  '505': 'ia','506': 'ia','507': 'ia','508': 'ia','509': 'ia',
+  '510': 'ia','511': 'ia','512': 'ia','513': 'ia','514': 'ia',
+  '515': 'ia','516': 'ia','520': 'ia','521': 'ia','522': 'ia',
+  '523': 'ia','524': 'ia','525': 'ia','526': 'ia','527': 'ia',
+  '528': 'ia',
+  '530': 'wi','531': 'wi','532': 'wi','534': 'wi','535': 'wi',
+  '537': 'wi','538': 'wi','539': 'wi','540': 'wi','541': 'wi',
+  '542': 'wi','543': 'wi','544': 'wi','545': 'wi','546': 'wi',
+  '547': 'wi','548': 'wi','549': 'wi',
+  '550': 'mn','551': 'mn','553': 'mn','554': 'mn','555': 'mn',
+  '556': 'mn','557': 'mn','558': 'mn','559': 'mn','560': 'mn',
+  '561': 'mn','562': 'mn','563': 'mn','564': 'mn','565': 'mn',
+  '566': 'mn','567': 'mn',
+  '570': 'sd','571': 'sd','572': 'sd','573': 'sd','574': 'sd',
+  '575': 'sd','576': 'sd','577': 'sd',
+  '580': 'nd','581': 'nd','582': 'nd','583': 'nd','584': 'nd',
+  '585': 'nd','586': 'nd','587': 'nd','588': 'nd',
+  '590': 'mt','591': 'mt','592': 'mt','593': 'mt','594': 'mt',
+  '595': 'mt','596': 'mt','597': 'mt','598': 'mt','599': 'mt',
+  '600': 'il','601': 'il','602': 'il','603': 'il','604': 'il',
+  '605': 'il','606': 'il','607': 'il','608': 'il','609': 'il',
+  '610': 'il','611': 'il','612': 'il','613': 'il','614': 'il',
+  '615': 'il','616': 'il','617': 'il','618': 'il','619': 'il',
+  '620': 'il','622': 'il','623': 'il','624': 'il','625': 'il',
+  '626': 'il','627': 'il','628': 'il','629': 'il',
+  '630': 'mo','631': 'mo','633': 'mo','634': 'mo','635': 'mo',
+  '636': 'mo','637': 'mo','638': 'mo','639': 'mo','640': 'mo',
+  '641': 'mo','644': 'mo','645': 'mo','646': 'mo','647': 'mo',
+  '648': 'mo','649': 'mo','650': 'mo','651': 'mo','652': 'mo',
+  '653': 'mo','654': 'mo','655': 'mo','656': 'mo','657': 'mo',
+  '658': 'mo',
+  '660': 'ks','661': 'ks','662': 'ks','664': 'ks','665': 'ks',
+  '666': 'ks','667': 'ks','668': 'ks','669': 'ks','670': 'ks',
+  '671': 'ks','672': 'ks','673': 'ks','674': 'ks','675': 'ks',
+  '676': 'ks','677': 'ks','678': 'ks','679': 'ks',
+  '680': 'ne','681': 'ne','683': 'ne','684': 'ne','685': 'ne',
+  '686': 'ne','687': 'ne','688': 'ne','689': 'ne','690': 'ne',
+  '691': 'ne','692': 'ne','693': 'ne',
+  '700': 'la','701': 'la','703': 'la','704': 'la','705': 'la',
+  '706': 'la','707': 'la','708': 'la','710': 'la','711': 'la',
+  '712': 'la','713': 'la','714': 'la',
+  '716': 'ar','717': 'ar','718': 'ar','719': 'ar','720': 'ar',
+  '721': 'ar','722': 'ar','723': 'ar','724': 'ar','725': 'ar',
+  '726': 'ar','727': 'ar','728': 'ar','729': 'ar',
+  '730': 'ok','731': 'ok','733': 'ok','734': 'ok','735': 'ok',
+  '736': 'ok','737': 'ok','738': 'ok','739': 'ok','740': 'ok',
+  '741': 'ok','743': 'ok','744': 'ok','745': 'ok','746': 'ok',
+  '747': 'ok','748': 'ok','749': 'ok',
+  '750': 'tx','751': 'tx','752': 'tx','753': 'tx','754': 'tx',
+  '755': 'tx','756': 'tx','757': 'tx','758': 'tx','759': 'tx',
+  '760': 'tx','761': 'tx','762': 'tx','763': 'tx','764': 'tx',
+  '765': 'tx','766': 'tx','767': 'tx','768': 'tx','769': 'tx',
+  '770': 'tx','771': 'tx','772': 'tx','773': 'tx','774': 'tx',
+  '775': 'tx','776': 'tx','777': 'tx','778': 'tx','779': 'tx',
+  '780': 'tx','781': 'tx','782': 'tx','783': 'tx','784': 'tx',
+  '785': 'tx','786': 'tx','787': 'tx','788': 'tx','789': 'tx',
+  '790': 'tx','791': 'tx','792': 'tx','793': 'tx','794': 'tx',
+  '795': 'tx','796': 'tx','797': 'tx','798': 'tx','799': 'tx',
+  '800': 'co','801': 'co','802': 'co','803': 'co','804': 'co',
+  '805': 'co','806': 'co','807': 'co','808': 'co','809': 'co',
+  '810': 'co','811': 'co','812': 'co','813': 'co','814': 'co',
+  '815': 'co','816': 'co',
+  '820': 'wy','821': 'wy','822': 'wy','823': 'wy','824': 'wy',
+  '825': 'wy','826': 'wy','827': 'wy','828': 'wy','829': 'wy',
+  '830': 'wy','831': 'wy',
+  '832': 'id','833': 'id','834': 'id','835': 'id','836': 'id',
+  '837': 'id','838': 'id',
+  '840': 'ut','841': 'ut','842': 'ut','843': 'ut','844': 'ut',
+  '845': 'ut','846': 'ut','847': 'ut',
+  '850': 'az','851': 'az','852': 'az','853': 'az','855': 'az',
+  '856': 'az','857': 'az','859': 'az','860': 'az','863': 'az',
+  '864': 'az','865': 'az',
+  '870': 'nm','871': 'nm','872': 'nm','873': 'nm','874': 'nm',
+  '875': 'nm','877': 'nm','878': 'nm','879': 'nm','880': 'nm',
+  '881': 'nm','882': 'nm','883': 'nm','884': 'nm',
+  '885': 'tx',
+  '889': 'nv','890': 'nv','891': 'nv','893': 'nv','894': 'nv',
+  '895': 'nv','896': 'nv','897': 'nv','898': 'nv',
+  '900': 'ca','901': 'ca','902': 'ca','903': 'ca','904': 'ca',
+  '905': 'ca','906': 'ca','907': 'ca','908': 'ca','910': 'ca',
+  '911': 'ca','912': 'ca','913': 'ca','914': 'ca','915': 'ca',
+  '916': 'ca','917': 'ca','918': 'ca','919': 'ca','920': 'ca',
+  '921': 'ca','922': 'ca','923': 'ca','924': 'ca','925': 'ca',
+  '926': 'ca','927': 'ca','928': 'ca','930': 'ca','931': 'ca',
+  '932': 'ca','933': 'ca','934': 'ca','935': 'ca','936': 'ca',
+  '937': 'ca','938': 'ca','939': 'ca','940': 'ca','941': 'ca',
+  '942': 'ca','943': 'ca','944': 'ca','945': 'ca','946': 'ca',
+  '947': 'ca','948': 'ca','949': 'ca','950': 'ca','951': 'ca',
+  '952': 'ca','953': 'ca','954': 'ca','955': 'ca','956': 'ca',
+  '957': 'ca','958': 'ca','959': 'ca','960': 'ca','961': 'ca',
+  '962': 'ap','963': 'ap','964': 'ap','965': 'ap','966': 'ap',
+  '967': 'hi','968': 'hi',
+  '969': 'gu',
+  '970': 'or','971': 'or','972': 'or','973': 'or','974': 'or',
+  '975': 'or','976': 'or','977': 'or','978': 'or','979': 'or',
+  '980': 'wa','981': 'wa','982': 'wa','983': 'wa','984': 'wa',
+  '985': 'wa','986': 'wa','988': 'wa','989': 'wa','990': 'wa',
+  '991': 'wa','992': 'wa','993': 'wa','994': 'wa',
+  '995': 'ak','996': 'ak','997': 'ak','998': 'ak','999': 'ak',
+};
+
+// Resolve which state file(s) to fetch for a set of zip codes
+function getStatesForZips(zips) {
+  const states = new Set();
+  zips.forEach(zip => {
+    const z = String(zip).padStart(5, '0');
+    // Try 3-digit prefix, then 2-digit, then 1-digit
+    const s = ZIP_STATE_MAP[z.slice(0,3)] || ZIP_STATE_MAP[z.slice(0,2)] || ZIP_STATE_MAP[z.slice(0,1)];
+    if (s) states.add(s);
+  });
+  return [...states];
+}
+
+// Cache fetched GeoJSON by state key
+const geojsonCache = {};
+
+async function fetchZipGeoJSON(zips) {
+  // Census TIGERweb REST API — CORS-enabled, no subscription required.
+  // We query only the specific ZCTAs we need, keeping payloads small.
+  // Endpoint: https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/tigerWMS_Current/MapServer/2/query
+  // Layer 2 = Zip Code Tabulation Areas (ZCTAs)
+
+  // Build cache key from sorted zip list
+  const cacheKey = [...zips].sort().join(',');
+  if (geojsonCache[cacheKey]) return geojsonCache[cacheKey];
+
+  // TIGERweb accepts a WHERE clause filtering by ZCTA5CE10
+  // Batch in groups of 50 to stay within URL length limits
+  const batches = [];
+  const zipArr = [...zips];
+  for (let i = 0; i < zipArr.length; i += 50) {
+    batches.push(zipArr.slice(i, i + 50));
+  }
+
+  const allFeatures = [];
+  for (const batch of batches) {
+    // Use GEOID field which is the reliable zip identifier on TIGERweb ZCTA layer.
+    // We also try ZCTA5CE10 as the WHERE field and request all fields (*) so we
+    // can inspect exactly what property names come back.
+    const zipsFormatted = batch.map(z => String(z).padStart(5,'0'));
+    // Correct service: PUMA_TAD_TAZ_UGA_ZCTA, layer 4 = 2020 Census ZCTAs
+    // Confirmed field name: ZCTA5 (also has GEOID as fallback)
+    const where = "ZCTA5 IN ('" + zipsFormatted.join("','") + "')";
+    const params = new URLSearchParams({
+      where,
+      outFields: 'ZCTA5,GEOID',
+      inSR: '4326',
+      outSR: '4326',
+      f: 'geojson',
+      returnGeometry: 'true',
+      geometryPrecision: '6',
+    });
+    const url = 'https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/PUMA_TAD_TAZ_UGA_ZCTA/MapServer/4/query?' + params;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('Census TIGERweb error (' + res.status + ')');
+    const data = await res.json();
+    if (data.features && data.features.length > 0) {
+      // Log first feature's properties so we know the exact field names
+      console.log('[TIGERweb] First feature properties:', JSON.stringify(data.features[0].properties));
+      allFeatures.push(...data.features);
+    } else {
+      console.warn('[TIGERweb] No features returned for batch:', zipsFormatted, 'Response:', JSON.stringify(data).slice(0,300));
+    }
+  }
+
+  const geojson = { type: 'FeatureCollection', features: allFeatures };
+  geojsonCache[cacheKey] = geojson;
+  return geojson;
+}
+
+// Filter GeoJSON to only the zips we care about
+function filterGeoJSON(geojson, zipSet) {
+  return {
+    type: 'FeatureCollection',
+    features: geojson.features.filter(f => {
+      const p = f.properties || {};
+      const z = p.ZCTA5 || p.GEOID || p.ZCTA5CE || p.ZCTA5CE10 || p.ZIP || p.zip || '';
+      const match = zipSet.has(String(z).padStart(5,'0'));
+      if (!match && z) console.log('[filterGeoJSON] No match for:', z, '| Props:', JSON.stringify(p));
+      return match;
+    })
+  };
+}
+
+let mapsInitialized = false;
+let pendingMapData = null; // {zipImprRows, zipClickRows} — stored if maps not ready yet
+
+function initMaps() {
+  if (!mapboxToken || !window.mapboxgl) return;
+  mapboxgl.accessToken = mapboxToken;
+
+  const commonOpts = {
+    style: 'mapbox://styles/mapbox/light-v11',
+    center: [-77.0369, 38.9072],
+    zoom: 10,
+    attributionControl: false,
+  };
+
+  // Clear placeholders
+  ['map-impressions','map-clicks'].forEach(id => {
+    const el = document.getElementById(id);
+    el.innerHTML = '';
+    el.classList.remove('map-placeholder');
+  });
+
+  mapImpressions = new mapboxgl.Map({ container: 'map-impressions', ...commonOpts });
+  mapClicks      = new mapboxgl.Map({ container: 'map-clicks',      ...commonOpts });
+
+  [mapImpressions, mapClicks].forEach(m => {
+    m.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right');
+  });
+
+  // Wait for both maps to be ready
+  let loadedCount = 0;
+  [mapImpressions, mapClicks].forEach(m => {
+    m.on('load', () => {
+      loadedCount++;
+      if (loadedCount === 2) {
+        mapsInitialized = true;
+        if (pendingMapData) {
+          const {zipImprRows, zipClickRows} = pendingMapData;
+          pendingMapData = null;
+          _paintBothMaps(zipImprRows, zipClickRows);
+        }
+      }
+    });
+  });
+}
+
+async function updateMaps(zipImprRows, zipClickRows) {
+  if (!mapboxToken || !window.mapboxgl) return;
+  if (!mapsInitialized) {
+    // Maps not ready yet — store data and paint once they load
+    pendingMapData = {zipImprRows, zipClickRows};
+    return;
+  }
+  _paintBothMaps(zipImprRows, zipClickRows);
+}
+
+function _setMapLoading(on) {
+  ['map-impressions','map-clicks'].forEach(id => {
+    const el = document.getElementById(id);
+    const existing = el.querySelector('.map-loading');
+    if (on && !existing) {
+      const div = document.createElement('div');
+      div.className = 'map-loading';
+      div.innerHTML = '<span class="spinner" style="border-top-color:var(--red);border-color:rgba(232,56,45,0.2);border-top-color:var(--red)"></span> Loading boundaries…';
+      el.appendChild(div);
+    } else if (!on && existing) {
+      existing.remove();
+    }
+  });
+}
+
+async function _paintBothMaps(zipImprRows, zipClickRows) {
+  _setMapLoading(true);
+
+  // Fetch boundaries separately for each dataset so each map only shows its own zips
+  const fetchFor = async (rows) => {
+    if (!rows || !rows.length) return null;
+    const zips = new Set(rows.map(r => String(r[0]).padStart(5,'0')));
+    try {
+      const geojson = await fetchZipGeoJSON([...zips]);
+      return filterGeoJSON(geojson, zips);
+    } catch(err) {
+      console.error('GeoJSON fetch failed:', err);
+      return null;
+    }
+  };
+
+  const [clicksGeo, imprGeo] = await Promise.all([
+    fetchFor(zipClickRows),
+    fetchFor(zipImprRows),
+  ]);
+
+  _setMapLoading(false);
+
+  if (!clicksGeo && !imprGeo) {
+    toast('Map boundary data unavailable', 'error');
+    return;
+  }
+
+  // Paint each map with only its own boundaries
+  if (clicksGeo && clicksGeo.features.length) {
+    _paintMap(mapClicks, clicksGeo, zipClickRows, 'clicks', 'Ad Clicks');
+    const bbox = getBbox(clicksGeo) || getCenterBbox(clicksGeo);
+    if (bbox) mapClicks.fitBounds(bbox, { padding: 28, duration: 800 });
+  }
+
+  if (imprGeo && imprGeo.features.length) {
+    _paintMap(mapImpressions, imprGeo, zipImprRows, 'impressions', 'Ad Impressions');
+    const bbox = getBbox(imprGeo) || getCenterBbox(imprGeo);
+    if (bbox) mapImpressions.fitBounds(bbox, { padding: 28, duration: 800 });
+  }
+}
+
+function getCenterBbox(geojson) {
+  const centers = geojson.features
+    .map(f => [parseFloat(f.properties.CENTLON), parseFloat(f.properties.CENTLAT)])
+    .filter(([lng, lat]) => !isNaN(lng) && !isNaN(lat));
+  if (!centers.length) return null;
+  const lngs = centers.map(c => c[0]);
+  const lats = centers.map(c => c[1]);
+  return [[Math.min(...lngs), Math.min(...lats)], [Math.max(...lngs), Math.max(...lats)]];
+}
+
+function _paintMap(map, geojson, rows, sourceId, labelPrefix) {
+  if (!map || !rows) return;
+
+  // Build value lookup: zip → numeric value
+  const cleanNum = v => parseFloat(String(v).replace(/[$,\s]/g, '')) || 0;
+  const valMap = {};
+  rows.forEach(r => {
+    const zip = String(r[0]).padStart(5,'0');
+    const val = cleanNum(r[1]);
+    valMap[zip] = val;
+  });
+  const max = Math.max(...Object.values(valMap)) || 1;
+  console.log('[Map ' + sourceId + '] valMap zips:', Object.keys(valMap), '| max:', max);
+
+  // Attach value to each feature as a property
+  const painted = {
+    type: 'FeatureCollection',
+    features: geojson.features.map(f => {
+      const zip = String(f.properties.ZCTA5 || f.properties.GEOID || f.properties.ZCTA5CE || f.properties.zip || '').padStart(5,'0');
+      const val = valMap[zip] || 0;
+      if (val === 0 && Object.keys(valMap).length > 0) console.log('[Map ' + sourceId + '] zip', zip, 'not in valMap — available:', Object.keys(valMap).slice(0,3));
+      return { ...f, properties: { ...f.properties, _zip: zip, _val: val } };
+    })
+  };
+
+  // Ensure style is loaded before adding sources/layers
+  const applyLayers = () => {
+    // Remove existing layers/source if present
+    ['zip-fill-' + sourceId, 'zip-outline-' + sourceId].forEach(id => {
+      if (map.getLayer(id)) map.removeLayer(id);
+    });
+    if (map.getSource(sourceId)) map.removeSource(sourceId);
+
+    map.addSource(sourceId, { type: 'geojson', data: painted });
+
+    map.addLayer({
+      id: 'zip-fill-' + sourceId,
+      type: 'fill',
+      source: sourceId,
+      paint: {
+        'fill-color': [
+          'interpolate', ['linear'], ['get', '_val'],
+          0,        'rgba(232,56,45,0.0)',
+          max*0.01, 'rgba(232,56,45,0.08)',
+          max*0.3,  'rgba(232,56,45,0.28)',
+          max*0.6,  'rgba(232,56,45,0.55)',
+          max,      'rgba(232,56,45,0.85)',
+        ],
+        'fill-opacity': 0.85,
+      }
+    });
+
+    map.addLayer({
+      id: 'zip-outline-' + sourceId,
+      type: 'line',
+      source: sourceId,
+      paint: {
+        'line-color': 'rgba(232,56,45,0.3)',
+        'line-width': 1,
+      }
+    });
+
+    // Hover popup
+    const popup = new mapboxgl.Popup({ closeButton: false, closeOnClick: false, className: 'map-popup' });
+
+    map.on('mousemove', 'zip-fill-' + sourceId, e => {
+      map.getCanvas().style.cursor = 'pointer';
+      const props = e.features[0].properties;
+      const zip = props._zip || '';
+      const val = props._val || 0;
+      popup.setLngLat(e.lngLat)
+        .setHTML(`<div style="font-family:Montserrat,sans-serif;font-size:11px;font-weight:700;color:#1a1c24">
+          ${zip}<br><span style="color:#e8382d">${val.toLocaleString()}</span>
+          <span style="font-size:9px;font-weight:500;color:#6b7080;margin-left:2px">${labelPrefix}</span>
+        </div>`)
+        .addTo(map);
+    });
+    map.on('mouseleave', 'zip-fill-' + sourceId, () => {
+      map.getCanvas().style.cursor = '';
+      popup.remove();
+    });
+  }; // end applyLayers
+
+  // Run now if style loaded, otherwise wait
+  if (map.isStyleLoaded()) {
+    applyLayers();
+  } else {
+    map.once('style.load', applyLayers);
+  }
+}
+
+// Compute bounding box of a GeoJSON FeatureCollection
+function getBbox(geojson) {
+  let minLng=Infinity, minLat=Infinity, maxLng=-Infinity, maxLat=-Infinity;
+  geojson.features.forEach(f => {
+    const coords = flattenCoords(f.geometry);
+    coords.forEach(([lng, lat]) => {
+      // Guard against NaN/projected coords (valid WGS84: lng -180..180, lat -90..90)
+      if (isNaN(lng) || isNaN(lat)) return;
+      if (Math.abs(lng) > 180 || Math.abs(lat) > 90) return;
+      if (lng < minLng) minLng = lng;
+      if (lat < minLat) minLat = lat;
+      if (lng > maxLng) maxLng = lng;
+      if (lat > maxLat) maxLat = lat;
+    });
+  });
+  if (!isFinite(minLng)) {
+    console.warn('[getBbox] No valid WGS84 coordinates found — skipping fitBounds');
+    return null;
+  }
+  return [[minLng, minLat], [maxLng, maxLat]];
+}
+
+function flattenCoords(geometry) {
+  if (!geometry) return [];
+  const t = geometry.type;
+  if (t === 'Polygon') return geometry.coordinates.flat();
+  if (t === 'MultiPolygon') return geometry.coordinates.flat(2);
+  return [];
+}
+
+/* ══════════════════════════════════════
+   SETTINGS PANEL
+══════════════════════════════════════ */
+
+// All top-level event wiring deferred to DOMContentLoaded to guarantee DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+
+// Logo upload — header (client logo, per-client)
+document.getElementById('logo-box').addEventListener('click', (e) => {
+  if (e.target === document.getElementById('logo-upload')) return;
+  document.getElementById('logo-upload').click();
+});
+document.getElementById('logo-upload').addEventListener('change', e => {
+  const file = e.target.files[0]; if (!file || !currentClient) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    saveClientLogo(currentClient.id, ev.target.result);
+    applyLogo(currentClient.id);
+    toast('Client logo updated', 'success');
+  };
+  reader.readAsDataURL(file);
+});
+
+// Footer logo is hardcoded — no upload handler needed
+
+// Open/close
+document.getElementById('settings-btn').addEventListener('click', openSettings);
+document.getElementById('sp-close').addEventListener('click', () => {
+  document.getElementById('settings-overlay').classList.remove('open');
+});
+document.getElementById('settings-overlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('settings-overlay')) {
+    document.getElementById('settings-overlay').classList.remove('open');
+  }
+});
+
+function openSettings() {
+  populateGeneralTab();
+  populateDeveloperTab();
+  populateApiKeys();
+  document.getElementById('settings-overlay').classList.add('open');
+}
+
+function populateGeneralTab() {
+  if (!currentClient) return;
+  // Report info
+  const set = (id, val) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = val || '—';
+  };
+  set('sp-info-client',  currentClient.name);
+  set('sp-info-title',   currentClient.reportTitle);
+  set('sp-info-period',  currentClient.period_text);
+  set('sp-info-date',    currentClient.reportDate);
+  const a1 = [currentClient.author1Name, currentClient.author1Title].filter(Boolean).join(', ');
+  const a2 = [currentClient.author2Name, currentClient.author2Title].filter(Boolean).join(', ');
+  set('sp-info-authors', [a1, a2].filter(Boolean).join(' · ') || '—');
+
+  // Client logo preview
+  const preview = document.getElementById('sp-logo-preview');
+  const stored = getClientLogo(currentClient.id);
+  if (preview) {
+    preview.innerHTML = stored
+      ? `<img src="${stored}" alt="Client logo"/>`
+      : '<span style="font-size:9px;color:rgba(255,255,255,0.3)">No logo</span>';
+  }
+}
+
+function populateDeveloperTab() {
+  // Version
+  const vEl = document.getElementById('sp-version');
+  if (vEl) vEl.textContent = 'v' + APP_VERSION;
+
+  // Current client config
+  const display = document.getElementById('current-config-display');
+  if (!display || !currentClient) return;
+  const skip = new Set(['password','_metaConfig','_metaLoaded','_gsMapping','_gsRangeIndex',
+    '_zipImpr','_zipClicks','reports','sheetId','id']);
+  const rows = Object.entries(currentClient)
+    .filter(([k]) => !skip.has(k) && !k.startsWith('_'))
+    .map(([k, v]) => `<tr>
+      <td style="font-size:10px;color:rgba(255,255,255,0.4);padding:3px 8px 3px 0;white-space:nowrap">${k}</td>
+      <td style="font-size:10px;color:rgba(255,255,255,0.7);padding:3px 0;word-break:break-all">${String(v||'').substring(0,60)}</td>
+    </tr>`).join('');
+  display.innerHTML = `<table style="width:100%;border-collapse:collapse">${rows}</table>`;
+}
+
+// Tab switching
+document.querySelectorAll('.sp-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.sp-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    ['general','developer'].forEach(id => {
+      const el = document.getElementById('tab-' + id);
+      if (el) el.style.display = tab.dataset.tab === id ? '' : 'none';
+    });
+  });
+});
+
+// Logo upload via settings panel
+document.getElementById('sp-logo-upload-btn')?.addEventListener('click', () => {
+  document.getElementById('sp-logo-file').click();
+});
+document.getElementById('sp-logo-file')?.addEventListener('change', function() {
+  const file = this.files[0];
+  if (!file || !currentClient) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    saveClientLogo(currentClient.id, e.target.result);
+    applyLogo(currentClient.id);
+    populateGeneralTab();
+  };
+  reader.readAsDataURL(file);
+  this.value = '';
+});
+document.getElementById('sp-logo-clear-btn')?.addEventListener('click', () => {
+  if (!currentClient) return;
+  clearClientLogo(currentClient.id);
+  applyLogo(currentClient.id);
+  populateGeneralTab();
+});
+
+// ── REGISTRY LIST — shows CLIENT_REGISTRY entries + current config ──
+function renderRegistryList() {
+  const list = document.getElementById('registry-list');
+  list.innerHTML = '';
+  CLIENT_REGISTRY.forEach(entry => {
+    const isActive = currentClient && currentClient.sheetId === entry.sheetId;
+    const item = document.createElement('div');
+    item.className = 'client-item' + (isActive ? ' active' : '');
+    item.innerHTML = `
+      <div>
+        <div class="client-item-name">${escHtml(entry.displayName)}</div>
+        <div class="client-item-meta">Sheet ID: ${entry.sheetId.substring(0,24)}…</div>
+      </div>
+      <div style="font-size:9px;color:rgba(255,255,255,0.3);font-weight:600;letter-spacing:.8px;text-transform:uppercase">
+        ${isActive ? '● Active' : ''}
+      </div>`;
+    list.appendChild(item);
+  });
+
+  // Show current config fields if logged in
+  const section = document.getElementById('current-config-section');
+  const display = document.getElementById('current-config-display');
+  if (currentClient) {
+    section.style.display = '';
+    const fields = ['name','reportTitle','reportDate','period_text','author1Name','author1Title','author2Name','author2Title'];
+    display.innerHTML = fields.map(f => currentClient[f] ? `
+      <div style="display:flex;gap:12px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.05)">
+        <span style="font-size:10px;color:rgba(255,255,255,0.35);width:120px;flex-shrink:0">${escHtml(f)}</span>
+        <span style="font-size:11px;color:rgba(255,255,255,0.7)">${escHtml(currentClient[f])}</span>
+      </div>` : '').join('');
+  } else {
+    section.style.display = 'none';
+  }
+}
+
+// ── API KEYS TAB ──
+function populateApiKeys() {
+  const stored = LS.get('link_v2_api_keys') || {};
+  // Only show stored overrides — don't expose built-in keys in the UI
+  document.getElementById('api-sheets-key').value = stored.sheetsApiKey || '';
+  document.getElementById('api-mapbox-token').value = stored.mapboxToken || '';
+}
+
+document.getElementById('api-save').addEventListener('click', () => {
+  const keys = {
+    sheetsApiKey: document.getElementById('api-sheets-key').value.trim(),
+    mapboxToken: document.getElementById('api-mapbox-token').value.trim(),
+  };
+  saveApiKeys(keys);
+  sheetsApiKey = keys.sheetsApiKey;
+  mapboxToken = keys.mapboxToken;
+  toast('API keys saved', 'success');
+
+  // Re-init maps if token added
+  if (mapboxToken && !mapImpressions) initMaps();
+});
+
+/* ══════════════════════════════════════
+   REFRESH BUTTON & LOGOUT
+══════════════════════════════════════ */
+document.getElementById('refresh-btn').addEventListener('click', async () => {
+  if (!currentClient || !sheetsApiKey) return;
+  // Re-fetch config from sheet first (picks up any mapping changes)
+  try {
+    const fresh = await fetchClientConfig(currentClient.sheetId);
+    currentClient = { ...currentClient, ...fresh };
+  } catch(e) {
+    console.warn('Config refresh failed:', e.message);
+  }
+  fetchSheetData();
+});
+
+document.getElementById('logout-btn').addEventListener('click', () => {
+  if (confirm('Sign out?')) logout();
+});
+
+}); // end DOMContentLoaded (settings + button wiring)
+
+// Print — force only active template visible, restore after
+window.addEventListener('beforeprint', () => {
+  document.querySelectorAll('.tmpl-content').forEach(el => {
+    el.style.display = el.classList.contains('active') ? 'block' : 'none';
+  });
+});
+window.addEventListener('afterprint', () => {
+  document.querySelectorAll('.tmpl-content').forEach(el => {
+    el.style.display = '';
+  });
+});
+
+/* ══════════════════════════════════════
+   MOBILE MAP TOGGLE
+══════════════════════════════════════ */
+function showMap(which) {
+  const isMobile = window.innerWidth <= 768;
+  if (!isMobile) return; // no-op on desktop — both rows always visible
+  ['clicks','impressions'].forEach(type => {
+    const panel = document.getElementById('map-panel-' + type);
+    const btn = document.getElementById('map-toggle-' + type);
+    if (panel) panel.classList.toggle('hidden', type !== which);
+    if (btn) btn.classList.toggle('active', type === which);
+  });
+  // Resize the visible map so tiles fill the container correctly
+  const map = which === 'clicks' ? mapClicks : mapImpressions;
+  if (map) setTimeout(() => map.resize(), 80);
+}
+
+// On resize, reset both panels to visible if returning to desktop
+window.addEventListener('resize', () => {
+  if (window.innerWidth > 768) {
+    ['clicks','impressions'].forEach(type => {
+      const panel = document.getElementById('map-panel-' + type);
+      if (panel) panel.classList.remove('hidden');
+    });
+  } else {
+    // Re-apply current toggle state
+    const activeBtn = document.querySelector('.map-toggle-btn.active');
+    if (activeBtn) {
+      const which = activeBtn.id.replace('map-toggle-','');
+      showMap(which);
+    }
+  }
+});
+
+/* ══════════════════════════════════════
+   UTILS
+══════════════════════════════════════ */
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function debounce(fn, ms) {
+  let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
+}
+</script>
+</body>
+</html>
