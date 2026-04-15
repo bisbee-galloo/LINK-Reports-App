@@ -808,6 +808,10 @@ body::before{
   display:flex;align-items:center;justify-content:center;
 }
 .creative-ph-text{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(0,0,0,0.3)}
+.creative-ph-text{display:none}
+#app.admin-mode .creative-ph-text{display:block}
+.replace-btn{display:none!important}
+#app.admin-mode .creative-wrap:hover .replace-btn{display:block!important}
 .rank-badge{
   position:absolute;top:10px;left:10px;
   background:var(--dark-hdr);color:white;
@@ -1901,7 +1905,7 @@ const FIELD_DEFS = [
 ];
 
 // ── VERSION ──
-const APP_VERSION = '2.11.7';
+const APP_VERSION = '2.12.1';
 
 // ── STATE ──
 let currentClient = null;
@@ -4022,14 +4026,17 @@ function buildContentCard(slot, label, rows, clientId) {
       triggerCreativeUpload(slot, clientId, card);
     });
   } else {
-    // No image — click anywhere on wrap to upload
-    wrap.addEventListener('click', () => triggerCreativeUpload(slot, clientId, card));
+    // No image — click anywhere on wrap to upload (admin only)
+    if (isAdminMode) {
+      wrap.addEventListener('click', () => triggerCreativeUpload(slot, clientId, card));
+    }
   }
 
   return card;
 }
 
 function triggerCreativeUpload(slot, clientId, card) {
+  if (!isAdminMode) return;
   const input = document.createElement('input');
   input.type = 'file';
   input.accept = 'image/*';
