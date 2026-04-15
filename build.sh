@@ -24,7 +24,7 @@ fi
 
 # Copy the source HTML to a dist folder (keeps source file clean)
 mkdir -p dist
-cp link-report-v2.12.0.html dist/index.html
+cp index.html dist/index.html
 
 # Inject real values in place of placeholders
 sed -i "s|__SHEETS_API_KEY__|${SHEETS_API_KEY}|g" dist/index.html
