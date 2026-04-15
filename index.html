@@ -213,8 +213,8 @@ body::before{
 .logo-box img{width:100%;height:100%;object-fit:contain;display:none}
 .logo-upload{display:none}
 .hdr-title{font-size:16px;font-weight:700;letter-spacing:-.2px;color:white;line-height:1.2}
-.hdr-sub{font-size:11px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:#b9bbb6;margin-top:3px}
-.hdr-prepared{font-size:11px;font-weight:500;letter-spacing:.5px;color:rgba(255,255,255,0.35);margin-top:2px}
+.hdr-sub{font-size:10px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:#b9bbb6;margin-top:3px}
+.hdr-prepared{font-size:10px;font-weight:500;letter-spacing:.5px;color:rgba(255,255,255,0.35);margin-top:2px}
 .hdr-r{display:flex;align-items:center;gap:9px}
 .btn{padding:7px 17px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:.4px;border:none;transition:all .2s}
 .btn-red{background:var(--red);color:white}
@@ -766,9 +766,9 @@ body::before{
 
 /* ── AUDIENCE TABLE ── */
 .audience-table-wrap{overflow-x:auto;flex:1;min-height:0}
-.audience-table{width:100%;border-collapse:collapse;font-size:13px}
+.audience-table{width:100%;border-collapse:collapse;font-size:11.5px}
 .audience-table th{
-  font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+  font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
   color:#6e324c;padding:8px 12px;border-bottom:2px solid rgba(232,56,45,0.15);
   text-align:left;white-space:nowrap;
 }
@@ -850,9 +850,9 @@ body::before{
 .content-metric{
   background:rgba(0,0,0,0.03);border-radius:6px;padding:8px 10px;
 }
-.content-metric-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#6e324c;margin-bottom:3px}
-.content-metric-value{font-size:19px;font-weight:800;letter-spacing:-.5px;color:var(--text);line-height:1}
-.content-metric-trend{font-size:10px;font-weight:700;margin-top:2px}
+.content-metric-label{font-size:8.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#6e324c;margin-bottom:3px}
+.content-metric-value{font-size:18px;font-weight:800;letter-spacing:-.5px;color:var(--text);line-height:1}
+.content-metric-trend{font-size:9px;font-weight:700;margin-top:2px}
 
 
 
@@ -1901,7 +1901,7 @@ const FIELD_DEFS = [
 ];
 
 // ── VERSION ──
-const APP_VERSION = '2.12.0';
+const APP_VERSION = '2.11.7';
 
 // ── STATE ──
 let currentClient = null;
@@ -1918,13 +1918,13 @@ const NOTE_KEYS = {
   'ov-notes-exec':         'ov_exec',
 };
 let activeTemplate = 'google-search'; // currently active report template
-// !! REPLACE THESE WITH YOUR ACTUAL KEYS !!
+// !! DO NOT hardcode real keys here — values are injected at build time by Netlify !!
 // Google Sheets API key (restricted to your domain in Google Cloud Console)
-const BUILT_IN_SHEETS_KEY   = 'AIzaSyAOdcfK2ObwJJhB4kAKPJjhivvCTEJvuqs';
+const BUILT_IN_SHEETS_KEY   = '__SHEETS_API_KEY__';
 // Mapbox token (restricted to your domain in Mapbox account)
-const BUILT_IN_MAPBOX_TOKEN = 'pk.eyJ1IjoiYnN0ZXJuIiwiYSI6ImNtbXd1dXlmdjJ1dWwycm9leGEzaTlsc3QifQ.wYjQ6RtCRPxtWZaQD_ylPg';
-// Admin suffix — append to any client password to enter admin mode (move to env var at Netlify migration)
-const ADMIN_SUFFIX = '-link';
+const BUILT_IN_MAPBOX_TOKEN = '__MAPBOX_TOKEN__';
+// Admin suffix — injected at build time via Netlify environment variable
+const ADMIN_SUFFIX = '__ADMIN_SUFFIX__';
 let sheetsApiKey = '';
 let mapboxToken = '';
 let mapImpressions = null;
