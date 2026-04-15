@@ -1,0 +1,8 @@
+# LINK SP Report Builder — Netlify configuration
+# This file tells Netlify how to build and serve the app.
+
+[build]
+  # The command Netlify runs on every deploy
+  command = "bash build.sh"
+  # The folder Netlify serves to visitors after the build runs
+  publish = "dist"
