@@ -150,7 +150,7 @@ body::before{
 }
 .auth-footer-inner{
   position:relative;z-index:2;
-  padding:36px 48px;
+  padding:44px 48px;
   display:grid;
   grid-template-columns:1.5fr 2px 1fr 2px 1fr;
   column-gap:32px;
@@ -201,7 +201,7 @@ body::before{
 }
 .hdr-l{display:flex;align-items:center;gap:16px}
 .logo-box{
-  width:120px;height:36px;border-radius:7px;
+  width:160px;height:48px;border-radius:7px;
   background:rgba(255,255,255,0.09);
   border:1px solid rgba(255,255,255,0.15);
   display:flex;align-items:center;justify-content:center;
@@ -213,8 +213,8 @@ body::before{
 .logo-box img{width:100%;height:100%;object-fit:contain;display:none}
 .logo-upload{display:none}
 .hdr-title{font-size:16px;font-weight:700;letter-spacing:-.2px;color:white;line-height:1.2}
-.hdr-sub{font-size:10px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:#b9bbb6;margin-top:3px}
-.hdr-prepared{font-size:10px;font-weight:500;letter-spacing:.5px;color:rgba(255,255,255,0.35);margin-top:2px}
+.hdr-sub{font-size:11px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:#b9bbb6;margin-top:3px}
+.hdr-prepared{font-size:11px;font-weight:500;letter-spacing:.5px;color:rgba(255,255,255,0.35);margin-top:2px}
 .hdr-r{display:flex;align-items:center;gap:9px}
 .btn{padding:7px 17px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:.4px;border:none;transition:all .2s}
 .btn-red{background:var(--red);color:white}
@@ -346,6 +346,45 @@ body::before{
 .note-textarea::-webkit-scrollbar-thumb{background:rgba(232,56,45,0.35);border-radius:2px}
 .note-textarea::placeholder{color:var(--text-faint)}
 
+/* ── ADMIN MODE ── */
+/* Edit buttons hidden unless admin mode is active */
+.note-edit-btn{display:none!important}
+#app.admin-mode .note-edit-btn{display:block!important}
+
+/* Admin badge */
+#admin-badge{
+  display:none;
+  font-size:9px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--red);background:rgba(232,56,45,0.12);
+  border:1px solid rgba(232,56,45,0.3);border-radius:5px;
+  padding:3px 8px;margin-right:4px;pointer-events:none;
+}
+
+/* Formatting toolbar */
+.note-toolbar{
+  display:none;gap:3px;padding:6px 2px 4px;
+  flex-shrink:0;border-bottom:1px solid rgba(0,0,0,0.07);
+  margin-bottom:2px;
+}
+.note-card.editing .note-toolbar{display:flex}
+.note-toolbar-btn{
+  width:26px;height:26px;border-radius:5px;border:none;
+  background:transparent;color:var(--text-muted);
+  font-size:12px;font-weight:700;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-primary);transition:background .15s,color .15s;
+  flex-shrink:0;
+}
+.note-toolbar-btn:hover{background:rgba(0,0,0,0.07);color:var(--text)}
+.note-toolbar-btn.active{background:rgba(232,56,45,0.1);color:var(--red)}
+
+/* Rendered note view formatting */
+.note-view strong{font-weight:700}
+.note-view em{font-style:italic}
+.note-view ul{margin:4px 0 4px 18px;padding:0}
+.note-view ol{margin:4px 0 4px 18px;padding:0}
+.note-view li{margin:2px 0}
+
 /* ── NOTES EDIT/SAVE PATTERN ── */
 .note-section{position:relative}
 .note-edit-btn{
@@ -380,7 +419,7 @@ body::before{
   padding:14px 2px;
   font-size:14px;font-family:var(--font-primary);
   color:var(--text);line-height:1.8;
-  white-space:pre-wrap;word-break:break-word;
+  word-break:break-word;
   flex:1;min-height:0;overflow-y:auto;
   scrollbar-width:thin;scrollbar-color:rgba(232,56,45,0.3) transparent;
 }
@@ -727,9 +766,9 @@ body::before{
 
 /* ── AUDIENCE TABLE ── */
 .audience-table-wrap{overflow-x:auto;flex:1;min-height:0}
-.audience-table{width:100%;border-collapse:collapse;font-size:11.5px}
+.audience-table{width:100%;border-collapse:collapse;font-size:13px}
 .audience-table th{
-  font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+  font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
   color:#6e324c;padding:8px 12px;border-bottom:2px solid rgba(232,56,45,0.15);
   text-align:left;white-space:nowrap;
 }
@@ -811,9 +850,9 @@ body::before{
 .content-metric{
   background:rgba(0,0,0,0.03);border-radius:6px;padding:8px 10px;
 }
-.content-metric-label{font-size:8.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#6e324c;margin-bottom:3px}
-.content-metric-value{font-size:18px;font-weight:800;letter-spacing:-.5px;color:var(--text);line-height:1}
-.content-metric-trend{font-size:9px;font-weight:700;margin-top:2px}
+.content-metric-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#6e324c;margin-bottom:3px}
+.content-metric-value{font-size:19px;font-weight:800;letter-spacing:-.5px;color:var(--text);line-height:1}
+.content-metric-trend{font-size:10px;font-weight:700;margin-top:2px}
 
 
 
@@ -857,6 +896,7 @@ body::before{
 
   /* KPI grid — 2 columns on tablet */
   .kpi-grid{grid-template-columns:1fr 1fr;gap:10px}
+  #ov-kpi-grid{grid-template-columns:1fr 1fr!important}
   #tmpl-meta-ads .kpi-grid-3{grid-template-columns:repeat(2,1fr)}
   .kpi{height:158px;padding:16px 16px 12px;overflow:hidden}
   .kpi-val{font-size:32px}
@@ -1239,6 +1279,7 @@ body::before{
       </div>
     </div>
     <div class="hdr-r">
+      <span id="admin-badge">Admin</span>
       <button class="btn btn-red" id="refresh-btn">↻ Refresh</button>
       <button class="btn btn-ghost" onclick="window.print()">⬇ Export PDF</button>
       <button class="btn-icon" id="settings-btn" title="Settings">⚙</button>
@@ -1269,7 +1310,7 @@ body::before{
       <div class="overview-hero-bg" id="ov-hero-bg"></div>
       <div class="overview-hero-inner">
         <div class="overview-hero-logo" id="ov-hero-logo"></div>
-        <div class="overview-hero-label">Advertising Performance Report</div>
+        <div class="overview-hero-label" id="ov-hero-label"></div>
         <div class="overview-hero-title" id="ov-hero-title">—</div>
         <div class="overview-hero-client" id="ov-hero-client">—</div>
       </div>
@@ -1277,7 +1318,7 @@ body::before{
 
     <!-- TOP LINE PERFORMANCE -->
     <div>
-      <div class="sh"><div class="sh-bar"></div><h2>Top Line Campaign Performance</h2><div class="sh-line"></div></div>
+      <div class="sh"><div class="sh-bar"></div><h2>Key Results</h2><div class="sh-line"></div></div>
       <div class="kpi-grid" id="ov-kpi-grid">
         <div class="glass kpi" id="ov-kpi-box-1">
           <div class="kpi-tag" id="ov-kpi-1-tag">—</div>
@@ -1308,6 +1349,12 @@ body::before{
       <div class="glass note-card note-section" style="height:255px">
         <button class="note-edit-btn" onclick="enterNoteEdit('ov-notes-exec')">Edit</button>
         <div class="note-view" id="ov-notes-exec-view"></div>
+        <div class="note-toolbar">
+          <button class="note-toolbar-btn" title="Bold" onclick="noteFormat(this,'bold')"><b>B</b></button>
+          <button class="note-toolbar-btn" title="Italic" onclick="noteFormat(this,'italic')"><i>I</i></button>
+          <button class="note-toolbar-btn" title="Bullet list" onclick="noteFormat(this,'bullet')">&#8226;</button>
+          <button class="note-toolbar-btn" title="Numbered list" onclick="noteFormat(this,'number')">1.</button>
+        </div>
         <textarea class="note-textarea" id="ov-notes-exec" placeholder="Add notes here…"></textarea>
         <div class="note-actions">
           <button class="note-cancel-btn" onclick="cancelNoteEdit('ov-notes-exec')">Cancel</button>
@@ -1354,6 +1401,12 @@ body::before{
 <div class="glass note-card note-section" style="height:188px">
         <button class="note-edit-btn" onclick="enterNoteEdit('notes-performance')">Edit</button>
         <div class="note-view" id="notes-performance-view"></div>
+        <div class="note-toolbar">
+          <button class="note-toolbar-btn" title="Bold" onclick="noteFormat(this,'bold')"><b>B</b></button>
+          <button class="note-toolbar-btn" title="Italic" onclick="noteFormat(this,'italic')"><i>I</i></button>
+          <button class="note-toolbar-btn" title="Bullet list" onclick="noteFormat(this,'bullet')">&#8226;</button>
+          <button class="note-toolbar-btn" title="Numbered list" onclick="noteFormat(this,'number')">1.</button>
+        </div>
         <textarea class="note-textarea" id="notes-performance" placeholder="Add notes here…"></textarea>
         <div class="note-actions">
           <button class="note-cancel-btn" onclick="cancelNoteEdit('notes-performance')">Cancel</button>
@@ -1379,6 +1432,12 @@ body::before{
 <div class="glass note-card note-section" style="height:188px">
         <button class="note-edit-btn" onclick="enterNoteEdit('notes-audience')">Edit</button>
         <div class="note-view" id="notes-audience-view"></div>
+        <div class="note-toolbar">
+          <button class="note-toolbar-btn" title="Bold" onclick="noteFormat(this,'bold')"><b>B</b></button>
+          <button class="note-toolbar-btn" title="Italic" onclick="noteFormat(this,'italic')"><i>I</i></button>
+          <button class="note-toolbar-btn" title="Bullet list" onclick="noteFormat(this,'bullet')">&#8226;</button>
+          <button class="note-toolbar-btn" title="Numbered list" onclick="noteFormat(this,'number')">1.</button>
+        </div>
         <textarea class="note-textarea" id="notes-audience" placeholder="Add notes here…"></textarea>
         <div class="note-actions">
           <button class="note-cancel-btn" onclick="cancelNoteEdit('notes-audience')">Cancel</button>
@@ -1401,7 +1460,13 @@ body::before{
           <div class="ctitle" id="gs-notes-keywords-title">Keyword Insights</div>
           <button class="note-edit-btn" onclick="enterNoteEdit('notes-keywords')">Edit</button>
           <div class="note-view" id="notes-keywords-view"></div>
-          <textarea class="note-textarea" id="notes-keywords" placeholder="Add notes here…"></textarea>
+          <div class="note-toolbar">
+          <button class="note-toolbar-btn" title="Bold" onclick="noteFormat(this,'bold')"><b>B</b></button>
+          <button class="note-toolbar-btn" title="Italic" onclick="noteFormat(this,'italic')"><i>I</i></button>
+          <button class="note-toolbar-btn" title="Bullet list" onclick="noteFormat(this,'bullet')">&#8226;</button>
+          <button class="note-toolbar-btn" title="Numbered list" onclick="noteFormat(this,'number')">1.</button>
+        </div>
+        <textarea class="note-textarea" id="notes-keywords" placeholder="Add notes here…"></textarea>
           <div class="note-actions">
             <button class="note-cancel-btn" onclick="cancelNoteEdit('notes-keywords')">Cancel</button>
             <button class="note-save-btn" onclick="saveNoteEdit('notes-keywords')">Save</button>
@@ -1492,6 +1557,12 @@ body::before{
 <div class="glass note-card note-section" style="height:255px">
         <button class="note-edit-btn" onclick="enterNoteEdit('notes-final')">Edit</button>
         <div class="note-view" id="notes-final-view"></div>
+        <div class="note-toolbar">
+          <button class="note-toolbar-btn" title="Bold" onclick="noteFormat(this,'bold')"><b>B</b></button>
+          <button class="note-toolbar-btn" title="Italic" onclick="noteFormat(this,'italic')"><i>I</i></button>
+          <button class="note-toolbar-btn" title="Bullet list" onclick="noteFormat(this,'bullet')">&#8226;</button>
+          <button class="note-toolbar-btn" title="Numbered list" onclick="noteFormat(this,'number')">1.</button>
+        </div>
         <textarea class="note-textarea" id="notes-final" placeholder="Add notes here…"></textarea>
         <div class="note-actions">
           <button class="note-cancel-btn" onclick="cancelNoteEdit('notes-final')">Cancel</button>
@@ -1548,6 +1619,12 @@ body::before{
 <div class="glass note-card note-section" style="height:188px">
         <button class="note-edit-btn" onclick="enterNoteEdit('meta-notes-performance')">Edit</button>
         <div class="note-view" id="meta-notes-performance-view"></div>
+        <div class="note-toolbar">
+          <button class="note-toolbar-btn" title="Bold" onclick="noteFormat(this,'bold')"><b>B</b></button>
+          <button class="note-toolbar-btn" title="Italic" onclick="noteFormat(this,'italic')"><i>I</i></button>
+          <button class="note-toolbar-btn" title="Bullet list" onclick="noteFormat(this,'bullet')">&#8226;</button>
+          <button class="note-toolbar-btn" title="Numbered list" onclick="noteFormat(this,'number')">1.</button>
+        </div>
         <textarea class="note-textarea" id="meta-notes-performance" placeholder="Add notes here…"></textarea>
         <div class="note-actions">
           <button class="note-cancel-btn" onclick="cancelNoteEdit('meta-notes-performance')">Cancel</button>
@@ -1573,6 +1650,12 @@ body::before{
       <div class="glass note-card note-section" style="height:188px">
         <button class="note-edit-btn" onclick="enterNoteEdit('meta-notes-audience')">Edit</button>
         <div class="note-view" id="meta-notes-audience-view"></div>
+        <div class="note-toolbar">
+          <button class="note-toolbar-btn" title="Bold" onclick="noteFormat(this,'bold')"><b>B</b></button>
+          <button class="note-toolbar-btn" title="Italic" onclick="noteFormat(this,'italic')"><i>I</i></button>
+          <button class="note-toolbar-btn" title="Bullet list" onclick="noteFormat(this,'bullet')">&#8226;</button>
+          <button class="note-toolbar-btn" title="Numbered list" onclick="noteFormat(this,'number')">1.</button>
+        </div>
         <textarea class="note-textarea" id="meta-notes-audience" placeholder="Add notes here…"></textarea>
         <div class="note-actions">
           <button class="note-cancel-btn" onclick="cancelNoteEdit('meta-notes-audience')">Cancel</button>
@@ -1614,6 +1697,12 @@ body::before{
       <div class="glass note-card note-section" style="height:255px">
         <button class="note-edit-btn" onclick="enterNoteEdit('meta-notes-final')">Edit</button>
         <div class="note-view" id="meta-notes-final-view"></div>
+        <div class="note-toolbar">
+          <button class="note-toolbar-btn" title="Bold" onclick="noteFormat(this,'bold')"><b>B</b></button>
+          <button class="note-toolbar-btn" title="Italic" onclick="noteFormat(this,'italic')"><i>I</i></button>
+          <button class="note-toolbar-btn" title="Bullet list" onclick="noteFormat(this,'bullet')">&#8226;</button>
+          <button class="note-toolbar-btn" title="Numbered list" onclick="noteFormat(this,'number')">1.</button>
+        </div>
         <textarea class="note-textarea" id="meta-notes-final" placeholder="Add notes here…"></textarea>
         <div class="note-actions">
           <button class="note-cancel-btn" onclick="cancelNoteEdit('meta-notes-final')">Cancel</button>
@@ -1812,7 +1901,7 @@ const FIELD_DEFS = [
 ];
 
 // ── VERSION ──
-const APP_VERSION = '2.9.3';
+const APP_VERSION = '2.12.0';
 
 // ── STATE ──
 let currentClient = null;
@@ -1834,11 +1923,22 @@ let activeTemplate = 'google-search'; // currently active report template
 const BUILT_IN_SHEETS_KEY   = 'AIzaSyAOdcfK2ObwJJhB4kAKPJjhivvCTEJvuqs';
 // Mapbox token (restricted to your domain in Mapbox account)
 const BUILT_IN_MAPBOX_TOKEN = 'pk.eyJ1IjoiYnN0ZXJuIiwiYSI6ImNtbXd1dXlmdjJ1dWwycm9leGEzaTlsc3QifQ.wYjQ6RtCRPxtWZaQD_ylPg';
+// Admin suffix — append to any client password to enter admin mode (move to env var at Netlify migration)
+const ADMIN_SUFFIX = '-link';
 let sheetsApiKey = '';
 let mapboxToken = '';
 let mapImpressions = null;
 let mapClicks = null;
 let donutCharts = {};
+let isAdminMode = false;
+
+function setAdminMode(on) {
+  isAdminMode = on;
+  const app = document.getElementById('app');
+  const badge = document.getElementById('admin-badge');
+  if (app)   app.classList.toggle('admin-mode', on);
+  if (badge) badge.style.display = on ? 'inline-block' : 'none';
+}
 
 // ── STORAGE HELPERS (localStorage — for API keys, logos, notes, session only) ──
 const LS = {
@@ -1865,8 +1965,6 @@ function saveNotes(clientId, n) { LS.set('link_v2_notes_' + clientId, n); }
 function getClientLogo(clientId) { return localStorage.getItem('link_v2_logo_' + clientId) || ''; }
 function saveClientLogo(clientId, dataUrl) { localStorage.setItem('link_v2_logo_' + clientId, dataUrl); }
 function clearClientLogo(clientId) { localStorage.removeItem('link_v2_logo_' + clientId); }
-function getFooterLogo() { return localStorage.getItem('link_v2_footer_logo') || ''; }
-function saveFooterLogo(dataUrl) { localStorage.setItem('link_v2_footer_logo', dataUrl); }
 
 // ── CLIENT REGISTRY ──
 // Clients are loaded dynamically from a Google Sheet at startup.
@@ -1895,6 +1993,7 @@ const FALLBACK_REGISTRY = [
 const SHARED_CONFIG_FIELD_MAP = {
   'Client name':            'name',
   'Client password':        'password',
+  'App title':              'appTitle',
   'Report title':           'reportTitle',
   'Report date':            'reportDate',
   'Reporting period text':  'period_text',
@@ -1904,7 +2003,7 @@ const SHARED_CONFIG_FIELD_MAP = {
   'Author2 title':          'author2Title',
 };
 const SHARED_VALUE_FIELDS = new Set([
-  'name','password','reportTitle','reportDate','period_text',
+  'name','password','appTitle','reportTitle','reportDate','period_text',
   'author1Name','author1Title','author2Name','author2Title',
 ]);
 
@@ -2283,12 +2382,26 @@ function toast(msg, type='') {
   el._t = setTimeout(() => el.className = '', 2800);
 }
 
+function friendlyError(err) {
+  const msg = (err && (err.message || String(err))) || '';
+  if (/not found|404/i.test(msg))             return 'Sheet or tab not found — check your config';
+  if (/permission|403|forbidden|access/i.test(msg)) return 'Access denied — check your API key';
+  if (/quota|429|rate/i.test(msg))            return 'Too many requests — please wait a moment';
+  if (/network|failed to fetch|load failed/i.test(msg)) return 'Connection failed — check your internet';
+  if (/invalid.*key|key.*invalid|api.*key/i.test(msg))  return 'Invalid API key — check your settings';
+  return 'Something went wrong — try refreshing';
+}
+
 /* ══════════════════════════════════════
    AUTH
 ══════════════════════════════════════ */
 async function tryLogin(pw) {
   pw = pw.trim();
   if (!pw) return;
+
+  // Check for admin suffix
+  const adminRequested = pw.endsWith(ADMIN_SUFFIX);
+  if (adminRequested) pw = pw.slice(0, -ADMIN_SUFFIX.length).trim();
 
   const keys = getApiKeys();
   sheetsApiKey = keys.sheetsApiKey || '';
@@ -2337,7 +2450,10 @@ async function tryLogin(pw) {
     return;
   }
 
-  LS.set('link_v2_session', { id: matched.id, sheetId: matched.sheetId });
+  LS.set('link_v2_session', { id: matched.id, sheetId: matched.sheetId, isAdmin: adminRequested });
+
+  // Activate admin mode if suffix was used
+  setAdminMode(adminRequested);
 
   // Show loading overlay immediately
   showLoadOverlay(matched.name || matched.displayName || '');
@@ -2451,7 +2567,12 @@ async function bootClientWithLoad(client) {
 
   await Promise.all(dataPromises);
 
-  // Stage 3 — Loading maps (if Google Search has zip data)
+  // Check conn status — if any fetch failed, setConnStatus(false) was called inside the async fn
+  // Surface a single consolidated toast so the user knows something didn't load
+  const connLabel = document.getElementById('conn-label');
+  if (connLabel && connLabel.textContent && !/Data Connection|Loading/i.test(connLabel.textContent)) {
+    toast('Some report data failed to load — try refreshing', 'error');
+  }
   const hasMapData = !!(client._zipImpr || client._zipClicks);
   if (hasMapData) {
     setLoadStage(3);
@@ -2715,16 +2836,7 @@ function applyOverviewData(client, cfg, rangeIndex) {
   applyNotesSection('ov-exec-section', 'ov-exec-title', cfg.exec_label);
 }
 
-function bootClient(client) {
-  currentClient = client;
-  document.getElementById('auth-screen').style.display = 'none';
-  document.getElementById('app').classList.add('visible');
-
-  // Load API keys
-  const keys = getApiKeys();
-  sheetsApiKey = keys.sheetsApiKey || '';
-  mapboxToken  = keys.mapboxToken  || '';
-
+function resetClientUI() {
   // ── RESET ALL STALE STATE FROM PREVIOUS CLIENT ──
 
   // Reset Google Search KPIs
@@ -2747,33 +2859,6 @@ function bootClient(client) {
     const el = document.getElementById(id);
     if (el) { el.style.display = 'none'; el.textContent = ''; }
   });
-
-  // Reset Meta loaded state so fresh data is fetched for new client
-  currentClient._metaLoaded = false;
-  currentClient._metaConfig = null;
-
-  // Reset Overview loaded state
-  currentClient._overviewLoaded = false;
-
-  // Overview hero — set static fields from shared config
-  const ovHeroTitle  = document.getElementById('ov-hero-title');
-  const ovHeroClient = document.getElementById('ov-hero-client');
-  const ovHeroLogo   = document.getElementById('ov-hero-logo');
-  if (ovHeroTitle)  ovHeroTitle.textContent  = client.reportTitle || '—';
-  if (ovHeroClient) ovHeroClient.textContent = client.name || '—';
-  if (ovHeroLogo) {
-    const storedLogo = LS.get('link_v2_logo_' + client.id);
-    if (storedLogo) {
-      ovHeroLogo.innerHTML = `<img src="${storedLogo}" alt="Logo" style="height:72px;max-width:300px;object-fit:contain;object-position:left center;">`;
-    } else {
-      const footerImg = document.getElementById('footer-logo-img');
-      if (footerImg && footerImg.src && !footerImg.src.endsWith(window.location.pathname)) {
-        ovHeroLogo.innerHTML = `<img src="${footerImg.src}" alt="LINK Strategic Partners">`;
-      } else {
-        ovHeroLogo.innerHTML = '';
-      }
-    }
-  }
 
   // Reset overview KPIs
   [1,2,3,4].forEach(n => {
@@ -2810,7 +2895,75 @@ function bootClient(client) {
   const contentGrid = document.getElementById('meta-content-grid');
   if (contentGrid) contentGrid.innerHTML = '';
 
-  // Header — uses shared config fields
+  // Reset donut canvases
+  const donutDefs = [
+    { canvasId: 'donut-gender',  legId: 'dleg-gender',  bodyId: null },
+    { canvasId: 'donut-age',     legId: 'dleg-age',     bodyId: null },
+    { canvasId: 'donut-income',  legId: 'dleg-income',  bodyId: 'donut-income-body' },
+  ];
+  donutDefs.forEach(({ canvasId, legId, bodyId }) => {
+    if (!document.getElementById(canvasId)) {
+      let body = bodyId
+        ? document.getElementById(bodyId)
+        : document.getElementById(legId)?.closest('.donut-body');
+      if (body) {
+        body.innerHTML = `<div class="dnut-wrap"><canvas id="${canvasId}"></canvas></div><div class="dleg" id="${legId}"></div>`;
+      }
+    }
+    if (donutCharts[canvasId]) {
+      try { donutCharts[canvasId].destroy(); } catch(e){}
+      delete donutCharts[canvasId];
+    }
+  });
+
+  // Ensure all note cards start in view mode
+  document.querySelectorAll('.note-card').forEach(c => c.classList.remove('editing'));
+}
+
+function bootClient(client) {
+  currentClient = client;
+  document.getElementById('auth-screen').style.display = 'none';
+  document.getElementById('app').classList.add('visible');
+
+  // Load API keys
+  const keys = getApiKeys();
+  sheetsApiKey = keys.sheetsApiKey || '';
+  mapboxToken  = keys.mapboxToken  || '';
+
+  // Reset loaded flags for this client
+  currentClient._metaLoaded = false;
+  currentClient._metaConfig = null;
+  currentClient._overviewLoaded = false;
+
+  // Reset all stale UI state from previous client
+  resetClientUI();
+
+  // Overview hero — set static fields from shared config
+  const ovHeroTitle  = document.getElementById('ov-hero-title');
+  const ovHeroClient = document.getElementById('ov-hero-client');
+  const ovHeroLogo   = document.getElementById('ov-hero-logo');
+  if (ovHeroTitle)  ovHeroTitle.textContent  = client.reportTitle || '—';
+  if (ovHeroClient) ovHeroClient.textContent = client.name || '—';
+  const ovHeroLabel = document.getElementById('ov-hero-label');
+  if (ovHeroLabel) {
+    ovHeroLabel.textContent = client.appTitle || '';
+    ovHeroLabel.style.display = client.appTitle ? '' : 'none';
+  }
+  if (ovHeroLogo) {
+    const storedLogo = LS.get('link_v2_logo_' + client.id);
+    if (storedLogo) {
+      ovHeroLogo.innerHTML = `<img src="${storedLogo}" alt="Logo" style="height:72px;max-width:300px;object-fit:contain;object-position:left center;">`;
+    } else {
+      const footerImg = document.getElementById('footer-logo-img');
+      if (footerImg && footerImg.src && !footerImg.src.endsWith(window.location.pathname)) {
+        ovHeroLogo.innerHTML = `<img src="${footerImg.src}" alt="LINK Strategic Partners">`;
+      } else {
+        ovHeroLogo.innerHTML = '';
+      }
+    }
+  }
+
+  // Header
   const reportTitle = client.reportTitle || 'Advertising Report';
   document.getElementById('hdr-title').textContent = reportTitle;
   document.getElementById('hdr-sub').textContent = client.name || '—';
@@ -2827,43 +2980,17 @@ function bootClient(client) {
   Object.entries(NOTE_KEYS).forEach(([id, key]) => {
     initNoteView(id, notes[key] || '');
   });
-  // Ensure all note cards start in view mode (not editing)
-  document.querySelectorAll('.note-card').forEach(c => c.classList.remove('editing'));
 
-  // Init template navigation
+  // Template navigation
   initTemplateNav(client.reports || []);
 
-  // Restore Google Search donut canvases using stable parent IDs
-  const donutDefs = [
-    { canvasId: 'donut-gender',  legId: 'dleg-gender',  bodyId: null },
-    { canvasId: 'donut-age',     legId: 'dleg-age',     bodyId: null },
-    { canvasId: 'donut-income',  legId: 'dleg-income',  bodyId: 'donut-income-body' },
-  ];
-  donutDefs.forEach(({ canvasId, legId, bodyId }) => {
-    if (!document.getElementById(canvasId)) {
-      // Find parent: use bodyId if available, else traverse from legend
-      let body = bodyId
-        ? document.getElementById(bodyId)
-        : document.getElementById(legId)?.closest('.donut-body');
-      if (body) {
-        body.innerHTML = `<div class="dnut-wrap"><canvas id="${canvasId}"></canvas></div><div class="dleg" id="${legId}"></div>`;
-      }
-    }
-    if (donutCharts[canvasId]) {
-      try { donutCharts[canvasId].destroy(); } catch(e){}
-      delete donutCharts[canvasId];
-    }
-  });
-
-  // Render placeholder donuts for Google Search only
+  // Render placeholder donuts for Google Search
   renderDonuts(
     [{label:'Male',pct:52},{label:'Female',pct:46}],
     [{label:'25–34',pct:28},{label:'35–44',pct:24},{label:'45–54',pct:18},{label:'18–24',pct:15},{label:'55+',pct:15}],
     [{label:'60–80th',pct:28},{label:'40–60th',pct:25},{label:'20–40th',pct:18},{label:'0–20th',pct:12},{label:'Top 10%',pct:17}]
   );
 
-  // Data fetching is handled by bootClientWithLoad (parallel)
-  // bootClient only sets up UI — data arrives separately
   setConnStatus(false, 'Loading…');
 
   // Init maps
@@ -2883,6 +3010,7 @@ function logout() {
   LS.del('link_v2_session');
   currentClient = null;
   activeTemplate = 'google-search';
+  setAdminMode(false);
   if (_navResizeObserver) { _navResizeObserver.disconnect(); _navResizeObserver = null; }
 
   // Reset map state so next client gets fresh maps
@@ -2902,7 +3030,7 @@ function logout() {
 
   // Reset template nav
   const toggle = document.getElementById('tmpl-toggle');
-  if (toggle) toggle.innerHTML = '';
+  if (toggle) { toggle.innerHTML = ''; delete toggle.dataset.navMode; }
   document.getElementById('tmpl-nav').style.display = 'none';
   document.querySelectorAll('.tmpl-content').forEach(el => el.classList.remove('active'));
   document.getElementById('tmpl-google-search').classList.add('active');
@@ -2940,6 +3068,7 @@ window.addEventListener('DOMContentLoaded', async () => {
       if (shared.name) {
         showLoadOverlay(shared.name || '');
         setLoadStage(1);
+        setAdminMode(session.isAdmin === true);
         await bootClientWithLoad({ ...shared, id: session.id, sheetId: session.sheetId, reports: entry ? entry.reports : [] });
         return;
       }
@@ -2947,6 +3076,9 @@ window.addEventListener('DOMContentLoaded', async () => {
       console.warn('Session restore failed:', e.message);
       LS.del('link_v2_session');
       hideLoadOverlay();
+      // Show a message on the login screen so user knows why they were signed out
+      const errEl = document.getElementById('auth-error');
+      if (errEl) { errEl.textContent = 'Your session expired — please sign in again.'; errEl.classList.add('show'); }
     }
   }
 
@@ -3006,80 +3138,6 @@ function applyLogo(clientId) {
   }
 }
 
-// Logo listeners — moved inside DOMContentLoaded in settings block below
-
-/* ══════════════════════════════════════
-   GOOGLE SHEETS DATA FETCH
-══════════════════════════════════════ */
-async function fetchSheetData() {
-  if (!currentClient || !sheetsApiKey || !currentClient.sheetId) return;
-
-  // Build mapping from client config object (loaded from _config sheet tab)
-  // Only include mapping fields — value fields (kpi_tlbl, period_text etc.)
-  // are already resolved at login and stored directly on currentClient
-  const MAPPING_FIELDS = [...CONFIG_MAPPING_FIELDS];
-  const mapping = {};
-  MAPPING_FIELDS.forEach(f => {
-    if (currentClient[f]) mapping[f] = currentClient[f].trim();
-  });
-
-  if (!Object.keys(mapping).length) {
-    setConnStatus(false, 'No cell mapping in sheet config');
-    return;
-  }
-
-  setRefreshing(true);
-
-  const results = {};
-  const sheetId = currentClient.sheetId;
-
-  // Collect all unique ranges to fetch
-  const rangesToFetch = [...new Set(Object.values(mapping).filter(Boolean))];
-  if (!rangesToFetch.length) {
-    setRefreshing(false);
-    setConnStatus(false, 'No ranges mapped');
-    return;
-  }
-
-  try {
-    // Batch fetch using batchGet
-    const rangesParam = rangesToFetch.map(r => 'ranges=' + encodeURIComponent(r)).join('&');
-    const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values:batchGet?${rangesParam}&key=${sheetsApiKey}`;
-    const res = await fetch(url);
-    if (!res.ok) {
-      const err = await res.json();
-      throw new Error(err.error?.message || 'Sheets API error');
-    }
-    const data = await res.json();
-
-    // Build a lookup: range → values
-    const rangeData = {};
-    (data.valueRanges || []).forEach(vr => {
-      // normalize the range key (Sheets may return different casing)
-      const key = (vr.range || '').split('!').pop() || vr.range;
-      rangeData[vr.range] = vr.values || [];
-    });
-
-    // Map range responses back by iterating valueRanges in order
-    const rangeIndex = {};
-    (data.valueRanges || []).forEach((vr, i) => {
-      rangeIndex[rangesToFetch[i]] = vr.values || [];
-    });
-
-    // Apply data to UI
-    applySheetData(mapping, rangeIndex);
-    setConnStatus(true, 'Data Connection');
-    setLastRefreshed();
-    toast('Data refreshed', 'success');
-  } catch(err) {
-    console.error(err);
-    setConnStatus(false, 'Error: ' + err.message);
-    toast('Refresh failed: ' + err.message, 'error');
-  } finally {
-    setRefreshing(false);
-  }
-}
-
 /* ══════════════════════════════════════
    TEMPLATE NAVIGATION
 ══════════════════════════════════════ */
@@ -3100,13 +3158,15 @@ function initTemplateNav(reports) {
   }
 
   nav.style.display = 'flex';
-  _renderNav(toggle, _navReports);
   switchTemplate(_navReports[0].type, _navReports);
 
-  // Wire resize observer — re-evaluate fit on every width change
+  // Wire resize observer for responsive switching on window resize
   if (_navResizeObserver) _navResizeObserver.disconnect();
   _navResizeObserver = new ResizeObserver(() => _renderNav(toggle, _navReports));
   _navResizeObserver.observe(toggle);
+  // Also render immediately — ResizeObserver only fires on changes, not on first attach
+  // if the element already has a width (which it does since #app is already visible)
+  setTimeout(() => _renderNav(toggle, _navReports), 0);
 }
 
 function _renderNav(toggle, reports) {
@@ -3314,10 +3374,9 @@ function cancelNoteEdit(id) {
   const card = document.getElementById(id)?.closest('.note-card');
   if (!card) return;
   card.classList.remove('editing');
-  // Revert textarea to last saved value (shown in view)
   const view = document.getElementById(id + '-view');
   const ta = document.getElementById(id);
-  if (ta && view) ta.value = view.textContent;
+  if (ta && view) ta.value = view.dataset.raw || '';
 }
 
 function saveNoteEdit(id) {
@@ -3328,21 +3387,110 @@ function saveNoteEdit(id) {
   const view = document.getElementById(id + '-view');
   if (!ta || !currentClient) return;
   const val = ta.value;
-  // Update view
-  if (view) view.textContent = val;
-  // Save to localStorage
+  if (view) renderNoteMarkdown(view, val);
   const n = getNotes(currentClient.id);
   n[NOTE_KEYS[id]] = val;
   saveNotes(currentClient.id, n);
-  showToast('Notes saved');
+  toast('Notes saved', 'success');
 }
 
 function initNoteView(id, value) {
-  // Set initial view content and sync textarea
   const view = document.getElementById(id + '-view');
   const ta = document.getElementById(id);
-  if (view) view.textContent = value || '';
+  if (view) renderNoteMarkdown(view, value || '');
   if (ta) ta.value = value || '';
+}
+
+function renderNoteMarkdown(el, text) {
+  // Store raw text for cancel revert
+  el.dataset.raw = text;
+  if (!text || !text.trim()) { el.innerHTML = ''; return; }
+
+  const lines = text.split('\n');
+  let html = '';
+  let inUl = false, inOl = false;
+
+  lines.forEach(line => {
+    // Bullet: lines starting with "- " or "• "
+    const ulMatch = line.match(/^[\-•]\s+(.*)/);
+    // Numbered: lines starting with "1. " or any digit + ". "
+    const olMatch = line.match(/^\d+\.\s+(.*)/);
+
+    if (ulMatch) {
+      if (inOl) { html += '</ol>'; inOl = false; }
+      if (!inUl) { html += '<ul>'; inUl = true; }
+      html += '<li>' + formatInline(ulMatch[1]) + '</li>';
+    } else if (olMatch) {
+      if (inUl) { html += '</ul>'; inUl = false; }
+      if (!inOl) { html += '<ol>'; inOl = true; }
+      html += '<li>' + formatInline(olMatch[1]) + '</li>';
+    } else {
+      if (inUl) { html += '</ul>'; inUl = false; }
+      if (inOl) { html += '</ol>'; inOl = false; }
+      html += (line.trim() === '' ? '<br>' : '<p style="margin:0;line-height:1.8">' + formatInline(line) + '</p>');
+    }
+  });
+  if (inUl) html += '</ul>';
+  if (inOl) html += '</ol>';
+  el.innerHTML = html;
+}
+
+function formatInline(text) {
+  // Bold: **text**
+  text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  // Italic: *text* or _text_
+  text = text.replace(/\*(.+?)\*/g, '<em>$1</em>');
+  text = text.replace(/_(.+?)_/g, '<em>$1</em>');
+  return text;
+}
+
+function noteFormat(btn, type) {
+  // Find the textarea sibling in the same note-card
+  const card = btn.closest('.note-card');
+  if (!card) return;
+  const ta = card.querySelector('.note-textarea');
+  if (!ta) return;
+
+  const start = ta.selectionStart;
+  const end   = ta.selectionEnd;
+  const sel   = ta.value.slice(start, end);
+  const before = ta.value.slice(0, start);
+  const after  = ta.value.slice(end);
+
+  let insert = '';
+  let cursorOffset = 0;
+
+  if (type === 'bold') {
+    insert = '**' + (sel || 'bold text') + '**';
+    cursorOffset = sel ? insert.length : 2;
+  } else if (type === 'italic') {
+    insert = '*' + (sel || 'italic text') + '*';
+    cursorOffset = sel ? insert.length : 1;
+  } else if (type === 'bullet') {
+    // Apply to each selected line, or insert a new bullet line
+    if (sel) {
+      insert = sel.split('\n').map(l => '- ' + l).join('\n');
+      cursorOffset = insert.length;
+    } else {
+      const atLineStart = before.endsWith('\n') || before === '';
+      insert = (atLineStart ? '' : '\n') + '- ';
+      cursorOffset = insert.length;
+    }
+  } else if (type === 'number') {
+    if (sel) {
+      insert = sel.split('\n').map((l, i) => (i + 1) + '. ' + l).join('\n');
+      cursorOffset = insert.length;
+    } else {
+      const atLineStart = before.endsWith('\n') || before === '';
+      insert = (atLineStart ? '' : '\n') + '1. ';
+      cursorOffset = insert.length;
+    }
+  }
+
+  ta.value = before + insert + after;
+  ta.focus();
+  ta.selectionStart = start + cursorOffset;
+  ta.selectionEnd   = start + cursorOffset;
 }
 
 // Show/hide a conditional notes section based on label from config
@@ -3658,7 +3806,7 @@ async function loadMetaTemplate() {
     applyMetaData(config, rangeIndex);
   } catch(e) {
     console.error('[Meta] Load failed:', e.message);
-    toast('Meta data load failed: ' + e.message, 'error');
+    toast(friendlyError(e), 'error');
   }
 }
 
@@ -4620,14 +4768,73 @@ document.getElementById('api-save').addEventListener('click', () => {
 ══════════════════════════════════════ */
 document.getElementById('refresh-btn').addEventListener('click', async () => {
   if (!currentClient || !sheetsApiKey) return;
-  // Re-fetch config from sheet first (picks up any mapping changes)
+  setRefreshing(true);
+
   try {
-    const fresh = await fetchClientConfig(currentClient.sheetId);
-    currentClient = { ...currentClient, ...fresh };
-  } catch(e) {
-    console.warn('Config refresh failed:', e.message);
+    // 1. Re-fetch registry so added/removed templates are picked up
+    await fetchRegistry();
+
+    // 2. Find the updated entry for the current client
+    const updatedEntry = CLIENT_REGISTRY.find(c => c.id === currentClient.id);
+    const reports = (updatedEntry && updatedEntry.reports) || currentClient.reports || [];
+
+    // 3. Re-fetch shared _config
+    try {
+      const shared = await fetchSharedConfig(currentClient.sheetId);
+      currentClient = { ...currentClient, ...shared, reports };
+    } catch(e) {
+      console.warn('[Refresh] Shared config fetch failed:', e.message);
+      currentClient = { ...currentClient, reports };
+    }
+
+    // 4. Re-fetch all per-template configs in parallel
+    const configPromises = reports.map(async r => {
+      try {
+        if (r.type === 'google-search') {
+          const cfg = await fetchClientConfig(currentClient.sheetId, r.configTab, CONFIG_FIELD_MAP, CONFIG_VALUE_FIELDS, CONFIG_MAPPING_FIELDS);
+          return { ...cfg, _reportType: 'google-search' };
+        }
+        if (r.type === 'meta-ads') {
+          const cfg = await fetchClientConfig(currentClient.sheetId, r.configTab, META_CONFIG_FIELD_MAP, META_VALUE_FIELDS, META_MAPPING_FIELDS);
+          return { ...cfg, _reportType: 'meta-ads' };
+        }
+        if (r.type === 'overview') {
+          const cfg = await fetchClientConfig(currentClient.sheetId, r.configTab, OVERVIEW_CONFIG_FIELD_MAP, OVERVIEW_VALUE_FIELDS, OVERVIEW_MAPPING_FIELDS);
+          return { ...cfg, _reportType: 'overview' };
+        }
+      } catch(e) {
+        console.warn('[Refresh] Config fetch failed for', r.type, ':', e.message);
+      }
+      return null;
+    });
+    const configs = await Promise.all(configPromises);
+
+    // 5. Merge fresh configs back onto currentClient
+    const gsCfg  = configs.find(c => c && c._reportType === 'google-search');
+    const metaCfg = configs.find(c => c && c._reportType === 'meta-ads');
+    const ovCfg   = configs.find(c => c && c._reportType === 'overview');
+
+    if (gsCfg)  { [...CONFIG_VALUE_FIELDS, ...CONFIG_MAPPING_FIELDS].forEach(f => { if (gsCfg[f] !== undefined) currentClient[f] = gsCfg[f]; }); }
+    if (metaCfg){ currentClient._metaConfig = metaCfg; currentClient._metaLoaded = false; }
+    if (ovCfg)  { currentClient._overviewConfig = ovCfg; currentClient._overviewLoaded = false; }
+
+    // 6. Re-fetch all template data in parallel
+    const dataPromises = [];
+    if (gsCfg)   dataPromises.push(fetchSheetDataAsync(currentClient));
+    if (metaCfg) dataPromises.push(fetchMetaDataAsync(currentClient, metaCfg));
+    if (ovCfg)   dataPromises.push(fetchOverviewDataAsync(currentClient, ovCfg));
+    await Promise.all(dataPromises);
+
+    setConnStatus(true, 'Data Connection');
+    setLastRefreshed();
+    toast('Report refreshed', 'success');
+  } catch(err) {
+    console.error('[Refresh]', err);
+    setConnStatus(false, 'Refresh failed');
+    toast(friendlyError(err), 'error');
+  } finally {
+    setRefreshing(false);
   }
-  fetchSheetData();
 });
 
 document.getElementById('logout-btn').addEventListener('click', () => {
