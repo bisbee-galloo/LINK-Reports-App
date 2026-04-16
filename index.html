@@ -812,6 +812,15 @@ body::before{
 #app.admin-mode .creative-ph-text{display:block}
 .replace-btn{display:none!important}
 #app.admin-mode .creative-wrap:hover .replace-btn{display:block!important}
+.remove-btn{
+  position:absolute;bottom:8px;left:8px;
+  background:rgba(0,0,0,0.5);color:white;border:none;
+  border-radius:4px;padding:4px 8px;font-size:10px;cursor:pointer;
+  font-family:var(--font-primary);font-weight:700;
+  transition:background .2s;display:none;
+}
+.remove-btn:hover{background:rgba(232,56,45,0.8)}
+#app.admin-mode .creative-wrap:hover .remove-btn{display:block}
 .rank-badge{
   position:absolute;top:10px;left:10px;
   background:var(--dark-hdr);color:white;
@@ -1905,7 +1914,7 @@ const FIELD_DEFS = [
 ];
 
 // ── VERSION ──
-const APP_VERSION = '2.12.1';
+const APP_VERSION = '2.12.2';
 
 // ── STATE ──
 let currentClient = null;
@@ -1929,6 +1938,8 @@ const BUILT_IN_SHEETS_KEY   = '__SHEETS_API_KEY__';
 const BUILT_IN_MAPBOX_TOKEN = '__MAPBOX_TOKEN__';
 // Admin suffix — injected at build time via Netlify environment variable
 const ADMIN_SUFFIX = '__ADMIN_SUFFIX__';
+const CLOUDINARY_CLOUD_NAME   = 'dpvpyevam';
+const CLOUDINARY_UPLOAD_PRESET = 'link-reports-creatives';
 let sheetsApiKey = '';
 let mapboxToken = '';
 let mapImpressions = null;
@@ -4006,6 +4017,7 @@ function buildContentCard(slot, label, rows, clientId) {
       <div class="rank-badge">#${slot}</div>
       ${storedImg ? '<button class="expand-btn">⤢ Expand</button>' : ''}
       ${storedImg ? '<button class="replace-btn">↺ Replace</button>' : ''}
+      ${storedImg ? '<button class="remove-btn">✕ Remove</button>' : ''}
     </div>
     <div class="content-card-body">
       <div class="content-card-title">${escHtml(label)}</div>
@@ -4025,6 +4037,11 @@ function buildContentCard(slot, label, rows, clientId) {
       e.stopPropagation();
       triggerCreativeUpload(slot, clientId, card);
     });
+    const removeBtn = card.querySelector('.remove-btn');
+    if (removeBtn) removeBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      removeCreativeImage(slot, clientId, card);
+    });
   } else {
     // No image — click anywhere on wrap to upload (admin only)
     if (isAdminMode) {
@@ -4040,28 +4057,79 @@ function triggerCreativeUpload(slot, clientId, card) {
   const input = document.createElement('input');
   input.type = 'file';
   input.accept = 'image/*';
-  input.onchange = (e) => {
+  input.onchange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      const dataUrl = ev.target.result;
-      localStorage.setItem('link_v2_creative_' + clientId + '_' + slot, dataUrl);
-      // Re-render the creative wrap
-      const wrap = card.querySelector('.creative-wrap');
+
+    // Show uploading state
+    const wrap = card.querySelector('.creative-wrap');
+    const prevHtml = wrap.innerHTML;
+    wrap.innerHTML = `<div class="creative-ph"><div class="creative-ph-icon"><span class="spinner"></span></div><span class="creative-ph-text">Uploading…</span></div>`;
+
+    try {
+      // Upload to Cloudinary
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+      formData.append('public_id', `${clientId}_slot${slot}`);
+
+      const res = await fetch(
+        `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
+        { method: 'POST', body: formData }
+      );
+
+      if (!res.ok) throw new Error('Upload failed');
+      const data = await res.json();
+      const imageUrl = data.secure_url;
+
+      // Store just the URL in localStorage
+      localStorage.setItem('link_v2_creative_' + clientId + '_' + slot, imageUrl);
+
+      // Re-render the creative wrap with new image
       wrap.innerHTML = `
-        <img src="${dataUrl}" style="width:100%;height:100%;object-fit:cover;display:block;cursor:pointer"/>
+        <img src="${imageUrl}" style="width:100%;height:100%;object-fit:cover;display:block;cursor:pointer"/>
         <div class="rank-badge">#${slot}</div>
         <button class="expand-btn">⤢ Expand</button>
-        <button class="replace-btn">↺ Replace</button>`;
-      // Image uploaded — only buttons act on it
+        <button class="replace-btn">↺ Replace</button>
+        <button class="remove-btn">✕ Remove</button>`;
       wrap.onclick = null;
-      wrap.querySelector('.expand-btn').onclick = (ev) => { ev.stopPropagation(); openLightboxSrc(dataUrl); };
+      wrap.querySelector('.expand-btn').onclick = (ev) => { ev.stopPropagation(); openLightboxSrc(imageUrl); };
       wrap.querySelector('.replace-btn').onclick = (ev) => { ev.stopPropagation(); triggerCreativeUpload(slot, clientId, card); };
-    };
-    reader.readAsDataURL(file);
+      wrap.querySelector('.remove-btn').onclick = (ev) => { ev.stopPropagation(); removeCreativeImage(slot, clientId, card); };
+      toast('Image uploaded', 'success');
+
+    } catch (err) {
+      wrap.innerHTML = prevHtml;
+      toast('Image upload failed — try again', 'error');
+      console.error('[Cloudinary upload]', err);
+    }
   };
   input.click();
+}
+
+function removeCreativeImage(slot, clientId, card) {
+  if (!isAdminMode) return;
+  if (!confirm('Remove this image?')) return;
+
+  // Clear from localStorage
+  localStorage.removeItem('link_v2_creative_' + clientId + '_' + slot);
+
+  // Revert card to empty placeholder
+  const wrap = card.querySelector('.creative-wrap');
+  wrap.innerHTML = `
+    <div class="creative-ph">
+      <div class="creative-ph-icon">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#e8382d" stroke-width="1.5">
+          <rect x="1" y="3" width="14" height="10" rx="2"/>
+          <circle cx="5.5" cy="7" r="1"/>
+          <path d="M1 11l4-3 3 2.5 2-1.5 5 4"/>
+        </svg>
+      </div>
+      <span class="creative-ph-text">Click to upload</span>
+    </div>
+    <div class="rank-badge">#${slot}</div>`;
+  wrap.onclick = () => triggerCreativeUpload(slot, clientId, card);
+  toast('Image removed', 'success');
 }
 
 function openLightboxSrc(src) {
