@@ -2635,8 +2635,8 @@ async function bootClientWithLoad(client) {
     }
   }
 
-  // Boot the client UI
-  bootClient(client);
+  // Boot the client UI — await so Firestore notes/creatives are loaded before data renders
+  await bootClient(client);
 
   // Stage 2 — Loading data
   setLoadStage(2);
