@@ -211,7 +211,7 @@ body::before{
   cursor:pointer;transition:all .2s;overflow:hidden;flex-shrink:0;
   position:relative;
 }
-.logo-box:hover{border-color:rgba(232,56,45,0.6);color:rgba(255,255,255,0.7)}
+#app.admin-mode .logo-box:hover{border-color:rgba(232,56,45,0.6);color:rgba(255,255,255,0.7)}
 .logo-box img{width:100%;height:100%;object-fit:contain;display:none}
 .logo-upload{display:none}
 .hdr-title{font-size:16px;font-weight:700;letter-spacing:-.2px;color:white;line-height:1.2}
@@ -537,6 +537,8 @@ body::before{
 .sp-info-label{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.3);width:100px;flex-shrink:0}
 .sp-info-value{font-size:12px;color:rgba(255,255,255,0.8);font-weight:500;flex:1;line-height:1.5}
 .sp-logo-row{display:flex;align-items:center;gap:16px;margin-top:4px}
+#sp-logo-upload-btn,#sp-logo-clear-btn{display:none}
+#app.admin-mode #sp-logo-upload-btn,#app.admin-mode #sp-logo-clear-btn{display:block}
 .sp-logo-preview{
   width:120px;height:36px;border-radius:7px;
   background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);
@@ -1916,7 +1918,7 @@ const FIELD_DEFS = [
 ];
 
 // ── VERSION ──
-const APP_VERSION = '2.13.1';
+const APP_VERSION = '2.13.3';
 
 // ── STATE ──
 let currentClient = null;
@@ -2008,6 +2010,36 @@ async function fsDeleteCreative(clientId, key) {
     console.warn('[Firebase] deleteCreative failed:', e.message);
   }
 }
+
+// ── LOGOS ──
+async function fsGetLogo(clientId) {
+  if (!db) return null;
+  try {
+    const doc = await db.collection('logos').doc(clientId).get();
+    return doc.exists ? doc.data().url : null;
+  } catch(e) {
+    console.warn('[Firebase] getLogo failed:', e.message);
+    return null;
+  }
+}
+
+async function fsSetLogo(clientId, url) {
+  if (!db) return;
+  try {
+    await db.collection('logos').doc(clientId).set({ url });
+  } catch(e) {
+    console.warn('[Firebase] setLogo failed:', e.message);
+  }
+}
+
+async function fsDeleteLogo(clientId) {
+  if (!db) return;
+  try {
+    await db.collection('logos').doc(clientId).delete();
+  } catch(e) {
+    console.warn('[Firebase] deleteLogo failed:', e.message);
+  }
+}
 let activeTemplate = 'google-search'; // currently active report template
 // !! DO NOT hardcode real keys here — values are injected at build time by Netlify !!
 // Google Sheets API key (restricted to your domain in Google Cloud Console)
@@ -2056,8 +2088,22 @@ function saveNotes(clientId, n) { LS.set('link_v2_notes_' + clientId, n); }
 
 // Logos — localStorage (binary, too large for sheets)
 function getClientLogo(clientId) { return localStorage.getItem('link_v2_logo_' + clientId) || ''; }
-function saveClientLogo(clientId, dataUrl) { localStorage.setItem('link_v2_logo_' + clientId, dataUrl); }
+function saveClientLogo(clientId, url) { localStorage.setItem('link_v2_logo_' + clientId, url); }
 function clearClientLogo(clientId) { localStorage.removeItem('link_v2_logo_' + clientId); }
+
+async function uploadLogoToCloudinary(file, clientId) {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+  formData.append('public_id', `logo_${clientId}_${Date.now()}`);
+  const res = await fetch(
+    `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
+    { method: 'POST', body: formData }
+  );
+  if (!res.ok) throw new Error('Logo upload failed');
+  const data = await res.json();
+  return data.secure_url;
+}
 
 // ── CLIENT REGISTRY ──
 // Clients are loaded dynamically from a Google Sheet at startup.
@@ -3069,9 +3115,10 @@ async function bootClient(client) {
   applyFooterLogo();
 
   // Notes — restore from Firestore (fall back to localStorage)
-  const [fsNotes, fsCreatives] = await Promise.all([
+  const [fsNotes, fsCreatives, fsLogoUrl] = await Promise.all([
     fsGetNotes(client.id),
-    fsGetCreatives(client.id)
+    fsGetCreatives(client.id),
+    fsGetLogo(client.id)
   ]);
   const localNotes = getNotes(client.id);
   const notes = Object.keys(fsNotes).length ? fsNotes : localNotes;
@@ -3083,6 +3130,12 @@ async function bootClient(client) {
   Object.entries(fsCreatives).forEach(([key, url]) => {
     localStorage.setItem('link_v2_creative_' + client.id + '_' + key, url);
   });
+  // Cache logo from Firestore
+  if (fsLogoUrl) {
+    saveClientLogo(client.id, fsLogoUrl);
+  } else {
+    clearClientLogo(client.id);
+  }
 
   // Template navigation
   initTemplateNav(client.reports || []);
@@ -4762,18 +4815,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Logo upload — header (client logo, per-client)
 document.getElementById('logo-box').addEventListener('click', (e) => {
+  if (!isAdminMode) return;
   if (e.target === document.getElementById('logo-upload')) return;
   document.getElementById('logo-upload').click();
 });
-document.getElementById('logo-upload').addEventListener('change', e => {
+document.getElementById('logo-upload').addEventListener('change', async e => {
   const file = e.target.files[0]; if (!file || !currentClient) return;
-  const reader = new FileReader();
-  reader.onload = ev => {
-    saveClientLogo(currentClient.id, ev.target.result);
+  try {
+    const url = await uploadLogoToCloudinary(file, currentClient.id);
+    saveClientLogo(currentClient.id, url);
+    await fsSetLogo(currentClient.id, url);
     applyLogo(currentClient.id);
     toast('Client logo updated', 'success');
-  };
-  reader.readAsDataURL(file);
+  } catch(err) {
+    toast('Logo upload failed — try again', 'error');
+    console.error('[Logo upload]', err);
+  }
 });
 
 // Footer logo is hardcoded — no upload handler needed
@@ -4854,25 +4911,33 @@ document.querySelectorAll('.sp-tab').forEach(tab => {
 
 // Logo upload via settings panel
 document.getElementById('sp-logo-upload-btn')?.addEventListener('click', () => {
+  if (!isAdminMode) return;
   document.getElementById('sp-logo-file').click();
 });
-document.getElementById('sp-logo-file')?.addEventListener('change', function() {
+document.getElementById('sp-logo-file')?.addEventListener('change', async function() {
   const file = this.files[0];
   if (!file || !currentClient) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    saveClientLogo(currentClient.id, e.target.result);
+  try {
+    const url = await uploadLogoToCloudinary(file, currentClient.id);
+    saveClientLogo(currentClient.id, url);
+    await fsSetLogo(currentClient.id, url);
     applyLogo(currentClient.id);
     populateGeneralTab();
-  };
-  reader.readAsDataURL(file);
+    toast('Client logo updated', 'success');
+  } catch(err) {
+    toast('Logo upload failed — try again', 'error');
+    console.error('[Logo upload]', err);
+  }
   this.value = '';
 });
-document.getElementById('sp-logo-clear-btn')?.addEventListener('click', () => {
+document.getElementById('sp-logo-clear-btn')?.addEventListener('click', async () => {
+  if (!isAdminMode) return;
   if (!currentClient) return;
   clearClientLogo(currentClient.id);
+  await fsDeleteLogo(currentClient.id);
   applyLogo(currentClient.id);
   populateGeneralTab();
+  toast('Logo removed', 'success');
 });
 
 // ── REGISTRY LIST — shows CLIENT_REGISTRY entries + current config ──
@@ -4997,10 +5062,11 @@ document.getElementById('refresh-btn').addEventListener('click', async () => {
     setConnStatus(true, 'Data Connection');
     setLastRefreshed();
 
-    // Re-fetch notes and creatives from Firestore
-    const [fsNotes, fsCreatives] = await Promise.all([
+    // Re-fetch notes, creatives and logo from Firestore
+    const [fsNotes, fsCreatives, fsLogoUrl] = await Promise.all([
       fsGetNotes(currentClient.id),
-      fsGetCreatives(currentClient.id)
+      fsGetCreatives(currentClient.id),
+      fsGetLogo(currentClient.id)
     ]);
     const localNotes = getNotes(currentClient.id);
     const notes = Object.keys(fsNotes).length ? fsNotes : localNotes;
@@ -5011,6 +5077,12 @@ document.getElementById('refresh-btn').addEventListener('click', async () => {
     Object.entries(fsCreatives).forEach(([key, url]) => {
       localStorage.setItem('link_v2_creative_' + currentClient.id + '_' + key, url);
     });
+    if (fsLogoUrl) {
+      saveClientLogo(currentClient.id, fsLogoUrl);
+    } else {
+      clearClientLogo(currentClient.id);
+    }
+    applyLogo(currentClient.id);
 
     toast('Report refreshed', 'success');
   } catch(err) {
