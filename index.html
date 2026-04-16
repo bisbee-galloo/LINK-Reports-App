@@ -3013,7 +3013,7 @@ function resetClientUI() {
   document.querySelectorAll('.note-card').forEach(c => c.classList.remove('editing'));
 }
 
-function bootClient(client) {
+async function bootClient(client) {
   currentClient = client;
   document.getElementById('auth-screen').style.display = 'none';
   document.getElementById('app').classList.add('visible');
