@@ -1916,7 +1916,7 @@ const FIELD_DEFS = [
 ];
 
 // ── VERSION ──
-const APP_VERSION = '2.13.0';
+const APP_VERSION = '2.13.1';
 
 // ── STATE ──
 let currentClient = null;
@@ -3078,7 +3078,8 @@ async function bootClient(client) {
   Object.entries(NOTE_KEYS).forEach(([id, key]) => {
     initNoteView(id, notes[key] || '');
   });
-  // Cache creatives from Firestore into localStorage for fast access
+  // Clear any stale localStorage creatives first, then write fresh Firestore values
+  [1,2,3].forEach(s => localStorage.removeItem('link_v2_creative_' + client.id + '_' + s));
   Object.entries(fsCreatives).forEach(([key, url]) => {
     localStorage.setItem('link_v2_creative_' + client.id + '_' + key, url);
   });
@@ -4162,7 +4163,7 @@ function triggerCreativeUpload(slot, clientId, card) {
       const formData = new FormData();
       formData.append('file', file);
       formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-      formData.append('public_id', `${clientId}_slot${slot}`);
+      formData.append('public_id', `${clientId}_slot${slot}_${Date.now()}`);
 
       const res = await fetch(
         `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
@@ -4995,6 +4996,22 @@ document.getElementById('refresh-btn').addEventListener('click', async () => {
 
     setConnStatus(true, 'Data Connection');
     setLastRefreshed();
+
+    // Re-fetch notes and creatives from Firestore
+    const [fsNotes, fsCreatives] = await Promise.all([
+      fsGetNotes(currentClient.id),
+      fsGetCreatives(currentClient.id)
+    ]);
+    const localNotes = getNotes(currentClient.id);
+    const notes = Object.keys(fsNotes).length ? fsNotes : localNotes;
+    Object.entries(NOTE_KEYS).forEach(([id, key]) => {
+      initNoteView(id, notes[key] || '');
+    });
+    [1,2,3].forEach(s => localStorage.removeItem('link_v2_creative_' + currentClient.id + '_' + s));
+    Object.entries(fsCreatives).forEach(([key, url]) => {
+      localStorage.setItem('link_v2_creative_' + currentClient.id + '_' + key, url);
+    });
+
     toast('Report refreshed', 'success');
   } catch(err) {
     console.error('[Refresh]', err);
