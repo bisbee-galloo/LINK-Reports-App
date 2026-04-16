@@ -8,6 +8,8 @@
 <link href='https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css' rel='stylesheet'/>
 <script src='https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js'></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 
 <style>
 /* ── CSS CUSTOM PROPERTIES ── */
@@ -1914,7 +1916,7 @@ const FIELD_DEFS = [
 ];
 
 // ── VERSION ──
-const APP_VERSION = '2.12.2';
+const APP_VERSION = '2.13.0';
 
 // ── STATE ──
 let currentClient = null;
@@ -1930,6 +1932,82 @@ const NOTE_KEYS = {
   'meta-notes-final':      'meta_final',
   'ov-notes-exec':         'ov_exec',
 };
+
+/* ══════════════════════════════════════
+   FIREBASE / FIRESTORE
+══════════════════════════════════════ */
+const FIREBASE_CONFIG = {
+  apiKey:            "AIzaSyDTSUKgeu78T7LAmxD94xjGhUoa5zZC47I",
+  authDomain:        "link-reports-app.firebaseapp.com",
+  projectId:         "link-reports-app",
+  storageBucket:     "link-reports-app.firebasestorage.app",
+  messagingSenderId: "1030532838786",
+  appId:             "1:1030532838786:web:89e15cae5ad09e7e71cb9b"
+};
+
+let db = null;
+function initFirebase() {
+  try {
+    if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+    db = firebase.firestore();
+    console.log('[Firebase] Initialized');
+  } catch(e) {
+    console.warn('[Firebase] Init failed:', e.message);
+  }
+}
+
+// ── NOTES ──
+async function fsGetNotes(clientId) {
+  if (!db) return {};
+  try {
+    const doc = await db.collection('notes').doc(clientId).get();
+    return doc.exists ? doc.data() : {};
+  } catch(e) {
+    console.warn('[Firebase] getNotes failed:', e.message);
+    return {};
+  }
+}
+
+async function fsSetNote(clientId, key, value) {
+  if (!db) return;
+  try {
+    await db.collection('notes').doc(clientId).set({ [key]: value }, { merge: true });
+  } catch(e) {
+    console.warn('[Firebase] setNote failed:', e.message);
+  }
+}
+
+// ── CREATIVES ──
+async function fsGetCreatives(clientId) {
+  if (!db) return {};
+  try {
+    const doc = await db.collection('creatives').doc(clientId).get();
+    return doc.exists ? doc.data() : {};
+  } catch(e) {
+    console.warn('[Firebase] getCreatives failed:', e.message);
+    return {};
+  }
+}
+
+async function fsSetCreative(clientId, key, url) {
+  if (!db) return;
+  try {
+    await db.collection('creatives').doc(clientId).set({ [key]: url }, { merge: true });
+  } catch(e) {
+    console.warn('[Firebase] setCreative failed:', e.message);
+  }
+}
+
+async function fsDeleteCreative(clientId, key) {
+  if (!db) return;
+  try {
+    await db.collection('creatives').doc(clientId).update({
+      [key]: firebase.firestore.FieldValue.delete()
+    });
+  } catch(e) {
+    console.warn('[Firebase] deleteCreative failed:', e.message);
+  }
+}
 let activeTemplate = 'google-search'; // currently active report template
 // !! DO NOT hardcode real keys here — values are injected at build time by Netlify !!
 // Google Sheets API key (restricted to your domain in Google Cloud Console)
@@ -2990,10 +3068,19 @@ function bootClient(client) {
   applyFooter(client);
   applyFooterLogo();
 
-  // Notes — restore all note views and textareas
-  const notes = getNotes(client.id);
+  // Notes — restore from Firestore (fall back to localStorage)
+  const [fsNotes, fsCreatives] = await Promise.all([
+    fsGetNotes(client.id),
+    fsGetCreatives(client.id)
+  ]);
+  const localNotes = getNotes(client.id);
+  const notes = Object.keys(fsNotes).length ? fsNotes : localNotes;
   Object.entries(NOTE_KEYS).forEach(([id, key]) => {
     initNoteView(id, notes[key] || '');
+  });
+  // Cache creatives from Firestore into localStorage for fast access
+  Object.entries(fsCreatives).forEach(([key, url]) => {
+    localStorage.setItem('link_v2_creative_' + client.id + '_' + key, url);
   });
 
   // Template navigation
@@ -3053,6 +3140,7 @@ function logout() {
 
 // Check for existing session on load
 window.addEventListener('DOMContentLoaded', async () => {
+  initFirebase();
   const keys = getApiKeys();
   sheetsApiKey = keys.sheetsApiKey || '';
   mapboxToken  = keys.mapboxToken  || '';
@@ -3403,9 +3491,12 @@ function saveNoteEdit(id) {
   if (!ta || !currentClient) return;
   const val = ta.value;
   if (view) renderNoteMarkdown(view, val);
+  // Save to localStorage
   const n = getNotes(currentClient.id);
   n[NOTE_KEYS[id]] = val;
   saveNotes(currentClient.id, n);
+  // Save to Firestore
+  fsSetNote(currentClient.id, NOTE_KEYS[id], val);
   toast('Notes saved', 'success');
 }
 
@@ -4082,8 +4173,9 @@ function triggerCreativeUpload(slot, clientId, card) {
       const data = await res.json();
       const imageUrl = data.secure_url;
 
-      // Store just the URL in localStorage
+      // Store URL in localStorage and Firestore
       localStorage.setItem('link_v2_creative_' + clientId + '_' + slot, imageUrl);
+      fsSetCreative(clientId, String(slot), imageUrl);
 
       // Re-render the creative wrap with new image
       wrap.innerHTML = `
@@ -4111,8 +4203,9 @@ function removeCreativeImage(slot, clientId, card) {
   if (!isAdminMode) return;
   if (!confirm('Remove this image?')) return;
 
-  // Clear from localStorage
+  // Clear from localStorage and Firestore
   localStorage.removeItem('link_v2_creative_' + clientId + '_' + slot);
+  fsDeleteCreative(clientId, String(slot));
 
   // Revert card to empty placeholder
   const wrap = card.querySelector('.creative-wrap');
