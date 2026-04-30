@@ -212,6 +212,7 @@ body::before{
   position:relative;
 }
 #app.admin-mode .logo-box:hover{border-color:rgba(232,56,45,0.6);color:rgba(255,255,255,0.7)}
+.logo-box.has-logo{background:transparent;border-color:transparent}
 .logo-box img{width:100%;height:100%;object-fit:contain;display:none}
 .logo-upload{display:none}
 .hdr-title{font-size:16px;font-weight:700;letter-spacing:-.2px;color:white;line-height:1.2}
@@ -504,6 +505,7 @@ body::before{
   border-bottom:2px solid transparent;transition:all .2s;margin-bottom:-1px;
 }
 .sp-tab.active{color:white;border-bottom-color:var(--red)}
+#app:not(.admin-mode) .sp-tab[data-tab="developer"]{display:none}
 .sp-body{flex:1;overflow-y:auto;padding:24px 28px;scrollbar-width:thin;scrollbar-color:rgba(232,56,45,0.4) rgba(255,255,255,0.05)}
 .sp-body::-webkit-scrollbar{width:4px}
 .sp-body::-webkit-scrollbar-track{background:rgba(255,255,255,0.03)}
@@ -538,17 +540,6 @@ body::before{
 .sp-info-row:last-child{border-bottom:none}
 .sp-info-label{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.3);width:100px;flex-shrink:0}
 .sp-info-value{font-size:12px;color:rgba(255,255,255,0.8);font-weight:500;flex:1;line-height:1.5}
-.sp-logo-row{display:flex;align-items:center;gap:16px;margin-top:4px}
-#sp-logo-upload-btn,#sp-logo-clear-btn{display:none}
-#app.admin-mode #sp-logo-upload-btn,#app.admin-mode #sp-logo-clear-btn{display:block}
-.sp-logo-preview{
-  width:120px;height:36px;border-radius:7px;
-  background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);
-  display:flex;align-items:center;justify-content:center;
-  overflow:hidden;flex-shrink:0;
-}
-.sp-logo-preview img{width:100%;height:100%;object-fit:contain}
-.sp-logo-btns{display:flex;flex-direction:column;gap:7px}
 .sp-btn{
   padding:8px 18px;border-radius:7px;font-size:11px;font-weight:700;
   letter-spacing:.5px;border:none;cursor:pointer;transition:all .2s;
@@ -1466,7 +1457,7 @@ body::before{
     </div>
 
     <!-- KEYWORD ANALYSIS -->
-    <div>
+    <div id="gs-keyword-section" style="display:none">
       <div class="sh"><div class="sh-bar"></div><h2>Keyword Analysis &amp; Insights</h2><div class="sh-line"></div></div>
       <div class="row-2">
         <div class="glass card" style="height:360px">
@@ -1495,7 +1486,7 @@ body::before{
     </div>
 
     <!-- GEOGRAPHIC — MAPS + BAR CHARTS PAIRED -->
-    <div>
+    <div id="gs-geo-section" style="display:none">
       <div class="sh"><div class="sh-bar"></div><h2>Geographic Performance</h2><div class="sh-line"></div></div>
       <!-- Mobile toggle — only visible on small screens -->
       <div class="map-toggle-bar" id="map-toggle-bar">
@@ -1543,7 +1534,7 @@ body::before{
     </div>
 
     <!-- DEMOGRAPHICS -->
-    <div>
+    <div id="gs-demo-section" style="display:none">
       <div class="sh"><div class="sh-bar"></div><h2>Campaign Demographic Data</h2><div class="sh-line"></div></div>
       <div class="row-3">
         <div class="glass card" style="height:290px">
@@ -1690,7 +1681,7 @@ body::before{
     </div>
 
     <!-- META DEMOGRAPHICS -->
-    <div>
+    <div id="meta-demo-section" style="display:none">
       <div class="sh"><div class="sh-bar"></div><h2>Campaign Demographic Data</h2><div class="sh-line"></div></div>
       <div class="row-2">
         <div class="glass card" style="height:290px">
@@ -1828,21 +1819,6 @@ body::before{
           </div>
         </div>
 
-        <div class="sp-section">
-          <div class="sp-section-title">Client Logo</div>
-          <div class="sp-hint" style="margin-bottom:12px">Displayed in the report header. Stored locally on this device.</div>
-          <div class="sp-logo-row">
-            <div class="sp-logo-preview" id="sp-logo-preview">
-              <span style="font-size:10px;color:var(--text-faint)">No logo</span>
-            </div>
-            <div style="display:flex;flex-direction:column;gap:8px">
-              <button class="sp-btn sp-btn-red" id="sp-logo-upload-btn">Upload logo</button>
-              <button class="sp-btn sp-btn-ghost" id="sp-logo-clear-btn">Remove</button>
-            </div>
-          </div>
-          <input type="file" id="sp-logo-file" accept="image/*" style="display:none"/>
-        </div>
-
       </div>
 
       <!-- ── DEVELOPER TAB ── -->
@@ -1920,7 +1896,7 @@ const FIELD_DEFS = [
 ];
 
 // ── VERSION ──
-const APP_VERSION = '2.13.6';
+const APP_VERSION = '2.13.7';
 
 // ── STATE ──
 let currentClient = null;
@@ -3020,8 +2996,9 @@ function resetClientUI() {
   // Hide all conditional sections until data loads
   ['gs-notes-performance-section','gs-notes-audience-section','gs-notes-final-section',
    'gs-audience-section','gs-notes-keywords-card',
+   'gs-keyword-section','gs-geo-section','gs-demo-section',
    'meta-notes-performance-section','meta-audience-notes-section','meta-notes-final-section',
-   'meta-audience-section','meta-content-section'].forEach(id => {
+   'meta-audience-section','meta-content-section','meta-demo-section'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.style.display = 'none';
   });
@@ -3286,13 +3263,16 @@ function applyLogo(clientId) {
   const dataUrl = getClientLogo(clientId);
   const img = document.getElementById('logo-img');
   const txt = document.getElementById('logo-text');
+  const box = document.getElementById('logo-box');
   if (!img) return;
   if (dataUrl) {
     img.src = dataUrl; img.style.display = 'block';
     if (txt) txt.style.display = 'none';
+    if (box) box.classList.add('has-logo');
   } else {
     img.style.display = 'none';
     if (txt) txt.style.display = '';
+    if (box) box.classList.remove('has-logo');
   }
 }
 
@@ -3450,7 +3430,10 @@ function applySheetData(mapping, rangeIndex) {
 
   // Keywords — renderKeywordBars handles null/empty internally
   const kwRows = rows('kw_range');
+  const validKwRows = (kwRows || []).filter(r => r[0] && (parseFloat(r[1]) > 0));
   renderKeywordBars(kwRows);
+  const gsKeywordSection = document.getElementById('gs-keyword-section');
+  if (gsKeywordSection) gsKeywordSection.style.display = validKwRows.length ? '' : 'none';
 
   // Zip bars — renderZipBars handles null/empty internally
   const zipImpr = rows('zip_impr_range');
@@ -3460,6 +3443,8 @@ function applySheetData(mapping, rangeIndex) {
   if ((zipImpr && zipImpr.length) || (zipClicks && zipClicks.length)) {
     if (mapboxToken) updateMaps(zipImpr, zipClicks);
   }
+  const gsGeoSection = document.getElementById('gs-geo-section');
+  if (gsGeoSection) gsGeoSection.style.display = ((zipImpr && zipImpr.length) || (zipClicks && zipClicks.length)) ? '' : 'none';
 
   // Demographics — renderDonuts handles null per-chart internally
   const genderRows = rows('demo_gender');
@@ -3470,6 +3455,8 @@ function applySheetData(mapping, rangeIndex) {
     ageRows    ? parseDemo(ageRows)    : null,
     incomeRows ? parseDemo(incomeRows) : null
   );
+  const gsDemoSection = document.getElementById('gs-demo-section');
+  if (gsDemoSection) gsDemoSection.style.display = (genderRows || ageRows || incomeRows) ? '' : 'none';
 
   // Audience segmentation (Google Search)
   const audienceRows = rows('audience_range');
@@ -4078,6 +4065,8 @@ function applyMetaData(config, rangeIndex) {
     'meta-donut-age',    'meta-dleg-age',
     'meta-donut-income', 'meta-dleg-income'
   );
+  const metaDemoSection = document.getElementById('meta-demo-section');
+  if (metaDemoSection) metaDemoSection.style.display = (genderRows || ageRows) ? '' : 'none';
 
   // Conditional notes sections — applied last so they appear in correct DOM order
   applyNotesSection('meta-notes-performance-section', 'meta-notes-performance-title', config.notes_performance_label);
@@ -4882,15 +4871,6 @@ function populateGeneralTab() {
   const a1 = [currentClient.author1Name, currentClient.author1Title].filter(Boolean).join(', ');
   const a2 = [currentClient.author2Name, currentClient.author2Title].filter(Boolean).join(', ');
   set('sp-info-authors', [a1, a2].filter(Boolean).join(' · ') || '—');
-
-  // Client logo preview
-  const preview = document.getElementById('sp-logo-preview');
-  const stored = getClientLogo(currentClient.id);
-  if (preview) {
-    preview.innerHTML = stored
-      ? `<img src="${stored}" alt="Client logo"/>`
-      : '<span style="font-size:9px;color:rgba(255,255,255,0.3)">No logo</span>';
-  }
 }
 
 function populateDeveloperTab() {
@@ -4922,37 +4902,6 @@ document.querySelectorAll('.sp-tab').forEach(tab => {
       if (el) el.style.display = tab.dataset.tab === id ? '' : 'none';
     });
   });
-});
-
-// Logo upload via settings panel
-document.getElementById('sp-logo-upload-btn')?.addEventListener('click', () => {
-  if (!isAdminMode) return;
-  document.getElementById('sp-logo-file').click();
-});
-document.getElementById('sp-logo-file')?.addEventListener('change', async function() {
-  const file = this.files[0];
-  if (!file || !currentClient) return;
-  try {
-    const url = await uploadLogoToCloudinary(file, currentClient.id);
-    saveClientLogo(currentClient.id, url);
-    await fsSetLogo(currentClient.id, url);
-    applyLogo(currentClient.id);
-    populateGeneralTab();
-    toast('Client logo updated', 'success');
-  } catch(err) {
-    toast('Logo upload failed — try again', 'error');
-    console.error('[Logo upload]', err);
-  }
-  this.value = '';
-});
-document.getElementById('sp-logo-clear-btn')?.addEventListener('click', async () => {
-  if (!isAdminMode) return;
-  if (!currentClient) return;
-  clearClientLogo(currentClient.id);
-  await fsDeleteLogo(currentClient.id);
-  applyLogo(currentClient.id);
-  populateGeneralTab();
-  toast('Logo removed', 'success');
 });
 
 // ── REGISTRY LIST — shows CLIENT_REGISTRY entries + current config ──
