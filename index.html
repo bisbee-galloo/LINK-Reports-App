@@ -4,10 +4,11 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>LINK SP — Advertising Reports</title>
+<link rel="stylesheet" href="https://use.typekit.net/mls7wiv.css"/>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href='https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css' rel='stylesheet'/>
 <script src='https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js'></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 
@@ -457,15 +458,15 @@ body::before{
 .mapboxgl-map{width:100%;height:100%}
 
 /* ── DONUT ── */
-.donut-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:0;gap:16px}
-.dnut-wrap{position:relative;width:130px;height:130px;flex-shrink:0}
-.dnut-wrap canvas{width:130px!important;height:130px!important}
-.dleg{width:100%;text-align:center;padding:0 4px}
-.dleg-table{border-collapse:collapse;table-layout:fixed;margin:0 auto;display:inline-table}
-.dleg-table td{width:62px;padding:3px 4px;font-size:10.5px;font-weight:600;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;vertical-align:middle}
-.dleg-table td.dleg-pct{font-weight:800;color:var(--text);text-align:center}
-.dleg-table td.dleg-lbl{display:flex;align-items:center;gap:5px}
-.dldt{width:8px;height:8px;border-radius:2px;flex-shrink:0;display:inline-block}
+.donut-body{flex:1;display:flex;flex-direction:column;align-items:center;min-height:0;gap:0}
+.dnut-wrap{width:100%;flex:1;min-height:0}
+.dleg{width:100%;padding:8px 8px 0;flex-shrink:0;display:flex;justify-content:center;align-items:flex-start}
+.dleg.dleg-fixed{height:72px}
+.dleg-inner{display:inline-grid;gap:3px 12px}
+.dleg-inner.one-col{grid-template-columns:auto}
+.dleg-inner.two-col{grid-template-columns:auto auto;column-gap:32px}
+.dleg-item{display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;color:#363636;white-space:nowrap}
+.dldt{width:8px;height:8px;border-radius:2px;flex-shrink:0;display:inline-block;border:1px solid rgba(0,0,0,0.18)}
 
 /* ── SPINNER ── */
 .spinner{
@@ -936,7 +937,6 @@ body::before{
 
   /* Donuts — already collapse via row-3 → 1col */
   .donut-body{min-height:260px}
-
   /* Section headers */
   .sh h2{font-size:10px;letter-spacing:2px}
 
@@ -995,8 +995,7 @@ body::before{
   .bkw-sm{width:42px;font-size:10px}
 
   /* Donut cards */
-  .dnut-wrap{width:110px;height:110px}
-  .dnut-wrap canvas{width:110px!important;height:110px!important}
+
 
   /* Footer */
   .footer-inner{grid-template-columns:1fr;gap:20px}
@@ -1537,25 +1536,25 @@ body::before{
     <div id="gs-demo-section" style="display:none">
       <div class="sh"><div class="sh-bar"></div><h2>Campaign Demographic Data</h2><div class="sh-line"></div></div>
       <div class="row-3">
-        <div class="glass card" style="height:290px">
+        <div class="glass card" style="height:320px;padding:16px 16px 12px">
           <div class="ctitle ctitle-center">Gender Distribution</div>
           <div class="donut-body">
-            <div class="dnut-wrap"><canvas id="donut-gender"></canvas></div>
-            <div class="dleg" id="dleg-gender"></div>
+            <div class="dnut-wrap" id="donut-gender"></div>
+            <div class="dleg dleg-fixed" id="dleg-gender"></div>
           </div>
         </div>
-        <div class="glass card" style="height:290px">
+        <div class="glass card" style="height:320px;padding:16px 16px 12px">
           <div class="ctitle ctitle-center">Age Distribution</div>
           <div class="donut-body">
-            <div class="dnut-wrap"><canvas id="donut-age"></canvas></div>
-            <div class="dleg" id="dleg-age"></div>
+            <div class="dnut-wrap" id="donut-age"></div>
+            <div class="dleg dleg-fixed" id="dleg-age"></div>
           </div>
         </div>
-        <div class="glass card" style="height:290px">
+        <div class="glass card" style="height:320px;padding:16px 16px 12px">
           <div class="ctitle ctitle-center">Income Distribution</div>
           <div class="donut-body" id="donut-income-body">
-            <div class="dnut-wrap"><canvas id="donut-income"></canvas></div>
-            <div class="dleg" id="dleg-income"></div>
+            <div class="dnut-wrap" id="donut-income"></div>
+            <div class="dleg dleg-fixed" id="dleg-income"></div>
           </div>
         </div>
       </div>
@@ -1684,17 +1683,17 @@ body::before{
     <div id="meta-demo-section" style="display:none">
       <div class="sh"><div class="sh-bar"></div><h2>Campaign Demographic Data</h2><div class="sh-line"></div></div>
       <div class="row-2">
-        <div class="glass card" style="height:290px">
+        <div class="glass card" style="height:340px">
           <div class="ctitle ctitle-center">Gender Distribution</div>
           <div class="donut-body">
-            <div class="dnut-wrap"><canvas id="meta-donut-gender"></canvas></div>
+            <div class="dnut-wrap" id="meta-donut-gender"></div>
             <div class="dleg" id="meta-dleg-gender"></div>
           </div>
         </div>
-        <div class="glass card" style="height:290px">
+        <div class="glass card" style="height:340px">
           <div class="ctitle ctitle-center">Age Distribution</div>
           <div class="donut-body">
-            <div class="dnut-wrap"><canvas id="meta-donut-age"></canvas></div>
+            <div class="dnut-wrap" id="meta-donut-age"></div>
             <div class="dleg" id="meta-dleg-age"></div>
           </div>
         </div>
@@ -1896,7 +1895,7 @@ const FIELD_DEFS = [
 ];
 
 // ── VERSION ──
-const APP_VERSION = '2.13.7';
+const APP_VERSION = '2.13.9';
 
 // ── STATE ──
 let currentClient = null;
@@ -2032,7 +2031,7 @@ let sheetsApiKey = '';
 let mapboxToken = '';
 let mapImpressions = null;
 let mapClicks = null;
-let donutCharts = {};
+
 let isAdminMode = false;
 
 function setAdminMode(on) {
@@ -2697,26 +2696,13 @@ async function bootClientWithLoad(client) {
     await new Promise(r => setTimeout(r, 800));
   }
 
-  // After all data loaded — restore income canvas if Google Search was inactive
-  // and re-render its donuts to ensure correct state
+  // After all data loaded — restore income div if Google Search was inactive
   if (activeTemplate !== 'google-search') {
-    // Restore income canvas which may have been affected during parallel load
-    const donutDefs2 = [
-      { canvasId: 'donut-gender',  legId: 'dleg-gender',  bodyId: null },
-      { canvasId: 'donut-age',     legId: 'dleg-age',     bodyId: null },
-      { canvasId: 'donut-income',  legId: 'dleg-income',  bodyId: 'donut-income-body' },
-    ];
-    donutDefs2.forEach(({ canvasId, legId, bodyId }) => {
-      if (!document.getElementById(canvasId)) {
-        let body = bodyId
-          ? document.getElementById(bodyId)
-          : document.getElementById(legId)?.closest('.donut-body');
-        if (body) {
-          body.innerHTML = `<div class="dnut-wrap"><canvas id="${canvasId}"></canvas></div><div class="dleg" id="${legId}"></div>`;
-        }
-      }
-      if (donutCharts[canvasId]) { try { donutCharts[canvasId].destroy(); } catch(e){} delete donutCharts[canvasId]; }
-    });
+    ['donut-gender','donut-age','donut-income'].forEach(id => disposeDonut(id));
+    const incomeBody2 = document.getElementById('donut-income-body');
+    if (incomeBody2 && !document.getElementById('donut-income')) {
+      incomeBody2.innerHTML = '<div class="dnut-wrap" id="donut-income"></div><div class="dleg dleg-fixed" id="dleg-income"></div>';
+    }
     // Re-apply Google Search data using stored range index (no extra API call)
     if (client._gsMapping && client._gsRangeIndex) {
       applySheetData(client._gsMapping, client._gsRangeIndex);
@@ -3013,26 +2999,15 @@ function resetClientUI() {
   const contentGrid = document.getElementById('meta-content-grid');
   if (contentGrid) contentGrid.innerHTML = '';
 
-  // Reset donut canvases
-  const donutDefs = [
-    { canvasId: 'donut-gender',  legId: 'dleg-gender',  bodyId: null },
-    { canvasId: 'donut-age',     legId: 'dleg-age',     bodyId: null },
-    { canvasId: 'donut-income',  legId: 'dleg-income',  bodyId: 'donut-income-body' },
-  ];
-  donutDefs.forEach(({ canvasId, legId, bodyId }) => {
-    if (!document.getElementById(canvasId)) {
-      let body = bodyId
-        ? document.getElementById(bodyId)
-        : document.getElementById(legId)?.closest('.donut-body');
-      if (body) {
-        body.innerHTML = `<div class="dnut-wrap"><canvas id="${canvasId}"></canvas></div><div class="dleg" id="${legId}"></div>`;
-      }
-    }
-    if (donutCharts[canvasId]) {
-      try { donutCharts[canvasId].destroy(); } catch(e){}
-      delete donutCharts[canvasId];
-    }
+  // Reset donut divs
+  ['donut-gender','donut-age','donut-income','meta-donut-gender','meta-donut-age'].forEach(id => {
+    disposeDonut(id);
   });
+  // Restore income body if missing
+  const incomeBody = document.getElementById('donut-income-body');
+  if (incomeBody && !document.getElementById('donut-income')) {
+    incomeBody.innerHTML = '<div class="dnut-wrap" id="donut-income"></div><div class="dleg dleg-fixed" id="dleg-income"></div>';
+  }
 
   // Ensure all note cards start in view mode
   document.querySelectorAll('.note-card').forEach(c => c.classList.remove('editing'));
@@ -3118,12 +3093,12 @@ async function bootClient(client) {
   // Template navigation
   initTemplateNav(client.reports || []);
 
-  // Render placeholder donuts for Google Search
-  renderDonuts(
+  // Render placeholder donuts for Google Search — deferred so containers have dimensions
+  setTimeout(() => renderDonuts(
     [{label:'Male',pct:52},{label:'Female',pct:46}],
     [{label:'25–34',pct:28},{label:'35–44',pct:24},{label:'45–54',pct:18},{label:'18–24',pct:15},{label:'55+',pct:15}],
     [{label:'60–80th',pct:28},{label:'40–60th',pct:25},{label:'20–40th',pct:18},{label:'0–20th',pct:12},{label:'Top 10%',pct:17}]
-  );
+  ), 100);
 
   setConnStatus(false, 'Loading…');
 
@@ -3153,9 +3128,8 @@ function logout() {
   mapsInitialized = false;
   pendingMapData = null;
 
-  // Destroy donut charts
-  Object.values(donutCharts).forEach(c => { try { c.destroy(); } catch(e){} });
-  donutCharts = {};
+  // Dispose donut charts
+  ['donut-gender','donut-age','donut-income','meta-donut-gender','meta-donut-age'].forEach(id => disposeDonut(id));
 
   document.getElementById('auth-screen').style.display = 'flex';
   document.getElementById('app').classList.remove('visible');
@@ -3397,6 +3371,21 @@ function switchTemplate(type, reports) {
   if (type === 'google-search') {
     if (mapClicks) setTimeout(() => mapClicks.resize(), 100);
     if (mapImpressions) setTimeout(() => mapImpressions.resize(), 100);
+    // Resize ECharts donuts after tab becomes visible
+    setTimeout(() => {
+      ['donut-gender','donut-age','donut-income'].forEach(id => {
+        const inst = echarts.getInstanceByDom(document.getElementById(id));
+        if (inst) inst.resize();
+      });
+    }, 50);
+  }
+  if (type === 'meta-ads') {
+    setTimeout(() => {
+      ['meta-donut-gender','meta-donut-age'].forEach(id => {
+        const inst = echarts.getInstanceByDom(document.getElementById(id));
+        if (inst) inst.resize();
+      });
+    }, 50);
   }
 }
 
@@ -3786,19 +3775,113 @@ function renderZipBars(containerId, zipRows) {
 }
 
 /* ══════════════════════════════════════
-   DONUT CHARTS (Chart.js)
+   DONUT CHARTS (ECharts)
 ══════════════════════════════════════ */
-const DONUT_PALETTE = [
-  '#e8382d',  // LINK red — dominant segment
-  '#94a3b8',  // slate
-  '#1a1c24',  // dark
-  '#cbd5e1',  // light slate
-  '#64748b',  // mid slate
-  '#f1f5f9',  // near white
-  '#c92e24',  // deep red
-  '#475569',  // dark slate
-  '#e2e8f0',  // pale slate
+const DONUT_GRADIENTS = [
+  ['#f05a51', '#c92e24'],
+  ['#b0bece', '#7a8da0'],
+  ['#dde5ef', '#a8bccf'],
+  ['#8a9db0', '#536070'],
+  ['#ffffff', '#d0d8e4'],
+  ['#e05047', '#a02018'],
+  ['#6a7d90', '#3d5060'],
 ];
+
+function makeDonutGradient(chart, h, b) {
+  return new echarts.graphic.RadialGradient(0.5, 0.5, 0.8, [
+    { offset: 0, color: h },
+    { offset: 1, color: b }
+  ]);
+}
+
+function buildDonutLegend(legId, data) {
+  const leg = document.getElementById(legId);
+  if (!leg) return;
+  const twoCol = data.length > 3;
+  const items = data.map((d, i) =>
+    `<div class="dleg-item"><span class="dldt" style="background:${DONUT_GRADIENTS[i][0]};border-color:rgba(0,0,0,0.18)"></span>${escHtml(d.label)}</div>`
+  ).join('');
+  leg.innerHTML = `<div class="dleg-inner ${twoCol ? 'two-col' : 'one-col'}">${items}</div>`;
+}
+
+function disposeDonut(elId) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  const instance = echarts.getInstanceByDom(el);
+  if (instance) instance.dispose();
+}
+
+function renderSingleDonutECharts(elId, legId, data, isOutsideLabels) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+
+  // Restore div if replaced by empty state
+  const donutBody = el.closest ? el.closest('.donut-body') : null;
+
+  // Empty state
+  if (!data || !data.length) {
+    disposeDonut(elId);
+    if (donutBody) donutBody.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🍩</div><div class="empty-state-msg">No data</div><div class="empty-state-hint">Configure demographic range in Settings → Cell Mapping</div></div>';
+    return;
+  }
+
+  disposeDonut(elId);
+  const chart = echarts.init(el);
+  const maxItems = 6;
+  const chartData = data.slice(0, maxItems);
+  const seriesData = chartData.map((d, i) => ({
+    value: d.pct,
+    name: d.label,
+    itemStyle: { color: makeDonutGradient(chart, DONUT_GRADIENTS[i][0], DONUT_GRADIENTS[i][1]) }
+  }));
+
+  if (isOutsideLabels) {
+    chart.setOption({
+      backgroundColor: 'transparent',
+      tooltip: { trigger: 'item', formatter: '{b}: {d}%',
+        backgroundColor: 'rgba(26,28,36,0.92)', borderColor: 'rgba(0,0,0,0.1)',
+        textStyle: { color: '#fff', fontSize: 11, fontFamily: "'Proxima Nova', Montserrat, sans-serif" }
+      },
+      series: [{
+        type: 'pie', radius: ['52%', '74%'], center: ['50%', '50%'],
+        avoidLabelOverlap: true, padAngle: 3,
+        itemStyle: { borderRadius: 2, borderColor: 'transparent', borderWidth: 1 },
+        label: { show: true, position: 'outside', formatter: '{b}', fontSize: 11.5,
+          fontFamily: "'Proxima Nova', Montserrat, sans-serif", fontWeight: 700, color: '#363636' },
+        labelLine: { show: true, length: 10, length2: 14,
+          lineStyle: { color: 'rgba(0,0,0,0.35)', width: 1.5 } },
+        emphasis: { scale: true, scaleSize: 6,
+          itemStyle: { shadowBlur: 16, shadowOffsetY: 4, shadowColor: 'rgba(0,0,0,0.18)' } },
+        animationType: 'scale', animationEasing: 'elasticOut', animationDuration: 800,
+        data: seriesData
+      }]
+    });
+  } else {
+    chart.setOption({
+      backgroundColor: 'transparent',
+      tooltip: { trigger: 'item', formatter: '{b}: {d}%',
+        backgroundColor: 'rgba(26,28,36,0.92)', borderColor: 'rgba(0,0,0,0.1)',
+        textStyle: { color: '#fff', fontSize: 11, fontFamily: "'Proxima Nova', Montserrat, sans-serif" }
+      },
+      series: [{
+        type: 'pie', radius: ['50%', '72%'], center: ['50%', '42%'],
+        avoidLabelOverlap: false, padAngle: 3,
+        itemStyle: { borderRadius: 2, borderColor: 'transparent', borderWidth: 1 },
+        label: { show: false }, labelLine: { show: false },
+        emphasis: { scale: true, scaleSize: 6,
+          itemStyle: { shadowBlur: 16, shadowOffsetY: 4, shadowColor: 'rgba(0,0,0,0.18)' } },
+        animationType: 'scale', animationEasing: 'elasticOut', animationDuration: 800,
+        data: seriesData
+      }]
+    });
+    if (legId) buildDonutLegend(legId, chartData);
+  }
+
+  window.addEventListener('resize', () => {
+    const inst = echarts.getInstanceByDom(el);
+    if (inst) inst.resize();
+  });
+}
 
 function renderDonuts(
   genderData, ageData, incomeData,
@@ -3820,95 +3903,22 @@ function renderDonuts(
   const ageFallback    = hasSheet ? null : [{label:'25–34',pct:28},{label:'35–44',pct:24},{label:'45–54',pct:18},{label:'18–24',pct:15},{label:'55+',pct:15}];
   const incomeFallback = hasSheet ? null : [{label:'60–80th',pct:28},{label:'40–60th',pct:25},{label:'20–40th',pct:18},{label:'0–20th',pct:12},{label:'Top 10%',pct:17}];
 
-  renderSingleDonut(genderCanvasId, genderLegId,
-    ((genderData || genderFallback) || []).filter(d => d.label.toLowerCase() !== 'unknown'),
-    {cols:2, maxItems:2});
-  renderSingleDonut(ageCanvasId, ageLegId, ageData || ageFallback, {cols:4, maxItems:6});
-  // Income — only render for Google Search canvas, never for Meta
-  // Restore canvas if it was previously replaced by empty state
-  if (incomeCanvasId === 'donut-income' || (!incomeCanvasId && document.getElementById('donut-income'))) {
-    const targetId = 'donut-income';
-    const targetLegId = 'dleg-income';
-    // Restore canvas if missing
-    const donutBody = document.getElementById(targetId)
-      ? document.getElementById(targetId).closest('.donut-body')
-      : document.getElementById(targetLegId)?.closest('.donut-body');
-    if (donutBody && !document.getElementById(targetId)) {
-      donutBody.innerHTML = `<div class="dnut-wrap"><canvas id="${targetId}"></canvas></div><div class="dleg" id="${targetLegId}"></div>`;
+  // Determine if this is Meta (outside labels, no income) or GS (legend below, income)
+  const isMeta = genderCanvasId === 'meta-donut-gender';
+
+  const genderFiltered = ((genderData || genderFallback) || []).filter(d => d.label.toLowerCase() !== 'unknown');
+  renderSingleDonutECharts(genderCanvasId, isMeta ? null : genderLegId, genderFiltered, isMeta);
+  renderSingleDonutECharts(ageCanvasId, isMeta ? null : ageLegId, ageData || ageFallback, isMeta);
+
+  // Income — GS only
+  if (!isMeta) {
+    const incomeEl = document.getElementById(incomeCanvasId);
+    const incomeBody = document.getElementById('donut-income-body');
+    if (incomeBody && !incomeEl) {
+      incomeBody.innerHTML = `<div class="dnut-wrap" id="${incomeCanvasId}"></div><div class="dleg" id="${incomeLegId}"></div>`;
     }
-    if (document.getElementById(targetId)) {
-      renderSingleDonut(targetId, targetLegId, incomeData || incomeFallback, {cols:4, maxItems:6});
-    }
+    renderSingleDonutECharts(incomeCanvasId, incomeLegId, incomeData || incomeFallback, false);
   }
-}
-
-function renderSingleDonut(canvasId, legId, data, opts) {
-  const cols = (opts && opts.cols) || 4;
-  const maxItems = (opts && opts.maxItems) || 6;
-
-  if (donutCharts[canvasId]) { donutCharts[canvasId].destroy(); donutCharts[canvasId] = null; }
-
-  // Restore canvas if it was previously replaced by an empty state
-  const donutBody = document.getElementById(canvasId)
-    ? document.getElementById(canvasId).closest('.donut-body')
-    : document.getElementById(legId)?.closest('.donut-body');
-  if (donutBody && !document.getElementById(canvasId)) {
-    donutBody.innerHTML = `<div class="dnut-wrap"><canvas id="${canvasId}"></canvas></div><div class="dleg" id="${legId}"></div>`;
-  }
-
-  // Empty state — no data mapped or returned
-  if (!data || !data.length) {
-    if (donutBody) donutBody.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🍩</div><div class="empty-state-msg">No data</div><div class="empty-state-hint">Configure demographic range in Settings → Cell Mapping</div></div>';
-    return;
-  }
-
-  if (donutCharts[canvasId]) donutCharts[canvasId].destroy();
-  const ctx = document.getElementById(canvasId).getContext('2d');
-  const chartData = data.slice(0, maxItems);
-  const labels = chartData.map(d => d.label);
-  const values = chartData.map(d => d.pct);
-  const colors = chartData.map((_, i) => DONUT_PALETTE[i % DONUT_PALETTE.length]);
-
-  donutCharts[canvasId] = new Chart(ctx, {
-    type: 'doughnut',
-    data: { labels, datasets: [{ data: values, backgroundColor: colors, borderWidth: 0, hoverOffset: 4 }] },
-    options: {
-      cutout: '62%',
-      plugins: { legend: { display: false }, tooltip: { enabled: true } },
-      animation: { duration: 600 },
-    }
-  });
-
-  const leg = document.getElementById(legId);
-  const items = chartData.slice(0, maxItems);
-  let tableRows = '';
-
-  if (cols === 2) {
-    // 2-col table: label | pct — one item per row
-    tableRows = items.map((d, i) => `<tr>
-      <td class="dleg-lbl"><div class="dldt" style="background:${colors[i]}"></div>${escHtml(d.label)}</td>
-      <td class="dleg-pct">${d.pct}%</td>
-    </tr>`).join('');
-  } else {
-    // 4-col table: label | pct | label | pct — items split left/right
-    const half = Math.ceil(items.length / 2);
-    const padded = [...items];
-    while (padded.length < half * 2) padded.push({label:'', pct:''});
-    tableRows = Array.from({length: half}, (_, row) => {
-      const ai = row, bi = row + half;
-      const a = padded[ai], b = padded[bi];
-      const aLbl = a.label ? `<div class="dldt" style="background:${colors[ai]}"></div>${escHtml(a.label)}` : '';
-      const bLbl = b && b.label ? `<div class="dldt" style="background:${colors[bi]}"></div>${escHtml(b.label)}` : '';
-      return `<tr>
-        <td class="dleg-lbl">${aLbl}</td>
-        <td class="dleg-pct">${a.pct !== '' ? a.pct + '%' : ''}</td>
-        <td class="dleg-lbl">${bLbl}</td>
-        <td class="dleg-pct">${b && b.pct !== '' ? b.pct + '%' : ''}</td>
-      </tr>`;
-    }).join('');
-  }
-
-  leg.innerHTML = `<table class="dleg-table"><tbody>${tableRows}</tbody></table>`;
 }
 
 /* ══════════════════════════════════════
