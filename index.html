@@ -426,6 +426,7 @@ body::before{
   scrollbar-width:thin;scrollbar-color:rgba(232,56,45,0.3) transparent;
 }
 .note-view:empty{display:none}
+#app:not(.admin-mode) .note-card.note-empty{display:none}
 .note-card.editing .note-view{display:none!important}
 .note-card.editing .note-textarea{display:block!important}
 .note-card.editing .note-actions{display:flex!important}
@@ -1918,7 +1919,7 @@ const FIELD_DEFS = [
 ];
 
 // ── VERSION ──
-const APP_VERSION = '2.13.3';
+const APP_VERSION = '2.13.5';
 
 // ── STATE ──
 let currentClient = null;
@@ -3088,20 +3089,6 @@ async function bootClient(client) {
     ovHeroLabel.textContent = client.appTitle || '';
     ovHeroLabel.style.display = client.appTitle ? '' : 'none';
   }
-  if (ovHeroLogo) {
-    const storedLogo = LS.get('link_v2_logo_' + client.id);
-    if (storedLogo) {
-      ovHeroLogo.innerHTML = `<img src="${storedLogo}" alt="Logo" style="height:72px;max-width:300px;object-fit:contain;object-position:left center;">`;
-    } else {
-      const footerImg = document.getElementById('footer-logo-img');
-      if (footerImg && footerImg.src && !footerImg.src.endsWith(window.location.pathname)) {
-        ovHeroLogo.innerHTML = `<img src="${footerImg.src}" alt="LINK Strategic Partners">`;
-      } else {
-        ovHeroLogo.innerHTML = '';
-      }
-    }
-  }
-
   // Header
   const reportTitle = client.reportTitle || 'Advertising Report';
   document.getElementById('hdr-title').textContent = reportTitle;
@@ -3109,8 +3096,7 @@ async function bootClient(client) {
   document.getElementById('period-text').textContent = client.period_text || '—';
   document.title = reportTitle + ' — ' + (client.name || 'LINK SP');
 
-  // Logo + footer
-  applyLogo(client.id);
+  // Footer (logo applied after Firestore resolves below)
   applyFooter(client);
   applyFooterLogo();
 
@@ -3130,11 +3116,25 @@ async function bootClient(client) {
   Object.entries(fsCreatives).forEach(([key, url]) => {
     localStorage.setItem('link_v2_creative_' + client.id + '_' + key, url);
   });
-  // Cache logo from Firestore
+  // Cache logo from Firestore, then apply to header + overview hero
   if (fsLogoUrl) {
     saveClientLogo(client.id, fsLogoUrl);
   } else {
     clearClientLogo(client.id);
+  }
+  applyLogo(client.id);
+  if (ovHeroLogo) {
+    const cachedLogo = getClientLogo(client.id);
+    if (cachedLogo) {
+      ovHeroLogo.innerHTML = `<img src="${cachedLogo}" alt="Logo" style="height:72px;max-width:300px;object-fit:contain;object-position:left center;">`;
+    } else {
+      const footerImg = document.getElementById('footer-logo-img');
+      if (footerImg && footerImg.src && !footerImg.src.endsWith(window.location.pathname)) {
+        ovHeroLogo.innerHTML = `<img src="${footerImg.src}" alt="LINK Strategic Partners">`;
+      } else {
+        ovHeroLogo.innerHTML = '';
+      }
+    }
   }
 
   // Template navigation
@@ -3545,6 +3545,7 @@ function saveNoteEdit(id) {
   if (!ta || !currentClient) return;
   const val = ta.value;
   if (view) renderNoteMarkdown(view, val);
+  card.classList.toggle('note-empty', !val || !val.trim());
   // Save to localStorage
   const n = getNotes(currentClient.id);
   n[NOTE_KEYS[id]] = val;
@@ -3559,6 +3560,8 @@ function initNoteView(id, value) {
   const ta = document.getElementById(id);
   if (view) renderNoteMarkdown(view, value || '');
   if (ta) ta.value = value || '';
+  const card = view?.closest('.note-card');
+  if (card) card.classList.toggle('note-empty', !value || !value.trim());
 }
 
 function renderNoteMarkdown(el, text) {
