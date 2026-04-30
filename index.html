@@ -203,7 +203,7 @@ body::before{
 }
 .hdr-l{display:flex;align-items:center;gap:16px}
 .logo-box{
-  width:160px;height:48px;border-radius:7px;
+  width:200px;height:50px;border-radius:7px;
   background:rgba(255,255,255,0.09);
   border:1px solid rgba(255,255,255,0.15);
   display:flex;align-items:center;justify-content:center;
@@ -427,6 +427,7 @@ body::before{
 }
 .note-view:empty{display:none}
 #app:not(.admin-mode) .note-card.note-empty{display:none}
+#app:not(.admin-mode) [id$="-section"].note-empty{display:none}
 .note-card.editing .note-view{display:none!important}
 .note-card.editing .note-textarea{display:block!important}
 .note-card.editing .note-actions{display:flex!important}
@@ -1919,7 +1920,7 @@ const FIELD_DEFS = [
 ];
 
 // ── VERSION ──
-const APP_VERSION = '2.13.5';
+const APP_VERSION = '2.13.6';
 
 // ── STATE ──
 let currentClient = null;
@@ -3545,7 +3546,9 @@ function saveNoteEdit(id) {
   if (!ta || !currentClient) return;
   const val = ta.value;
   if (view) renderNoteMarkdown(view, val);
-  card.classList.toggle('note-empty', !val || !val.trim());
+  const section = card.closest('[id$="-section"]');
+  const target = section || card;
+  target.classList.toggle('note-empty', !val || !val.trim());
   // Save to localStorage
   const n = getNotes(currentClient.id);
   n[NOTE_KEYS[id]] = val;
@@ -3560,8 +3563,9 @@ function initNoteView(id, value) {
   const ta = document.getElementById(id);
   if (view) renderNoteMarkdown(view, value || '');
   if (ta) ta.value = value || '';
-  const card = view?.closest('.note-card');
-  if (card) card.classList.toggle('note-empty', !value || !value.trim());
+  const section = view?.closest('[id$="-section"]');
+  const target = section || view?.closest('.note-card');
+  if (target) target.classList.toggle('note-empty', !value || !value.trim());
 }
 
 function renderNoteMarkdown(el, text) {
@@ -3685,12 +3689,20 @@ function setKpiVal(id, val) {
   }
 }
 
+function signTrend(val) {
+  const s = String(val).trim();
+  if (!s) return s;
+  if (/^[+\-↑↓]/.test(s)) return s;
+  if (/\d/.test(s)) return '+' + s;
+  return s;
+}
+
 function setKpiTrend(trendId, lblId, trendVal, lblVal, invert, neutral) {
   const el = document.getElementById(trendId);
   const lbl = document.getElementById(lblId);
   if (trendVal && String(trendVal).trim() !== '') {
     el.style.display = '';
-    el.textContent = trendVal;
+    el.textContent = signTrend(trendVal);
     if (neutral) {
       el.className = 'tneutral';
     } else {
