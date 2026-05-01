@@ -271,6 +271,7 @@ body::before{
 /* ── KPI CARDS ── */
 .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
 #tmpl-meta-ads .kpi-grid-3{grid-template-columns:repeat(3,1fr)}
+#tmpl-linkedin-ads .kpi-grid-3{grid-template-columns:repeat(3,1fr)}
 .kpi{
   padding:26px 28px 22px;position:relative;overflow:hidden;
   height:158px;display:flex;flex-direction:column;justify-content:space-between;
@@ -324,6 +325,7 @@ body::before{
 
 /* ── BASE CARD ── */
 .card{display:flex;flex-direction:column;padding:22px 24px;overflow:hidden}
+.card.card-auto{overflow:visible}
 
 /* ── CARD TITLE ── */
 .ctitle{
@@ -763,7 +765,7 @@ body::before{
 .tmpl-content.active{display:flex;flex-direction:column;gap:32px}
 
 /* ── AUDIENCE TABLE ── */
-.audience-table-wrap{overflow-x:auto;flex:1;min-height:0}
+.audience-table-wrap{overflow-x:auto}
 .audience-table{width:100%;border-collapse:collapse;font-size:11.5px}
 .audience-table th{
   font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
@@ -909,6 +911,7 @@ body::before{
   .kpi-grid{grid-template-columns:1fr 1fr;gap:10px}
   #ov-kpi-grid{grid-template-columns:1fr 1fr!important}
   #tmpl-meta-ads .kpi-grid-3{grid-template-columns:repeat(2,1fr)}
+  #tmpl-linkedin-ads .kpi-grid-3{grid-template-columns:repeat(2,1fr)}
   .kpi{height:158px;padding:16px 16px 12px;overflow:hidden}
   .kpi-val{font-size:32px}
   .kpi-tag{font-size:8px;letter-spacing:1px;white-space:normal;line-height:1.3;word-break:break-word}
@@ -1202,7 +1205,13 @@ body::before{
         <svg class="auth-label-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M12 1C8.676 1 6 3.676 6 7v1H4v15h16V8h-2V7c0-3.324-2.676-6-6-6zm0 2c2.276 0 4 1.724 4 4v1H8V7c0-2.276 1.724-4 4-4zm0 9a2 2 0 1 1 0 4 2 2 0 0 1 0-4z"/></svg>
         Client Access Code
       </label>
-      <input class="auth-input" type="password" id="auth-pw-input" placeholder="Enter your access code" autocomplete="current-password"/>
+      <div style="position:relative;display:flex;align-items:center">
+      <input class="auth-input" type="password" id="auth-pw-input" placeholder="Enter your access code" autocomplete="current-password" style="padding-right:40px;width:100%"/>
+      <button type="button" id="auth-pw-toggle" onclick="togglePwVisibility()" style="position:absolute;right:10px;background:none;border:none;cursor:pointer;color:rgba(0,0,0,0.35);display:flex;align-items:center;padding:4px;transition:color .2s" onmouseover="this.style.color='rgba(0,0,0,0.65)'" onmouseout="this.style.color='rgba(0,0,0,0.35)'">
+        <svg id="auth-eye-open" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        <svg id="auth-eye-off" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24M1 1l22 22"/></svg>
+      </button>
+      </div>
       <div class="auth-error" id="auth-error">Incorrect password. Please try again.</div>
       <button class="auth-btn" id="auth-btn">
         Sign In
@@ -1427,7 +1436,7 @@ body::before{
     <!-- AUDIENCE SEGMENTATION (conditional) -->
     <div id="gs-audience-section" style="display:none">
       <div class="sh"><div class="sh-bar"></div><h2>Audience Segmentation</h2><div class="sh-line"></div></div>
-      <div class="glass card" style="height:300px">
+      <div class="glass card card-auto">
         <div class="ctitle">Audience Performance</div>
         <div class="audience-table-wrap" id="gs-audience-table-wrap">
           <div class="audience-empty">No audience data configured</div>
@@ -1645,7 +1654,7 @@ body::before{
     <!-- AUDIENCE SEGMENTATION (conditional) -->
     <div id="meta-audience-section" style="display:none">
       <div class="sh"><div class="sh-bar"></div><h2>Audience Segmentation</h2><div class="sh-line"></div></div>
-      <div class="glass card" style="height:300px">
+      <div class="glass card card-auto">
         <div class="ctitle">Audience Performance</div>
         <div class="audience-table-wrap" id="meta-audience-table-wrap">
           <div class="audience-empty">No audience data configured</div>
@@ -1721,6 +1730,125 @@ body::before{
     </div>
 
     </div><!-- /tmpl-meta-ads -->
+
+    <!-- ── LINKEDIN ADS TEMPLATE ── -->
+    <div class="tmpl-content" id="tmpl-linkedin-ads">
+
+    <!-- LINKEDIN KPIs — 3x2 grid -->
+    <div>
+      <div class="sh"><div class="sh-bar"></div><h2>Top Line Campaign Performance</h2><div class="sh-line"></div></div>
+      <div class="kpi-grid kpi-grid-3" id="li-kpi-grid">
+        <div class="glass kpi">
+          <div class="kpi-tag">Ad Clicks</div>
+          <div class="kpi-val" id="li-kpi-clicks">—</div>
+          <div class="kpi-trend"><span id="li-kpi-clicks-trend" class="tup" style="display:none"></span><span class="tlbl" id="li-kpi-clicks-tlbl"></span></div>
+        </div>
+        <div class="glass kpi">
+          <div class="kpi-tag">Reach</div>
+          <div class="kpi-val" id="li-kpi-reach">—</div>
+          <div class="kpi-trend"><span id="li-kpi-reach-trend" class="tup" style="display:none"></span><span class="tlbl" id="li-kpi-reach-tlbl"></span></div>
+        </div>
+        <div class="glass kpi">
+          <div class="kpi-tag">Impressions</div>
+          <div class="kpi-val" id="li-kpi-impr">—</div>
+          <div class="kpi-trend"><span id="li-kpi-impr-trend" class="tup" style="display:none"></span><span class="tlbl" id="li-kpi-impr-tlbl"></span></div>
+        </div>
+        <div class="glass kpi">
+          <div class="kpi-tag">Avg. Click-Through Rate (CTR)</div>
+          <div class="kpi-val" id="li-kpi-ctr">—</div>
+          <div class="kpi-trend"><span id="li-kpi-ctr-trend" class="tdn" style="display:none"></span><span class="tlbl" id="li-kpi-ctr-tlbl"></span></div>
+        </div>
+        <div class="glass kpi">
+          <div class="kpi-tag">Avg. Cost-Per-Click (CPC)</div>
+          <div class="kpi-val" id="li-kpi-cpc">—</div>
+          <div class="kpi-trend"><span id="li-kpi-cpc-trend" class="tup" style="display:none"></span><span class="tlbl" id="li-kpi-cpc-tlbl"></span></div>
+        </div>
+        <div class="glass kpi">
+          <div class="kpi-tag">Avg. Frequency</div>
+          <div class="kpi-val" id="li-kpi-freq">—</div>
+          <div class="kpi-trend"><span id="li-kpi-freq-trend" class="tneutral" style="display:none"></span><span class="tlbl" id="li-kpi-freq-tlbl"></span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LINKEDIN PERFORMANCE NOTES (conditional) -->
+    <div id="li-notes-performance-section" style="display:none">
+      <div class="sh"><div class="sh-bar"></div><h2 id="li-notes-performance-title">Performance Notes</h2><div class="sh-line"></div></div>
+      <div class="glass note-card note-section" style="height:188px">
+        <button class="note-edit-btn" onclick="enterNoteEdit('li-notes-performance')">Edit</button>
+        <div class="note-view" id="li-notes-performance-view"></div>
+        <div class="note-toolbar">
+          <button class="note-toolbar-btn" title="Bold" onclick="noteFormat(this,'bold')"><b>B</b></button>
+          <button class="note-toolbar-btn" title="Italic" onclick="noteFormat(this,'italic')"><i>I</i></button>
+          <button class="note-toolbar-btn" title="Bullet list" onclick="noteFormat(this,'bullet')">&#8226;</button>
+          <button class="note-toolbar-btn" title="Numbered list" onclick="noteFormat(this,'number')">1.</button>
+        </div>
+        <textarea class="note-textarea" id="li-notes-performance" placeholder="Add notes here…"></textarea>
+        <div class="note-actions">
+          <button class="note-cancel-btn" onclick="cancelNoteEdit('li-notes-performance')">Cancel</button>
+          <button class="note-save-btn" onclick="saveNoteEdit('li-notes-performance')">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- LINKEDIN AUDIENCE SEGMENTATION (conditional) -->
+    <div id="li-audience-section" style="display:none">
+      <div class="sh"><div class="sh-bar"></div><h2>Audience Segmentation</h2><div class="sh-line"></div></div>
+      <div class="glass card card-auto">
+        <div class="ctitle">Audience Performance</div>
+        <div class="audience-table-wrap" id="li-audience-table-wrap">
+          <div class="audience-empty">No audience data configured</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LINKEDIN AUDIENCE INSIGHTS NOTES (conditional) -->
+    <div id="li-audience-notes-section" style="display:none">
+      <div class="sh"><div class="sh-bar"></div><h2 id="li-notes-audience-title">Audience Insights</h2><div class="sh-line"></div></div>
+      <div class="glass note-card note-section" style="height:188px">
+        <button class="note-edit-btn" onclick="enterNoteEdit('li-notes-audience')">Edit</button>
+        <div class="note-view" id="li-notes-audience-view"></div>
+        <div class="note-toolbar">
+          <button class="note-toolbar-btn" title="Bold" onclick="noteFormat(this,'bold')"><b>B</b></button>
+          <button class="note-toolbar-btn" title="Italic" onclick="noteFormat(this,'italic')"><i>I</i></button>
+          <button class="note-toolbar-btn" title="Bullet list" onclick="noteFormat(this,'bullet')">&#8226;</button>
+          <button class="note-toolbar-btn" title="Numbered list" onclick="noteFormat(this,'number')">1.</button>
+        </div>
+        <textarea class="note-textarea" id="li-notes-audience" placeholder="Add notes here…"></textarea>
+        <div class="note-actions">
+          <button class="note-cancel-btn" onclick="cancelNoteEdit('li-notes-audience')">Cancel</button>
+          <button class="note-save-btn" onclick="saveNoteEdit('li-notes-audience')">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- LINKEDIN TOP CONTENT (conditional) -->
+    <div id="li-content-section" style="display:none">
+      <div class="sh"><div class="sh-bar"></div><h2>Top Content</h2><div class="sh-line"></div></div>
+      <div class="content-grid" id="li-content-grid"></div>
+    </div>
+
+    <!-- LINKEDIN FINAL THOUGHTS (conditional) -->
+    <div id="li-notes-final-section" style="display:none">
+      <div class="sh"><div class="sh-bar"></div><h2 id="li-notes-final-title">Final Thoughts</h2><div class="sh-line"></div></div>
+      <div class="glass note-card note-section" style="height:255px">
+        <button class="note-edit-btn" onclick="enterNoteEdit('li-notes-final')">Edit</button>
+        <div class="note-view" id="li-notes-final-view"></div>
+        <div class="note-toolbar">
+          <button class="note-toolbar-btn" title="Bold" onclick="noteFormat(this,'bold')"><b>B</b></button>
+          <button class="note-toolbar-btn" title="Italic" onclick="noteFormat(this,'italic')"><i>I</i></button>
+          <button class="note-toolbar-btn" title="Bullet list" onclick="noteFormat(this,'bullet')">&#8226;</button>
+          <button class="note-toolbar-btn" title="Numbered list" onclick="noteFormat(this,'number')">1.</button>
+        </div>
+        <textarea class="note-textarea" id="li-notes-final" placeholder="Add notes here…"></textarea>
+        <div class="note-actions">
+          <button class="note-cancel-btn" onclick="cancelNoteEdit('li-notes-final')">Cancel</button>
+          <button class="note-save-btn" onclick="saveNoteEdit('li-notes-final')">Save</button>
+        </div>
+      </div>
+    </div>
+
+    </div><!-- /tmpl-linkedin-ads -->
 
   </div><!-- /main -->
 
@@ -1895,7 +2023,7 @@ const FIELD_DEFS = [
 ];
 
 // ── VERSION ──
-const APP_VERSION = '2.13.9';
+const APP_VERSION = '2.14.0';
 
 // ── STATE ──
 let currentClient = null;
@@ -1909,6 +2037,9 @@ const NOTE_KEYS = {
   'meta-notes-performance':'meta_performance',
   'meta-notes-audience':   'meta_audience',
   'meta-notes-final':      'meta_final',
+  'li-notes-performance':  'li_performance',
+  'li-notes-audience':     'li_audience',
+  'li-notes-final':        'li_final',
   'ov-notes-exec':         'ov_exec',
 };
 
@@ -2202,7 +2333,45 @@ const META_MAPPING_FIELDS = new Set([
   'demo_gender','demo_age',
 ]);
 
-// ── OVERVIEW CONFIG FIELD MAP (_config_overview tab) ──
+// ── LINKEDIN CONFIG FIELD MAP (_config_linkedin tab) ──
+const LI_CONFIG_FIELD_MAP = {
+  'Report tab title':                               'reportTabTitle',
+  'KPI - ad clicks (value)':                       'kpi_clicks',
+  'KPI - ad clicks (trend)':                       'kpi_clicks_trend',
+  'KPI - reach (value)':                           'kpi_reach',
+  'KPI - reach (trend)':                           'kpi_reach_trend',
+  'KPI - impressions (value)':                     'kpi_impr',
+  'KPI - impressions (trend)':                     'kpi_impr_trend',
+  'KPI - CTR (value)':                             'kpi_ctr',
+  'KPI - CTR (trend)':                             'kpi_ctr_trend',
+  'KPI - CPC (value)':                             'kpi_cpc',
+  'KPI - CPC (trend)':                             'kpi_cpc_trend',
+  'KPI - frequency (value)':                       'kpi_freq',
+  'KPI - frequency (trend)':                       'kpi_freq_trend',
+  'KPI - trend label (all)':                       'kpi_tlbl',
+  'Top content 1 label':                           'content1_label',
+  'Top content 2 label':                           'content2_label',
+  'Top content 3 label':                           'content3_label',
+  'Top content metric labels':                     'content_metric_labels',
+  'Audience segmentation range':                   'audience_range',
+  'Top content 1 metrics range':                   'content1_range',
+  'Top content 2 metrics range':                   'content2_range',
+  'Top content 3 metrics range':                   'content3_range',
+  'Performance notes label':                       'notes_performance_label',
+  'Audience insights label':                       'notes_audience_label',
+  'Final thoughts label':                          'notes_final_label',
+};
+const LI_VALUE_FIELDS = new Set([
+  'reportTabTitle','kpi_tlbl',
+  'content1_label','content2_label','content3_label','content_metric_labels',
+  'notes_performance_label','notes_audience_label','notes_final_label',
+]);
+const LI_MAPPING_FIELDS = new Set([
+  'kpi_clicks','kpi_clicks_trend','kpi_reach','kpi_reach_trend',
+  'kpi_impr','kpi_impr_trend','kpi_ctr','kpi_ctr_trend',
+  'kpi_cpc','kpi_cpc_trend','kpi_freq','kpi_freq_trend',
+  'audience_range','content1_range','content2_range','content3_range',
+]);
 const OVERVIEW_CONFIG_FIELD_MAP = {
   'Report tab title':          'reportTabTitle',
   'KPI 1 - title':             'kpi1_title',
@@ -2498,6 +2667,16 @@ function toast(msg, type='') {
   el._t = setTimeout(() => el.className = '', 2800);
 }
 
+function togglePwVisibility() {
+  const input = document.getElementById('auth-pw-input');
+  const eyeOpen = document.getElementById('auth-eye-open');
+  const eyeOff = document.getElementById('auth-eye-off');
+  const isHidden = input.type === 'password';
+  input.type = isHidden ? 'text' : 'password';
+  eyeOpen.style.display = isHidden ? 'none' : '';
+  eyeOff.style.display = isHidden ? '' : 'none';
+}
+
 function friendlyError(err) {
   const msg = (err && (err.message || String(err))) || '';
   if (/not found|404/i.test(msg))             return 'Sheet or tab not found — check your config';
@@ -2609,6 +2788,11 @@ async function bootClientWithLoad(client) {
           META_CONFIG_FIELD_MAP, META_VALUE_FIELDS, META_MAPPING_FIELDS);
         return { ...cfg, _reportType: 'meta-ads' };
       }
+      if (r.type === 'linkedin-ads') {
+        const cfg = await fetchClientConfig(client.sheetId, r.configTab,
+          LI_CONFIG_FIELD_MAP, LI_VALUE_FIELDS, LI_MAPPING_FIELDS);
+        return { ...cfg, _reportType: 'linkedin-ads' };
+      }
       if (r.type === 'overview') {
         const cfg = await fetchClientConfig(client.sheetId, r.configTab,
           OVERVIEW_CONFIG_FIELD_MAP, OVERVIEW_VALUE_FIELDS, OVERVIEW_MAPPING_FIELDS);
@@ -2658,6 +2842,17 @@ async function bootClientWithLoad(client) {
     }
   }
 
+  // Store LinkedIn config on client object
+  const liCfg = configs.find(c => c && c._reportType === 'linkedin-ads');
+  if (liCfg) {
+    client._liConfig = liCfg;
+    client._liLoaded = false;
+    if (liCfg.reportTabTitle) {
+      const liReport = reports.find(r => r.type === 'linkedin-ads');
+      if (liReport) liReport.label = liCfg.reportTabTitle;
+    }
+  }
+
   // Boot the client UI — await so Firestore notes/creatives are loaded before data renders
   await bootClient(client);
 
@@ -2675,6 +2870,12 @@ async function bootClientWithLoad(client) {
     dataPromises.push(fetchMetaDataAsync(client, metaCfg));
   }
 
+  // LinkedIn data (if applicable)
+  const liCfgBoot = client._liConfig;
+  if (liCfgBoot) {
+    dataPromises.push(fetchLinkedInDataAsync(client, liCfgBoot));
+  }
+
   // Overview data (if applicable)
   const ovCfgBoot = client._overviewConfig;
   if (ovCfgBoot) {
@@ -2683,10 +2884,13 @@ async function bootClientWithLoad(client) {
 
   await Promise.all(dataPromises);
 
-  // Check conn status — if any fetch failed, setConnStatus(false) was called inside the async fn
-  // Surface a single consolidated toast so the user knows something didn't load
+  // Set final conn status — green unless a fetch already marked it failed
   const connLabel = document.getElementById('conn-label');
-  if (connLabel && connLabel.textContent && !/Data Connection|Loading/i.test(connLabel.textContent)) {
+  if (connLabel && /Loading/i.test(connLabel.textContent)) {
+    // No fetch updated the status — means no sheet data fetches ran (e.g. overview-only client)
+    setConnStatus(true, 'Data Connection');
+  } else if (connLabel && !/Data Connection/i.test(connLabel.textContent)) {
+    // A fetch set it to something other than success — surface error toast
     toast('Some report data failed to load — try refreshing', 'error');
   }
   const hasMapData = !!(client._zipImpr || client._zipClicks);
@@ -2805,6 +3009,137 @@ async function fetchMetaDataAsync(client, metaCfg) {
     console.error('[Load] Meta data fetch failed:', e.message);
     client._metaLoaded = true;
   }
+}
+
+async function fetchLinkedInDataAsync(client, liCfg) {
+  if (!sheetsApiKey || !client.sheetId) return;
+
+  const RANGE_FIELDS = [
+    'kpi_clicks','kpi_clicks_trend','kpi_reach','kpi_reach_trend',
+    'kpi_impr','kpi_impr_trend','kpi_ctr','kpi_ctr_trend',
+    'kpi_cpc','kpi_cpc_trend','kpi_freq','kpi_freq_trend',
+    'audience_range','content1_range','content2_range','content3_range',
+  ];
+
+  const rangesToFetch = [];
+  RANGE_FIELDS.forEach(f => { if (liCfg[f]) rangesToFetch.push(liCfg[f]); });
+  if (!rangesToFetch.length) {
+    applyLinkedInData(liCfg, {});
+    client._liLoaded = true;
+    return;
+  }
+
+  try {
+    const uniqueRanges = [...new Set(rangesToFetch)];
+    const params = uniqueRanges.map(r => 'ranges=' + encodeURIComponent(r)).join('&');
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${client.sheetId}/values:batchGet?${params}&key=${sheetsApiKey}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('LinkedIn data fetch failed');
+    const data = await res.json();
+
+    const rangeIndex = {};
+    (data.valueRanges || []).forEach((vr, i) => {
+      const key = uniqueRanges[i];
+      rangeIndex[key] = vr.values || [];
+      if (vr.range) {
+        rangeIndex[vr.range] = vr.values || [];
+        const cellOnly = vr.range.includes('!') ? vr.range.split('!').pop() : vr.range;
+        rangeIndex[cellOnly] = vr.values || [];
+      }
+    });
+
+    client._liConfig = liCfg;
+    currentClient._liConfig = liCfg;
+    applyLinkedInData(liCfg, rangeIndex);
+    client._liLoaded = true;
+    setConnStatus(true, 'Data Connection');
+  } catch(e) {
+    console.error('[Load] LinkedIn data fetch failed:', e.message);
+    client._liLoaded = true;
+    setConnStatus(false, 'Data load failed');
+  }
+}
+
+function applyLinkedInData(config, rangeIndex) {
+  const val = (fieldId) => {
+    const range = config[fieldId];
+    if (!range) return null;
+    const rows = rangeIndex[range];
+    if (!rows || !rows.length) return null;
+    return rows;
+  };
+  const singleVal = (fieldId) => {
+    const rows = val(fieldId);
+    return rows ? String(rows[0][0] || '').trim() : null;
+  };
+
+  // Update tab label
+  if (config.reportTabTitle) {
+    const liReport = (currentClient.reports || []).find(r => r.type === 'linkedin-ads');
+    if (liReport) {
+      liReport.label = config.reportTabTitle;
+      document.querySelectorAll('.tmpl-btn').forEach(btn => {
+        if (btn.dataset.type === 'linkedin-ads') btn.textContent = config.reportTabTitle;
+      });
+      const sel = document.querySelector('.tmpl-select');
+      if (sel) [...sel.options].forEach(opt => {
+        if (opt.value === 'linkedin-ads') opt.textContent = config.reportTabTitle;
+      });
+    }
+  }
+
+  // ── KPIs ──
+  const kpiDefs = [
+    { id: 'clicks', el: 'li-kpi-clicks', trendEl: 'li-kpi-clicks-trend', tlblEl: 'li-kpi-clicks-tlbl', invert: false },
+    { id: 'reach',  el: 'li-kpi-reach',  trendEl: 'li-kpi-reach-trend',  tlblEl: 'li-kpi-reach-tlbl',  invert: false },
+    { id: 'impr',   el: 'li-kpi-impr',   trendEl: 'li-kpi-impr-trend',   tlblEl: 'li-kpi-impr-tlbl',   invert: false },
+    { id: 'ctr',    el: 'li-kpi-ctr',    trendEl: 'li-kpi-ctr-trend',    tlblEl: 'li-kpi-ctr-tlbl',    invert: false },
+    { id: 'cpc',    el: 'li-kpi-cpc',    trendEl: 'li-kpi-cpc-trend',    tlblEl: 'li-kpi-cpc-tlbl',    invert: true  },
+    { id: 'freq',   el: 'li-kpi-freq',   trendEl: 'li-kpi-freq-trend',   tlblEl: 'li-kpi-freq-tlbl',   invert: false, neutral: true },
+  ];
+  const tlbl = config.kpi_tlbl || '';
+  kpiDefs.forEach(k => {
+    const v = singleVal('kpi_' + k.id);
+    const t = singleVal('kpi_' + k.id + '_trend');
+    if (v) document.getElementById(k.el).textContent = v;
+    if (t) setKpiTrend(k.trendEl, k.tlblEl, t, tlbl, k.invert, k.neutral);
+  });
+
+  // ── AUDIENCE SEGMENTATION ──
+  const audienceRows = val('audience_range');
+  const audienceSection = document.getElementById('li-audience-section');
+  if (audienceRows && audienceRows.length > 1) {
+    audienceSection.style.display = '';
+    renderAudienceTable(audienceRows, document.getElementById('li-audience-table-wrap'));
+  } else if (audienceSection) {
+    audienceSection.style.display = 'none';
+  }
+
+  // ── TOP CONTENT ──
+  const contentDefs = [
+    { rangeField: 'content1_range', labelField: 'content1_label', slot: 1 },
+    { rangeField: 'content2_range', labelField: 'content2_label', slot: 2 },
+    { rangeField: 'content3_range', labelField: 'content3_label', slot: 3 },
+  ];
+  const contentSection = document.getElementById('li-content-section');
+  const contentGrid = document.getElementById('li-content-grid');
+  contentGrid.innerHTML = '';
+  let contentCount = 0;
+  contentDefs.forEach(c => {
+    const rows = val(c.rangeField);
+    const label = config[c.labelField] || ('Top Creative #' + c.slot);
+    const hasStoredImg = !!localStorage.getItem('link_v2_creative_' + currentClient.id + '_li_' + c.slot);
+    if ((rows && rows.length) || hasStoredImg) {
+      contentCount++;
+      contentGrid.appendChild(buildContentCard('li_' + c.slot, label, rows || [], currentClient.id));
+    }
+  });
+  contentSection.style.display = contentCount > 0 ? '' : 'none';
+
+  // ── NOTES ──
+  applyNotesSection('li-notes-performance-section', 'li-notes-performance-title', config.notes_performance_label);
+  applyNotesSection('li-audience-notes-section',    'li-notes-audience-title',    config.notes_audience_label);
+  applyNotesSection('li-notes-final-section',       'li-notes-final-title',       config.notes_final_label);
 }
 
 async function fetchOverviewDataAsync(client, ovCfg) {
@@ -2984,7 +3319,9 @@ function resetClientUI() {
    'gs-audience-section','gs-notes-keywords-card',
    'gs-keyword-section','gs-geo-section','gs-demo-section',
    'meta-notes-performance-section','meta-audience-notes-section','meta-notes-final-section',
-   'meta-audience-section','meta-content-section','meta-demo-section'].forEach(id => {
+   'meta-audience-section','meta-content-section','meta-demo-section',
+   'li-notes-performance-section','li-audience-notes-section','li-notes-final-section',
+   'li-audience-section','li-content-section'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.style.display = 'none';
   });
@@ -3361,6 +3698,11 @@ function switchTemplate(type, reports) {
   // loadMetaTemplate() is kept as fallback for manual refresh
   if (type === 'meta-ads' && currentClient && !currentClient._metaLoaded) {
     loadMetaTemplate();
+  }
+
+  if (type === 'linkedin-ads' && currentClient && !currentClient._liLoaded) {
+    const liCfg = currentClient._liConfig;
+    if (liCfg) fetchLinkedInDataAsync(currentClient, liCfg);
   }
 
   if (type === 'overview' && currentClient && !currentClient._overviewLoaded) {
@@ -5006,6 +5348,10 @@ document.getElementById('refresh-btn').addEventListener('click', async () => {
           const cfg = await fetchClientConfig(currentClient.sheetId, r.configTab, META_CONFIG_FIELD_MAP, META_VALUE_FIELDS, META_MAPPING_FIELDS);
           return { ...cfg, _reportType: 'meta-ads' };
         }
+        if (r.type === 'linkedin-ads') {
+          const cfg = await fetchClientConfig(currentClient.sheetId, r.configTab, LI_CONFIG_FIELD_MAP, LI_VALUE_FIELDS, LI_MAPPING_FIELDS);
+          return { ...cfg, _reportType: 'linkedin-ads' };
+        }
         if (r.type === 'overview') {
           const cfg = await fetchClientConfig(currentClient.sheetId, r.configTab, OVERVIEW_CONFIG_FIELD_MAP, OVERVIEW_VALUE_FIELDS, OVERVIEW_MAPPING_FIELDS);
           return { ...cfg, _reportType: 'overview' };
@@ -5018,18 +5364,21 @@ document.getElementById('refresh-btn').addEventListener('click', async () => {
     const configs = await Promise.all(configPromises);
 
     // 5. Merge fresh configs back onto currentClient
-    const gsCfg  = configs.find(c => c && c._reportType === 'google-search');
+    const gsCfg   = configs.find(c => c && c._reportType === 'google-search');
     const metaCfg = configs.find(c => c && c._reportType === 'meta-ads');
+    const liCfg   = configs.find(c => c && c._reportType === 'linkedin-ads');
     const ovCfg   = configs.find(c => c && c._reportType === 'overview');
 
-    if (gsCfg)  { [...CONFIG_VALUE_FIELDS, ...CONFIG_MAPPING_FIELDS].forEach(f => { if (gsCfg[f] !== undefined) currentClient[f] = gsCfg[f]; }); }
-    if (metaCfg){ currentClient._metaConfig = metaCfg; currentClient._metaLoaded = false; }
-    if (ovCfg)  { currentClient._overviewConfig = ovCfg; currentClient._overviewLoaded = false; }
+    if (gsCfg)   { [...CONFIG_VALUE_FIELDS, ...CONFIG_MAPPING_FIELDS].forEach(f => { if (gsCfg[f] !== undefined) currentClient[f] = gsCfg[f]; }); }
+    if (metaCfg) { currentClient._metaConfig = metaCfg; currentClient._metaLoaded = false; }
+    if (liCfg)   { currentClient._liConfig = liCfg; currentClient._liLoaded = false; }
+    if (ovCfg)   { currentClient._overviewConfig = ovCfg; currentClient._overviewLoaded = false; }
 
     // 6. Re-fetch all template data in parallel
     const dataPromises = [];
     if (gsCfg)   dataPromises.push(fetchSheetDataAsync(currentClient));
     if (metaCfg) dataPromises.push(fetchMetaDataAsync(currentClient, metaCfg));
+    if (liCfg)   dataPromises.push(fetchLinkedInDataAsync(currentClient, liCfg));
     if (ovCfg)   dataPromises.push(fetchOverviewDataAsync(currentClient, ovCfg));
     await Promise.all(dataPromises);
 
