@@ -196,49 +196,55 @@ body::before{
 
 /* ── HEADER ── */
 .hdr{
-  background:var(--dark-hdr);
-  border-bottom:1px solid rgba(0,0,0,0.15);
-  padding:0 36px;
+  background:var(--glass-bg);
+  backdrop-filter:blur(20px) saturate(180%);
+  -webkit-backdrop-filter:blur(20px) saturate(180%);
+  border:1px solid var(--glass-border);
+  border-radius:16px;
+  box-shadow:var(--glass-shadow);
+  padding:0 28px;
   display:flex;align-items:center;justify-content:space-between;
-  height:84px;position:sticky;top:0;z-index:200;
+  height:72px;z-index:200;
+  margin:10px 16px 0;
 }
 .hdr-l{display:flex;align-items:center;gap:16px}
 .logo-box{
   width:200px;height:50px;border-radius:7px;
-  background:rgba(255,255,255,0.09);
-  border:1px solid rgba(255,255,255,0.15);
+  background:rgba(255,255,255,0.6);
+  border:1px solid rgba(0,0,0,0.08);
   display:flex;align-items:center;justify-content:center;
-  font-size:8px;color:rgba(255,255,255,0.35);text-align:center;line-height:1.4;
+  font-size:8px;color:rgba(0,0,0,0.3);text-align:center;line-height:1.4;
   cursor:pointer;transition:all .2s;overflow:hidden;flex-shrink:0;
   position:relative;
 }
-#app.admin-mode .logo-box:hover{border-color:rgba(232,56,45,0.6);color:rgba(255,255,255,0.7)}
+#app.admin-mode .logo-box:hover{border-color:rgba(232,56,45,0.5);color:rgba(0,0,0,0.5)}
 .logo-box.has-logo{background:transparent;border-color:transparent}
 .logo-box img{width:100%;height:100%;object-fit:contain;display:none}
 .logo-upload{display:none}
-.hdr-title{font-size:16px;font-weight:700;letter-spacing:-.2px;color:white;line-height:1.2}
-.hdr-sub{font-size:10px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:#b9bbb6;margin-top:3px}
-.hdr-prepared{font-size:10px;font-weight:500;letter-spacing:.5px;color:rgba(255,255,255,0.35);margin-top:2px}
+.hdr-title{font-size:16px;font-weight:700;letter-spacing:-.2px;color:var(--text);line-height:1.2}
+.hdr-sub{font-size:10px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-top:3px}
+.hdr-prepared{font-size:10px;font-weight:500;letter-spacing:.5px;color:rgba(0,0,0,0.3);margin-top:2px}
 .hdr-r{display:flex;align-items:center;gap:9px}
-.btn{padding:7px 17px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:.4px;border:none;transition:all .2s}
-.btn-red{background:var(--red);color:white}
+.btn{padding:0 17px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:.4px;line-height:1;height:30px;display:inline-flex;align-items:center;transition:all .2s}
+.btn-red{background:var(--red);color:white;border:1px solid transparent}
 .btn-red:hover{background:var(--red-dark)}
-.btn-ghost{background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.8);border:1px solid rgba(255,255,255,0.15)}
-.btn-ghost:hover{background:rgba(255,255,255,0.18)}
-.btn-icon{background:none;border:none;color:rgba(255,255,255,0.45);font-size:16px;cursor:pointer;padding:7px 9px;line-height:1;transition:color .2s}
-.btn-icon:hover{color:rgba(255,255,255,0.85)}
+.btn-ghost{background:rgba(0,0,0,0.04);color:var(--text);border:1px solid rgba(0,0,0,0.1)}
+.btn-ghost:hover{background:rgba(0,0,0,0.08)}
+.btn-icon{background:none;border:none;color:rgba(0,0,0,0.35);font-size:20px;cursor:pointer;padding:7px 10px;line-height:1;transition:color .2s}
+.btn-icon:hover{color:rgba(0,0,0,0.75)}
 
 /* ── PERIOD BAR ── */
 .pbar{
-  padding:9px 36px;
-  background:rgba(255,255,255,0.6);
-  border-bottom:1px solid rgba(0,0,0,0.07);
-  display:flex;align-items:center;gap:16px;
-  backdrop-filter:blur(12px);
+  padding:8px 16px;
+  display:flex;align-items:center;gap:10px;
 }
 .ppill{
-  background:rgba(255,255,255,0.8);border:1px solid rgba(0,0,0,0.09);
-  border-radius:6px;padding:5px 13px;font-size:12px;color:var(--text-muted);
+  background:var(--glass-bg);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  border:1px solid var(--glass-border);
+  box-shadow:var(--glass-shadow);
+  border-radius:20px;padding:5px 14px;font-size:12px;color:var(--text-muted);
 }
 .ppill b{color:var(--text);font-weight:700}
 .ldot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 6px rgba(34,197,94,0.6);display:inline-block;margin-right:6px;vertical-align:middle}
@@ -444,6 +450,7 @@ body::before{
 .bkw{font-size:11px;color:var(--text-muted);width:155px;flex-shrink:0;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .bkw-sm{font-size:11px;color:var(--text-muted);width:50px;flex-shrink:0;text-align:right;font-family:monospace;letter-spacing:.5px}
 .btrack{flex:1;height:20px;background:rgba(0,0,0,0.05);border-radius:5px;overflow:hidden}
+.btrack-clear{flex:1;height:20px;background:transparent;border-radius:5px;overflow:hidden}
 .bfill{height:100%;border-radius:5px;display:flex;align-items:center;justify-content:flex-end;padding-right:8px;font-size:9px;font-weight:700;color:white;transition:width .6s ease}
 
 /* ── MAP ── */
@@ -891,7 +898,7 @@ body::before{
 ══════════════════════════════════════ */
 @media (max-width: 768px) {
   /* Header */
-  .hdr{padding:0 16px;height:72px}
+  .hdr{padding:0 16px;height:64px}
   .hdr-title{font-size:13px}
   .hdr-sub{font-size:9px}
   .hdr-prepared{font-size:9px}
@@ -901,7 +908,7 @@ body::before{
   .btn{padding:6px 12px;font-size:10px;min-width:80px;text-align:center}
 
   /* Period bar */
-  .pbar{padding:8px 16px;gap:10px;flex-wrap:wrap}
+  .pbar{padding:6px 10px;gap:8px;flex-wrap:wrap}
   .ppill{font-size:10px}
 
   /* Main layout */
@@ -982,7 +989,7 @@ body::before{
 
   /* Period bar */
   #last-refreshed{display:none}
-  .pbar{flex-wrap:wrap}
+  .pbar{flex-wrap:wrap;padding:6px 8px}
 
   /* Main */
   .main{padding:12px 12px 32px;gap:16px}
@@ -1051,12 +1058,22 @@ body::before{
 
   /* Header */
   .hdr{
-    position:relative!important;
+    border-radius:0!important;
+    margin:0!important;
     background:#1a1c24!important;
+    border:none!important;
+    box-shadow:none!important;
+    backdrop-filter:none!important;
+    -webkit-backdrop-filter:none!important;
     -webkit-print-color-adjust:exact;
     print-color-adjust:exact;
     padding:0 24px;
   }
+  .hdr-title{color:white!important}
+  .hdr-sub{color:#b9bbb6!important}
+  .hdr-prepared{color:rgba(255,255,255,0.35)!important}
+  .logo-box{background:rgba(255,255,255,0.09)!important;border-color:rgba(255,255,255,0.15)!important;color:rgba(255,255,255,0.35)!important}
+  .pbar{margin:0!important;padding:8px 24px!important}
 
   /* Remove backdrop-filter — not supported in print */
   .glass,.pbar{
@@ -1300,8 +1317,8 @@ body::before{
       <span id="admin-badge">Admin</span>
       <button class="btn btn-red" id="refresh-btn">↻ Refresh</button>
       <button class="btn btn-ghost" onclick="window.print()">⬇ Export PDF</button>
-      <button class="btn-icon" id="settings-btn" title="Settings">⚙</button>
-      <button class="btn-icon" id="logout-btn" title="Sign out" style="font-size:13px">⏻</button>
+      <button class="btn-icon" id="settings-btn" title="Settings"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:block"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
+      <button class="btn-icon" id="logout-btn" title="Sign out"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:block"><path d="M12 3v9"/><path d="M18.36 5.64a9 9 0 1 1-12.73 0"/></svg></button>
     </div>
   </div>
 
@@ -1467,28 +1484,30 @@ body::before{
     <!-- KEYWORD ANALYSIS -->
     <div id="gs-keyword-section" style="display:none">
       <div class="sh"><div class="sh-bar"></div><h2>Keyword Analysis &amp; Insights</h2><div class="sh-line"></div></div>
-      <div class="row-2">
-        <div class="glass card" style="height:360px">
-          <div class="ctitle">Top Keywords by Clicks</div>
-          <div class="bar-list" id="kw-bar-list">
-            <div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--text-faint)">No data — configure cell mapping in Settings</div>
-          </div>
+      <div class="glass card" style="height:360px">
+        <div class="ctitle">Top Keywords by Clicks</div>
+        <div class="bar-list" id="kw-bar-list">
+          <div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--text-faint)">No data — configure cell mapping in Settings</div>
         </div>
-        <div class="glass note-card note-section" id="gs-notes-keywords-card" style="height:360px;display:none">
-          <div class="ctitle" id="gs-notes-keywords-title">Keyword Insights</div>
-          <button class="note-edit-btn" onclick="enterNoteEdit('notes-keywords')">Edit</button>
-          <div class="note-view" id="notes-keywords-view"></div>
-          <div class="note-toolbar">
+      </div>
+    </div>
+
+    <!-- KEYWORD INSIGHTS NOTE (conditional) -->
+    <div id="gs-notes-keywords-section" style="display:none">
+      <div class="sh"><div class="sh-bar"></div><h2 id="gs-notes-keywords-title">Keyword Insights</h2><div class="sh-line"></div></div>
+      <div class="glass note-card note-section" id="gs-notes-keywords-card" style="height:188px">
+        <button class="note-edit-btn" onclick="enterNoteEdit('notes-keywords')">Edit</button>
+        <div class="note-view" id="notes-keywords-view"></div>
+        <div class="note-toolbar">
           <button class="note-toolbar-btn" title="Bold" onclick="noteFormat(this,'bold')"><b>B</b></button>
           <button class="note-toolbar-btn" title="Italic" onclick="noteFormat(this,'italic')"><i>I</i></button>
           <button class="note-toolbar-btn" title="Bullet list" onclick="noteFormat(this,'bullet')">&#8226;</button>
           <button class="note-toolbar-btn" title="Numbered list" onclick="noteFormat(this,'number')">1.</button>
         </div>
         <textarea class="note-textarea" id="notes-keywords" placeholder="Add notes here…"></textarea>
-          <div class="note-actions">
-            <button class="note-cancel-btn" onclick="cancelNoteEdit('notes-keywords')">Cancel</button>
-            <button class="note-save-btn" onclick="saveNoteEdit('notes-keywords')">Save</button>
-          </div>
+        <div class="note-actions">
+          <button class="note-cancel-btn" onclick="cancelNoteEdit('notes-keywords')">Cancel</button>
+          <button class="note-save-btn" onclick="saveNoteEdit('notes-keywords')">Save</button>
         </div>
       </div>
     </div>
@@ -2023,7 +2042,7 @@ const FIELD_DEFS = [
 ];
 
 // ── VERSION ──
-const APP_VERSION = '2.14.0';
+const APP_VERSION = '2.15.2';
 
 // ── STATE ──
 let currentClient = null;
@@ -2461,6 +2480,72 @@ function hideLoadOverlay() {
 /* ══════════════════════════════════════
    CLIENT REGISTRY — fetched from Google Sheet
 ══════════════════════════════════════ */
+// ---------------------------------------------------------------------------
+// resilientBatchFetch — wraps batchGet with per-range fallback on 400
+// Returns a rangeIndex object keyed by original range string, returned range
+// string, and cell-only shorthand. Failed individual ranges are silently skipped.
+// ---------------------------------------------------------------------------
+async function resilientBatchFetch(sheetId, uniqueRanges) {
+  const base = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values`;
+  const rangeIndex = {};
+
+  const buildIndex = (valueRanges) => {
+    (valueRanges || []).forEach((vr, i) => {
+      if (!vr) return;
+      rangeIndex[uniqueRanges[i]] = vr.values || [];
+      if (vr.range) {
+        rangeIndex[vr.range] = vr.values || [];
+        const cellOnly = vr.range.includes('!') ? vr.range.split('!').pop() : vr.range;
+        rangeIndex[cellOnly] = vr.values || [];
+      }
+    });
+  };
+
+  // Happy path — single batchGet
+  const params = uniqueRanges.map(r => 'ranges=' + encodeURIComponent(r)).join('&');
+  const batchRes = await fetch(`${base}:batchGet?${params}&key=${sheetsApiKey}`);
+
+  if (batchRes.ok) {
+    const data = await batchRes.json();
+    buildIndex(data.valueRanges);
+    return rangeIndex;
+  }
+
+  // Only use per-range fallback for 400 (bad range mapping)
+  // Other errors (429 rate limit, 5xx, etc.) should propagate to the caller
+  if (batchRes.status !== 400) {
+    const err = await batchRes.json().catch(() => ({}));
+    throw new Error(err.error?.message || `Sheets API error ${batchRes.status}`);
+  }
+
+  // Fallback — fetch each range individually, skip failures silently
+  console.warn('[resilientBatchFetch] batchGet failed, retrying ranges individually');
+  const results = await Promise.allSettled(
+    uniqueRanges.map(r =>
+      fetch(`${base}/${encodeURIComponent(r)}?key=${sheetsApiKey}`).then(res => {
+        if (!res.ok) throw new Error(`Range failed: ${r}`);
+        return res.json();
+      })
+    )
+  );
+
+  results.forEach((result, i) => {
+    if (result.status === 'fulfilled') {
+      const vr = { range: result.value.range, values: result.value.values };
+      rangeIndex[uniqueRanges[i]] = vr.values || [];
+      if (vr.range) {
+        rangeIndex[vr.range] = vr.values || [];
+        const cellOnly = vr.range.includes('!') ? vr.range.split('!').pop() : vr.range;
+        rangeIndex[cellOnly] = vr.values || [];
+      }
+    } else {
+      console.warn(`[resilientBatchFetch] Skipped bad range: ${uniqueRanges[i]}`);
+    }
+  });
+
+  return rangeIndex;
+}
+
 async function fetchRegistry() {
   // Returns true if registry loaded successfully, false if using fallback
   if (!REGISTRY_SHEET_ID || REGISTRY_SHEET_ID === 'REPLACE_WITH_REGISTRY_SHEET_ID') {
@@ -2547,22 +2632,11 @@ async function fetchSharedConfig(sheetId) {
   if (!Object.keys(toResolve).length) return config;
 
   const valueRanges = [...new Set(Object.values(toResolve))];
-  const batchUrl = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values:batchGet?${
-    valueRanges.map(r => 'ranges=' + encodeURIComponent(r)).join('&')
-  }&key=${sheetsApiKey}`;
-  const batchRes = await fetch(batchUrl);
-  if (!batchRes.ok) throw new Error('Failed to fetch shared config values');
-  const batchData = await batchRes.json();
+  const rangeIdx = await resilientBatchFetch(sheetId, valueRanges);
 
   const rangeValues = {};
-  (batchData.valueRanges || []).forEach((vr, i) => {
-    const val = String(vr.values?.[0]?.[0] ?? '').trim();
-    if (valueRanges[i]) rangeValues[valueRanges[i]] = val;
-    if (vr.range) {
-      rangeValues[vr.range] = val;
-      const cellOnly = vr.range.includes('!') ? vr.range.split('!').pop() : vr.range;
-      rangeValues[cellOnly] = val;
-    }
+  Object.entries(rangeIdx).forEach(([k, rows]) => {
+    rangeValues[k] = String(rows?.[0]?.[0] ?? '').trim();
   });
 
   Object.entries(toResolve).forEach(([field, ref]) => {
@@ -2618,32 +2692,11 @@ async function fetchClientConfig(sheetId, configTab, fieldMap, valueFields, mapp
   // Step 2: Batch-fetch only the value fields (name, password, title, etc.)
   const valueRanges = [...new Set(Object.values(toResolve))];
   if (valueRanges.length) {
-    const batchUrl = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values:batchGet?${
-      valueRanges.map(r => 'ranges=' + encodeURIComponent(r)).join('&')
-    }&key=${sheetsApiKey}`;
+    const rangeIdx = await resilientBatchFetch(sheetId, valueRanges);
 
-    const batchRes = await fetch(batchUrl);
-    if (!batchRes.ok) {
-      const err = await batchRes.json();
-      throw new Error(err.error?.message || 'Failed to fetch config values');
-    }
-    const batchData = await batchRes.json();
-
-    // Build range → value lookup using both index and returned range name for reliability
     const rangeValues = {};
-    (batchData.valueRanges || []).forEach((vr, i) => {
-      // Map by index (primary) and by normalized returned range (fallback)
-      const val = String(vr.values?.[0]?.[0] ?? '').trim();
-      if (valueRanges[i]) rangeValues[valueRanges[i]] = val;
-      // Also store by the range string Google returns (may differ in casing/sheet name format)
-      if (vr.range) {
-        // Extract just the cell ref part after the ! 
-        const returnedRef = vr.range;
-        rangeValues[returnedRef] = val;
-        // Also store without sheet prefix in case of mismatch
-        const cellOnly = returnedRef.includes('!') ? returnedRef.split('!').pop() : returnedRef;
-        rangeValues[cellOnly] = val;
-      }
+    Object.entries(rangeIdx).forEach(([k, rows]) => {
+      rangeValues[k] = String(rows?.[0]?.[0] ?? '').trim();
     });
 
     // Assign resolved values to config — try multiple range key formats
@@ -2928,21 +2981,7 @@ async function fetchSheetDataAsync(client) {
 
   try {
     const rangesToFetch = [...new Set(Object.values(mapping).filter(Boolean))];
-    const rangesParam = rangesToFetch.map(r => 'ranges=' + encodeURIComponent(r)).join('&');
-    const url = `https://sheets.googleapis.com/v4/spreadsheets/${client.sheetId}/values:batchGet?${rangesParam}&key=${sheetsApiKey}`;
-    const res = await fetch(url);
-    if (!res.ok) throw new Error('Sheet data fetch failed');
-    const data = await res.json();
-
-    const rangeIndex = {};
-    (data.valueRanges || []).forEach((vr, i) => {
-      rangeIndex[rangesToFetch[i]] = vr.values || [];
-      if (vr.range) {
-        rangeIndex[vr.range] = vr.values || [];
-        const cellOnly = vr.range.includes('!') ? vr.range.split('!').pop() : vr.range;
-        rangeIndex[cellOnly] = vr.values || [];
-      }
-    });
+    const rangeIndex = await resilientBatchFetch(client.sheetId, rangesToFetch);
 
     // Store zip data reference for map stage check
     const zipImpr = mapping.zip_impr_range ? rangeIndex[mapping.zip_impr_range] : null;
@@ -2983,22 +3022,7 @@ async function fetchMetaDataAsync(client, metaCfg) {
 
   try {
     const uniqueRanges = [...new Set(rangesToFetch)];
-    const params = uniqueRanges.map(r => 'ranges=' + encodeURIComponent(r)).join('&');
-    const url = `https://sheets.googleapis.com/v4/spreadsheets/${client.sheetId}/values:batchGet?${params}&key=${sheetsApiKey}`;
-    const res = await fetch(url);
-    if (!res.ok) throw new Error('Meta data fetch failed');
-    const data = await res.json();
-
-    const rangeIndex = {};
-    (data.valueRanges || []).forEach((vr, i) => {
-      const key = uniqueRanges[i];
-      rangeIndex[key] = vr.values || [];
-      if (vr.range) {
-        rangeIndex[vr.range] = vr.values || [];
-        const cellOnly = vr.range.includes('!') ? vr.range.split('!').pop() : vr.range;
-        rangeIndex[cellOnly] = vr.values || [];
-      }
-    });
+    const rangeIndex = await resilientBatchFetch(client.sheetId, uniqueRanges);
 
     // Set _metaConfig BEFORE calling applyMetaData so buildContentCard can read it
     client._metaConfig = metaCfg;
@@ -3031,22 +3055,7 @@ async function fetchLinkedInDataAsync(client, liCfg) {
 
   try {
     const uniqueRanges = [...new Set(rangesToFetch)];
-    const params = uniqueRanges.map(r => 'ranges=' + encodeURIComponent(r)).join('&');
-    const url = `https://sheets.googleapis.com/v4/spreadsheets/${client.sheetId}/values:batchGet?${params}&key=${sheetsApiKey}`;
-    const res = await fetch(url);
-    if (!res.ok) throw new Error('LinkedIn data fetch failed');
-    const data = await res.json();
-
-    const rangeIndex = {};
-    (data.valueRanges || []).forEach((vr, i) => {
-      const key = uniqueRanges[i];
-      rangeIndex[key] = vr.values || [];
-      if (vr.range) {
-        rangeIndex[vr.range] = vr.values || [];
-        const cellOnly = vr.range.includes('!') ? vr.range.split('!').pop() : vr.range;
-        rangeIndex[cellOnly] = vr.values || [];
-      }
-    });
+    const rangeIndex = await resilientBatchFetch(client.sheetId, uniqueRanges);
 
     client._liConfig = liCfg;
     currentClient._liConfig = liCfg;
@@ -3162,22 +3171,7 @@ async function fetchOverviewDataAsync(client, ovCfg) {
 
   try {
     const uniqueRanges = [...new Set(rangesToFetch)];
-    const params = uniqueRanges.map(r => 'ranges=' + encodeURIComponent(r)).join('&');
-    const url = `https://sheets.googleapis.com/v4/spreadsheets/${client.sheetId}/values:batchGet?${params}&key=${sheetsApiKey}`;
-    const res = await fetch(url);
-    if (!res.ok) throw new Error('Overview data fetch failed');
-    const data = await res.json();
-
-    const rangeIndex = {};
-    (data.valueRanges || []).forEach((vr, i) => {
-      const key = uniqueRanges[i];
-      rangeIndex[key] = vr.values || [];
-      if (vr.range) {
-        rangeIndex[vr.range] = vr.values || [];
-        const cellOnly = vr.range.includes('!') ? vr.range.split('!').pop() : vr.range;
-        rangeIndex[cellOnly] = vr.values || [];
-      }
-    });
+    const rangeIndex = await resilientBatchFetch(client.sheetId, uniqueRanges);
 
     applyOverviewData(client, ovCfg, rangeIndex);
     client._overviewLoaded = true;
@@ -3316,7 +3310,7 @@ function resetClientUI() {
 
   // Hide all conditional sections until data loads
   ['gs-notes-performance-section','gs-notes-audience-section','gs-notes-final-section',
-   'gs-audience-section','gs-notes-keywords-card',
+   'gs-audience-section','gs-notes-keywords-section',
    'gs-keyword-section','gs-geo-section','gs-demo-section',
    'meta-notes-performance-section','meta-audience-notes-section','meta-notes-final-section',
    'meta-audience-section','meta-content-section','meta-demo-section',
@@ -3820,19 +3814,8 @@ function applySheetData(mapping, rangeIndex) {
   // Conditional notes sections — driven by label fields from config
   applyNotesSection('gs-notes-performance-section', 'gs-notes-performance-title', currentClient.notes_performance_label);
   applyNotesSection('gs-notes-audience-section',    'gs-notes-audience-title',    currentClient.notes_audience_label);
+  applyNotesSection('gs-notes-keywords-section',    'gs-notes-keywords-title',    currentClient.notes_keywords_label);
   applyNotesSection('gs-notes-final-section',       'gs-notes-final-title',       currentClient.notes_final_label);
-
-  // Keyword notes card — inline conditional (lives inside row-2 alongside bar chart)
-  const kwNotesCard = document.getElementById('gs-notes-keywords-card');
-  if (kwNotesCard) {
-    const kwLabel = currentClient.notes_keywords_label;
-    const skip = !kwLabel || ['n/a','na','none','-',''].includes(String(kwLabel).trim().toLowerCase());
-    kwNotesCard.style.display = skip ? 'none' : '';
-    if (!skip) {
-      const titleEl = document.getElementById('gs-notes-keywords-title');
-      if (titleEl) titleEl.textContent = kwLabel;
-    }
-  }
 }
 
 /* ══════════════════════════════════════
@@ -4077,7 +4060,7 @@ function renderKeywordBars(kwRows) {
     div.className = 'brow';
     div.innerHTML = `
       <div class="bkw">${escHtml(kw)}</div>
-      <div class="btrack">
+      <div class="btrack-clear">
         <div class="bfill" style="width:${pct}%;background:#e8382d">
           ${clicks.toLocaleString()}
         </div>
@@ -4300,22 +4283,7 @@ async function loadMetaTemplate() {
     }
 
     const uniqueRanges = [...new Set(rangesToFetch)];
-    const params = uniqueRanges.map(r => 'ranges=' + encodeURIComponent(r)).join('&');
-    const url = `https://sheets.googleapis.com/v4/spreadsheets/${currentClient.sheetId}/values:batchGet?${params}&key=${sheetsApiKey}`;
-    const res = await fetch(url);
-    if (!res.ok) throw new Error('Meta data fetch failed');
-    const data = await res.json();
-
-    const rangeIndex = {};
-    (data.valueRanges || []).forEach((vr, i) => {
-      const key = uniqueRanges[i];
-      rangeIndex[key] = vr.values || [];
-      if (vr.range) {
-        rangeIndex[vr.range] = vr.values || [];
-        const cellOnly = vr.range.includes('!') ? vr.range.split('!').pop() : vr.range;
-        rangeIndex[cellOnly] = vr.values || [];
-      }
-    });
+    const rangeIndex = await resilientBatchFetch(currentClient.sheetId, uniqueRanges);
 
     applyMetaData(config, rangeIndex);
   } catch(e) {
@@ -5411,7 +5379,10 @@ document.getElementById('refresh-btn').addEventListener('click', async () => {
   } catch(err) {
     console.error('[Refresh]', err);
     setConnStatus(false, 'Refresh failed');
-    toast(friendlyError(err), 'error');
+    const msg = (err instanceof TypeError && err.message.toLowerCase().includes('fetch'))
+      ? 'No internet connection — showing last loaded data'
+      : friendlyError(err);
+    toast(msg, 'error');
   } finally {
     setRefreshing(false);
   }
