@@ -224,7 +224,8 @@ body::before{
 .hdr-title{font-size:16px;font-weight:700;letter-spacing:-.2px;color:var(--text);line-height:1.2}
 .hdr-sub{font-size:10px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-top:3px}
 .hdr-prepared{font-size:10px;font-weight:500;letter-spacing:.5px;color:rgba(0,0,0,0.3);margin-top:2px}
-.hdr-r{display:flex;align-items:center;gap:9px}
+.hdr-r{display:flex;align-items:center;gap:8px}
+.hdr-divider{width:1px;height:16px;background:rgba(0,0,0,0.12);margin:0 2px;flex-shrink:0}
 .btn{padding:0 17px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:.4px;line-height:1;height:30px;display:inline-flex;align-items:center;transition:all .2s}
 .btn-red{background:var(--red);color:white;border:1px solid transparent}
 .btn-red:hover{background:var(--red-dark)}
@@ -277,6 +278,10 @@ body::before{
 /* ── KPI CARDS ── */
 .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
 #tmpl-meta-ads .kpi-grid-3{grid-template-columns:repeat(3,1fr)}
+#tmpl-facebook-ads .kpi-grid-3{grid-template-columns:repeat(3,1fr)}
+#tmpl-instagram-ads .kpi-grid-3{grid-template-columns:repeat(3,1fr)}
+#tmpl-display-ads .kpi-grid-3{grid-template-columns:repeat(3,1fr)}
+#tmpl-youtube-ads .kpi-grid-3{grid-template-columns:repeat(3,1fr)}
 #tmpl-linkedin-ads .kpi-grid-3{grid-template-columns:repeat(3,1fr)}
 .kpi{
   padding:26px 28px 22px;position:relative;overflow:hidden;
@@ -448,7 +453,7 @@ body::before{
 .bar-list{display:flex;flex-direction:column;gap:0;flex:1;min-height:0}
 .brow{display:flex;align-items:center;gap:10px;flex:1}
 .bkw{font-size:11px;color:var(--text-muted);width:155px;flex-shrink:0;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.bkw-sm{font-size:11px;color:var(--text-muted);width:50px;flex-shrink:0;text-align:right;font-family:monospace;letter-spacing:.5px}
+.bkw-sm{font-size:11px;font-weight:700;color:var(--text-muted);width:auto;min-width:34px;flex-shrink:0;text-align:right;font-family:var(--font-primary);letter-spacing:.5px;white-space:nowrap;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility;font-variant-numeric:tabular-nums}
 .btrack{flex:1;height:20px;background:rgba(0,0,0,0.05);border-radius:5px;overflow:hidden}
 .btrack-clear{flex:1;height:20px;background:transparent;border-radius:5px;overflow:hidden}
 .bfill{height:100%;border-radius:5px;display:flex;align-items:center;justify-content:flex-end;padding-right:8px;font-size:9px;font-weight:700;color:white;transition:width .6s ease}
@@ -465,6 +470,30 @@ body::before{
 .map-placeholder-icon{font-size:24px;opacity:.3}
 .map-placeholder-text{font-size:10px;color:rgba(0,0,0,0.3);letter-spacing:1.8px;text-transform:uppercase}
 .mapboxgl-map{width:100%;height:100%}
+
+/* ── GEO CARD (unified map + bars, stacked) — 4:3 applies to the whole card on desktop;
+   relaxed at tablet/phone breakpoints below to give the map more room ── */
+.geo-card{
+  padding:20px;aspect-ratio:4/3;display:flex;flex-direction:column;
+}
+.geo-header-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px;flex-shrink:0}
+.geo-pill-toggle{
+  display:inline-flex;background:rgba(0,0,0,0.05);border-radius:9px;padding:3px;gap:2px;flex-shrink:0;
+}
+.geo-pill-btn{
+  padding:6px 12px;border-radius:7px;border:none;background:transparent;
+  color:var(--text-muted);font-size:11px;font-weight:600;cursor:pointer;
+  font-family:var(--font-primary);transition:all .2s ease;white-space:nowrap;
+}
+.geo-pill-btn.active{background:#fff;color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,0.1)}
+.geo-map-body{
+  flex:1;min-height:0;border-radius:9px;overflow:hidden;
+  border:1px solid rgba(0,0,0,0.08);position:relative;margin-bottom:14px;
+}
+.geo-bars{display:flex;flex-direction:column;gap:6px;flex:none}
+.geo-bars .brow{flex:none}
+.fade-target{transition:opacity .12s ease}
+.fade-target.fading{opacity:0}
 
 /* ── DONUT ── */
 .donut-body{flex:1;display:flex;flex-direction:column;align-items:center;min-height:0;gap:0}
@@ -918,6 +947,10 @@ body::before{
   .kpi-grid{grid-template-columns:1fr 1fr;gap:10px}
   #ov-kpi-grid{grid-template-columns:1fr 1fr!important}
   #tmpl-meta-ads .kpi-grid-3{grid-template-columns:repeat(2,1fr)}
+  #tmpl-facebook-ads .kpi-grid-3{grid-template-columns:repeat(2,1fr)}
+  #tmpl-instagram-ads .kpi-grid-3{grid-template-columns:repeat(2,1fr)}
+  #tmpl-display-ads .kpi-grid-3{grid-template-columns:repeat(2,1fr)}
+  #tmpl-youtube-ads .kpi-grid-3{grid-template-columns:repeat(2,1fr)}
   #tmpl-linkedin-ads .kpi-grid-3{grid-template-columns:repeat(2,1fr)}
   .kpi{height:158px;padding:16px 16px 12px;overflow:hidden}
   .kpi-val{font-size:32px}
@@ -939,11 +972,15 @@ body::before{
   /* Note textareas */
   .note-textarea{min-height:120px}
 
-  /* Bar lists */
-  .bar-list{min-height:200px}
+  /* Bar lists — excludes geo-bars, which is intentionally content-sized to preserve the geo card ratio */
+  .bar-list:not(.geo-bars){min-height:200px}
 
   /* Maps — handled by toggle (see below) */
   .map-body{min-height:280px}
+
+  /* Geo card — relax aspect ratio at tablet width so the map keeps usable height
+     once the header row and bar list claim their share */
+  .geo-card{aspect-ratio:1/1}
 
   /* Donuts — already collapse via row-3 → 1col */
   .donut-body{min-height:260px}
@@ -1002,7 +1039,39 @@ body::before{
 
   /* Bar chart labels — narrower on phone */
   .bkw{width:110px;font-size:10px}
-  .bkw-sm{width:42px;font-size:10px}
+  .bkw-sm{min-width:30px;font-size:10px}
+
+  /* Geo card — split into two independent square-ish cards at phone width,
+     with the clicks/impressions toggle pulled out above both, full-width —
+     matching the old pre-redesign mobile toggle pattern. */
+  .geo-card{
+    aspect-ratio:auto;padding:0;background:none;border:none;box-shadow:none;
+    backdrop-filter:none;-webkit-backdrop-filter:none;gap:10px;
+  }
+  .geo-header-row{
+    justify-content:center;margin-bottom:0;
+  }
+  .geo-header-row .ctitle{display:none}
+  .geo-pill-toggle{
+    width:100%;background:rgba(0,0,0,0.05);
+  }
+  .geo-pill-btn{flex:1;padding:8px 9px;font-size:11px;text-align:center}
+  .geo-map-body{
+    aspect-ratio:1/1;flex:none;margin-bottom:0;
+    background:var(--glass-bg);border:1px solid var(--glass-border);
+    box-shadow:var(--glass-shadow);backdrop-filter:blur(20px) saturate(180%);
+    -webkit-backdrop-filter:blur(20px) saturate(180%);
+  }
+  #gs-geo-bar-title,#disp-geo-bar-title,#yt-geo-bar-title{
+    background:var(--glass-bg);border:1px solid var(--glass-border);
+    border-radius:13px 13px 0 0;box-shadow:var(--glass-shadow);
+    padding:14px 14px 0;margin-bottom:0;border-bottom:none;font-size:10px;
+  }
+  .geo-bars{
+    gap:5px;background:var(--glass-bg);border:1px solid var(--glass-border);
+    border-top:none;border-radius:0 0 13px 13px;box-shadow:var(--glass-shadow);
+    padding:10px 14px 14px;
+  }
 
   /* Donut cards */
 
@@ -1016,27 +1085,6 @@ body::before{
   /* KPI tags even smaller on phone */
   .kpi-tag{font-size:7.5px}
   .kpi{height:148px}
-}
-
-/* ── MAP TOGGLE (mobile only) ── */
-.map-toggle-bar{
-  display:none;
-  gap:8px;margin-bottom:10px;flex-shrink:0;
-}
-.map-toggle-btn{
-  flex:1;padding:7px 12px;border-radius:7px;font-size:11px;font-weight:700;
-  letter-spacing:.5px;border:1px solid rgba(232,56,45,0.25);
-  background:rgba(255,255,255,0.6);color:var(--text-muted);
-  cursor:pointer;transition:all .2s;font-family:var(--font-primary);
-}
-.map-toggle-btn.active{background:#e8382d;color:white;border-color:#e8382d}
-.map-panel{display:block}
-.map-panel.hidden{display:none}
-
-@media (max-width: 768px) {
-  .map-toggle-bar{display:flex}
-  /* On mobile the two map cards are already stacked (row-2 → 1col).
-     We use JS to show/hide them via .hidden class */
 }
 
 /* Print */
@@ -1166,13 +1214,17 @@ body::before{
   .rank-badge{font-size:8px!important;padding:2px 6px!important}
 
   /* Demographics — force 2-col side by side in print */
-  #tmpl-meta-ads .row-2{
+  #tmpl-meta-ads .row-2,
+  #tmpl-facebook-ads .row-2,
+  #tmpl-instagram-ads .row-2{
     display:grid!important;
     grid-template-columns:1fr 1fr!important;
   }
 
-  /* KPI grid — maintain 3-col for meta */
-  #tmpl-meta-ads .kpi-grid{
+  /* KPI grid — maintain 3-col for meta/fb/ig */
+  #tmpl-meta-ads .kpi-grid,
+  #tmpl-facebook-ads .kpi-grid,
+  #tmpl-instagram-ads .kpi-grid{
     grid-template-columns:repeat(3,1fr)!important;
   }
 
@@ -1317,6 +1369,7 @@ body::before{
       <span id="admin-badge">Admin</span>
       <button class="btn btn-red" id="refresh-btn">↻ Refresh</button>
       <button class="btn btn-ghost" onclick="window.print()">⬇ Export PDF</button>
+      <span class="hdr-divider"></span>
       <button class="btn-icon" id="settings-btn" title="Settings"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:block"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
       <button class="btn-icon" id="logout-btn" title="Sign out"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:block"><path d="M12 3v9"/><path d="M18.36 5.64a9 9 0 1 1-12.73 0"/></svg></button>
     </div>
@@ -1512,50 +1565,24 @@ body::before{
       </div>
     </div>
 
-    <!-- GEOGRAPHIC — MAPS + BAR CHARTS PAIRED -->
+    <!-- GEOGRAPHIC — UNIFIED MAP + BAR CHART, TOGGLE-DRIVEN -->
     <div id="gs-geo-section" style="display:none">
       <div class="sh"><div class="sh-bar"></div><h2>Geographic Performance</h2><div class="sh-line"></div></div>
-      <!-- Mobile toggle — only visible on small screens -->
-      <div class="map-toggle-bar" id="map-toggle-bar">
-        <button class="map-toggle-btn active" id="map-toggle-clicks" onclick="showMap('clicks')">Ad Clicks</button>
-        <button class="map-toggle-btn" id="map-toggle-impressions" onclick="showMap('impressions')">Ad Impressions</button>
-      </div>
-
-      <!-- Clicks row: map + bar chart paired -->
-      <div class="map-panel" id="map-panel-clicks" style="margin-bottom:14px">
-        <div class="row-2">
-          <div class="glass card" style="height:320px">
-            <div class="ctitle">Ad Clicks By Zip Code (1.1)</div>
-            <div class="map-body map-placeholder" id="map-clicks">
-              <div class="map-placeholder-icon">🗺</div>
-              <div class="map-placeholder-text">Mapbox · Clicks Heat</div>
-            </div>
-          </div>
-          <div class="glass card" style="height:320px">
-            <div class="ctitle">Ad Clicks By Zip Code (1.2)</div>
-            <div class="bar-list" id="zip-clicks-bars">
-              <div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--text-faint)">No data</div>
-            </div>
+      <div class="glass geo-card">
+        <div class="geo-header-row">
+          <div class="ctitle" id="gs-geo-map-title" style="margin-bottom:0">Ad Clicks By Zip Code</div>
+          <div class="geo-pill-toggle" id="gs-geo-toggle-bar">
+            <button class="geo-pill-btn active" id="gs-geo-toggle-clicks" onclick="toggleGeoView('gs','clicks')">Clicks</button>
+            <button class="geo-pill-btn" id="gs-geo-toggle-impressions" onclick="toggleGeoView('gs','impressions')">Impressions</button>
           </div>
         </div>
-      </div>
-
-      <!-- Impressions row: map + bar chart paired -->
-      <div class="map-panel" id="map-panel-impressions">
-        <div class="row-2">
-          <div class="glass card" style="height:320px">
-            <div class="ctitle">Ad Impressions By Zip Code (1.1)</div>
-            <div class="map-body map-placeholder" id="map-impressions">
-              <div class="map-placeholder-icon">🗺</div>
-              <div class="map-placeholder-text">Mapbox · Impressions Heat</div>
-            </div>
-          </div>
-          <div class="glass card" style="height:320px">
-            <div class="ctitle">Ad Impressions By Zip Code (1.2)</div>
-            <div class="bar-list" id="zip-impressions-bars">
-              <div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--text-faint)">No data</div>
-            </div>
-          </div>
+        <div class="geo-map-body map-placeholder fade-target" id="gs-geo-map">
+          <div class="map-placeholder-icon">🗺</div>
+          <div class="map-placeholder-text">Mapbox · Clicks Heat</div>
+        </div>
+        <div class="ctitle" id="gs-geo-bar-title">Top Zip Codes — Clicks</div>
+        <div class="bar-list geo-bars fade-target" id="gs-geo-bars">
+          <div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--text-faint)">No data</div>
         </div>
       </div>
     </div>
@@ -1749,6 +1776,464 @@ body::before{
     </div>
 
     </div><!-- /tmpl-meta-ads -->
+
+    <!-- ═══ FACEBOOK ADS TEMPLATE ═══ -->
+    <div class="tmpl-content" id="tmpl-facebook-ads">
+    <div>
+      <div class="sh"><div class="sh-bar"></div><h2>Top Line Campaign Performance</h2><div class="sh-line"></div></div>
+      <div class="kpi-grid kpi-grid-3" id="fb-kpi-grid">
+        <div class="glass kpi"><div class="kpi-tag">Ad Clicks</div><div class="kpi-val" id="fb-kpi-clicks">—</div><div class="kpi-trend"><span id="fb-kpi-clicks-trend" class="tup" style="display:none"></span><span class="tlbl" id="fb-kpi-clicks-tlbl"></span></div></div>
+        <div class="glass kpi"><div class="kpi-tag">Reach</div><div class="kpi-val" id="fb-kpi-reach">—</div><div class="kpi-trend"><span id="fb-kpi-reach-trend" class="tup" style="display:none"></span><span class="tlbl" id="fb-kpi-reach-tlbl"></span></div></div>
+        <div class="glass kpi"><div class="kpi-tag">Impressions</div><div class="kpi-val" id="fb-kpi-impr">—</div><div class="kpi-trend"><span id="fb-kpi-impr-trend" class="tup" style="display:none"></span><span class="tlbl" id="fb-kpi-impr-tlbl"></span></div></div>
+        <div class="glass kpi"><div class="kpi-tag">Avg. Click-Through Rate (CTR)</div><div class="kpi-val" id="fb-kpi-ctr">—</div><div class="kpi-trend"><span id="fb-kpi-ctr-trend" class="tdn" style="display:none"></span><span class="tlbl" id="fb-kpi-ctr-tlbl"></span></div></div>
+        <div class="glass kpi"><div class="kpi-tag">Avg. Cost-Per-Click (CPC)</div><div class="kpi-val" id="fb-kpi-cpc">—</div><div class="kpi-trend"><span id="fb-kpi-cpc-trend" class="tup" style="display:none"></span><span class="tlbl" id="fb-kpi-cpc-tlbl"></span></div></div>
+        <div class="glass kpi"><div class="kpi-tag">Avg. Frequency</div><div class="kpi-val" id="fb-kpi-freq">—</div><div class="kpi-trend"><span id="fb-kpi-freq-trend" class="tneutral" style="display:none"></span><span class="tlbl" id="fb-kpi-freq-tlbl"></span></div></div>
+      </div>
+    </div>
+    <div id="fb-notes-performance-section" style="display:none">
+      <div class="sh"><div class="sh-bar"></div><h2 id="fb-notes-performance-title">Performance Notes</h2><div class="sh-line"></div></div>
+      <div class="glass note-card note-section" style="height:188px">
+        <button class="note-edit-btn" onclick="enterNoteEdit('fb-notes-performance')">Edit</button>
+        <div class="note-view" id="fb-notes-performance-view"></div>
+        <div class="note-toolbar"><button class="note-toolbar-btn" title="Bold" onclick="noteFormat(this,'bold')"><b>B</b></button><button class="note-toolbar-btn" title="Italic" onclick="noteFormat(this,'italic')"><i>I</i></button><button class="note-toolbar-btn" title="Bullet list" onclick="noteFormat(this,'bullet')">&#8226;</button><button class="note-toolbar-btn" title="Numbered list" onclick="noteFormat(this,'number')">1.</button></div>
+        <textarea class="note-textarea" id="fb-notes-performance" placeholder="Add notes here..."></textarea>
+        <div class="note-actions"><button class="note-cancel-btn" onclick="cancelNoteEdit('fb-notes-performance')">Cancel</button><button class="note-save-btn" onclick="saveNoteEdit('fb-notes-performance')">Save</button></div>
+      </div>
+    </div>
+    <div id="fb-audience-section" style="display:none">
+      <div class="sh"><div class="sh-bar"></div><h2>Audience Segmentation</h2><div class="sh-line"></div></div>
+      <div class="glass card card-auto"><div class="ctitle">Audience Performance</div><div class="audience-table-wrap" id="fb-audience-table-wrap"><div class="audience-empty">No audience data configured</div></div></div>
+    </div>
+    <div id="fb-audience-notes-section" style="display:none">
+      <div class="sh"><div class="sh-bar"></div><h2 id="fb-notes-audience-title">Audience Insights</h2><div class="sh-line"></div></div>
+      <div class="glass note-card note-section" style="height:188px">
+        <button class="note-edit-btn" onclick="enterNoteEdit('fb-notes-audience')">Edit</button>
+        <div class="note-view" id="fb-notes-audience-view"></div>
+        <div class="note-toolbar"><button class="note-toolbar-btn" title="Bold" onclick="noteFormat(this,'bold')"><b>B</b></button><button class="note-toolbar-btn" title="Italic" onclick="noteFormat(this,'italic')"><i>I</i></button><button class="note-toolbar-btn" title="Bullet list" onclick="noteFormat(this,'bullet')">&#8226;</button><button class="note-toolbar-btn" title="Numbered list" onclick="noteFormat(this,'number')">1.</button></div>
+        <textarea class="note-textarea" id="fb-notes-audience" placeholder="Add notes here..."></textarea>
+        <div class="note-actions"><button class="note-cancel-btn" onclick="cancelNoteEdit('fb-notes-audience')">Cancel</button><button class="note-save-btn" onclick="saveNoteEdit('fb-notes-audience')">Save</button></div>
+      </div>
+    </div>
+    <div id="fb-content-section" style="display:none">
+      <div class="sh"><div class="sh-bar"></div><h2>Top Content</h2><div class="sh-line"></div></div>
+      <div class="content-grid" id="fb-content-grid"></div>
+    </div>
+    <div id="fb-demo-section" style="display:none">
+      <div class="sh"><div class="sh-bar"></div><h2>Campaign Demographic Data</h2><div class="sh-line"></div></div>
+      <div class="row-2">
+        <div class="glass card" style="height:340px"><div class="ctitle ctitle-center">Gender Distribution</div><div class="donut-body"><div class="dnut-wrap" id="fb-donut-gender"></div><div class="dleg" id="fb-dleg-gender"></div></div></div>
+        <div class="glass card" style="height:340px"><div class="ctitle ctitle-center">Age Distribution</div><div class="donut-body"><div class="dnut-wrap" id="fb-donut-age"></div><div class="dleg" id="fb-dleg-age"></div></div></div>
+      </div>
+    </div>
+    <div id="fb-notes-final-section" style="display:none">
+      <div class="sh"><div class="sh-bar"></div><h2 id="fb-notes-final-title">Final Thoughts</h2><div class="sh-line"></div></div>
+      <div class="glass note-card note-section" style="height:255px">
+        <button class="note-edit-btn" onclick="enterNoteEdit('fb-notes-final')">Edit</button>
+        <div class="note-view" id="fb-notes-final-view"></div>
+        <div class="note-toolbar"><button class="note-toolbar-btn" title="Bold" onclick="noteFormat(this,'bold')"><b>B</b></button><button class="note-toolbar-btn" title="Italic" onclick="noteFormat(this,'italic')"><i>I</i></button><button class="note-toolbar-btn" title="Bullet list" onclick="noteFormat(this,'bullet')">&#8226;</button><button class="note-toolbar-btn" title="Numbered list" onclick="noteFormat(this,'number')">1.</button></div>
+        <textarea class="note-textarea" id="fb-notes-final" placeholder="Add notes here..."></textarea>
+        <div class="note-actions"><button class="note-cancel-btn" onclick="cancelNoteEdit('fb-notes-final')">Cancel</button><button class="note-save-btn" onclick="saveNoteEdit('fb-notes-final')">Save</button></div>
+      </div>
+    </div>
+    </div><!-- /tmpl-facebook-ads -->
+
+    <!-- ═══ INSTAGRAM ADS TEMPLATE ═══ -->
+    <div class="tmpl-content" id="tmpl-instagram-ads">
+    <div>
+      <div class="sh"><div class="sh-bar"></div><h2>Top Line Campaign Performance</h2><div class="sh-line"></div></div>
+      <div class="kpi-grid kpi-grid-3" id="ig-kpi-grid">
+        <div class="glass kpi"><div class="kpi-tag">Ad Clicks</div><div class="kpi-val" id="ig-kpi-clicks">—</div><div class="kpi-trend"><span id="ig-kpi-clicks-trend" class="tup" style="display:none"></span><span class="tlbl" id="ig-kpi-clicks-tlbl"></span></div></div>
+        <div class="glass kpi"><div class="kpi-tag">Reach</div><div class="kpi-val" id="ig-kpi-reach">—</div><div class="kpi-trend"><span id="ig-kpi-reach-trend" class="tup" style="display:none"></span><span class="tlbl" id="ig-kpi-reach-tlbl"></span></div></div>
+        <div class="glass kpi"><div class="kpi-tag">Impressions</div><div class="kpi-val" id="ig-kpi-impr">—</div><div class="kpi-trend"><span id="ig-kpi-impr-trend" class="tup" style="display:none"></span><span class="tlbl" id="ig-kpi-impr-tlbl"></span></div></div>
+        <div class="glass kpi"><div class="kpi-tag">Avg. Click-Through Rate (CTR)</div><div class="kpi-val" id="ig-kpi-ctr">—</div><div class="kpi-trend"><span id="ig-kpi-ctr-trend" class="tdn" style="display:none"></span><span class="tlbl" id="ig-kpi-ctr-tlbl"></span></div></div>
+        <div class="glass kpi"><div class="kpi-tag">Avg. Cost-Per-Click (CPC)</div><div class="kpi-val" id="ig-kpi-cpc">—</div><div class="kpi-trend"><span id="ig-kpi-cpc-trend" class="tup" style="display:none"></span><span class="tlbl" id="ig-kpi-cpc-tlbl"></span></div></div>
+        <div class="glass kpi"><div class="kpi-tag">Avg. Frequency</div><div class="kpi-val" id="ig-kpi-freq">—</div><div class="kpi-trend"><span id="ig-kpi-freq-trend" class="tneutral" style="display:none"></span><span class="tlbl" id="ig-kpi-freq-tlbl"></span></div></div>
+      </div>
+    </div>
+    <div id="ig-notes-performance-section" style="display:none">
+      <div class="sh"><div class="sh-bar"></div><h2 id="ig-notes-performance-title">Performance Notes</h2><div class="sh-line"></div></div>
+      <div class="glass note-card note-section" style="height:188px">
+        <button class="note-edit-btn" onclick="enterNoteEdit('ig-notes-performance')">Edit</button>
+        <div class="note-view" id="ig-notes-performance-view"></div>
+        <div class="note-toolbar"><button class="note-toolbar-btn" title="Bold" onclick="noteFormat(this,'bold')"><b>B</b></button><button class="note-toolbar-btn" title="Italic" onclick="noteFormat(this,'italic')"><i>I</i></button><button class="note-toolbar-btn" title="Bullet list" onclick="noteFormat(this,'bullet')">&#8226;</button><button class="note-toolbar-btn" title="Numbered list" onclick="noteFormat(this,'number')">1.</button></div>
+        <textarea class="note-textarea" id="ig-notes-performance" placeholder="Add notes here..."></textarea>
+        <div class="note-actions"><button class="note-cancel-btn" onclick="cancelNoteEdit('ig-notes-performance')">Cancel</button><button class="note-save-btn" onclick="saveNoteEdit('ig-notes-performance')">Save</button></div>
+      </div>
+    </div>
+    <div id="ig-audience-section" style="display:none">
+      <div class="sh"><div class="sh-bar"></div><h2>Audience Segmentation</h2><div class="sh-line"></div></div>
+      <div class="glass card card-auto"><div class="ctitle">Audience Performance</div><div class="audience-table-wrap" id="ig-audience-table-wrap"><div class="audience-empty">No audience data configured</div></div></div>
+    </div>
+    <div id="ig-audience-notes-section" style="display:none">
+      <div class="sh"><div class="sh-bar"></div><h2 id="ig-notes-audience-title">Audience Insights</h2><div class="sh-line"></div></div>
+      <div class="glass note-card note-section" style="height:188px">
+        <button class="note-edit-btn" onclick="enterNoteEdit('ig-notes-audience')">Edit</button>
+        <div class="note-view" id="ig-notes-audience-view"></div>
+        <div class="note-toolbar"><button class="note-toolbar-btn" title="Bold" onclick="noteFormat(this,'bold')"><b>B</b></button><button class="note-toolbar-btn" title="Italic" onclick="noteFormat(this,'italic')"><i>I</i></button><button class="note-toolbar-btn" title="Bullet list" onclick="noteFormat(this,'bullet')">&#8226;</button><button class="note-toolbar-btn" title="Numbered list" onclick="noteFormat(this,'number')">1.</button></div>
+        <textarea class="note-textarea" id="ig-notes-audience" placeholder="Add notes here..."></textarea>
+        <div class="note-actions"><button class="note-cancel-btn" onclick="cancelNoteEdit('ig-notes-audience')">Cancel</button><button class="note-save-btn" onclick="saveNoteEdit('ig-notes-audience')">Save</button></div>
+      </div>
+    </div>
+    <div id="ig-content-section" style="display:none">
+      <div class="sh"><div class="sh-bar"></div><h2>Top Content</h2><div class="sh-line"></div></div>
+      <div class="content-grid" id="ig-content-grid"></div>
+    </div>
+    <div id="ig-demo-section" style="display:none">
+      <div class="sh"><div class="sh-bar"></div><h2>Campaign Demographic Data</h2><div class="sh-line"></div></div>
+      <div class="row-2">
+        <div class="glass card" style="height:340px"><div class="ctitle ctitle-center">Gender Distribution</div><div class="donut-body"><div class="dnut-wrap" id="ig-donut-gender"></div><div class="dleg" id="ig-dleg-gender"></div></div></div>
+        <div class="glass card" style="height:340px"><div class="ctitle ctitle-center">Age Distribution</div><div class="donut-body"><div class="dnut-wrap" id="ig-donut-age"></div><div class="dleg" id="ig-dleg-age"></div></div></div>
+      </div>
+    </div>
+    <div id="ig-notes-final-section" style="display:none">
+      <div class="sh"><div class="sh-bar"></div><h2 id="ig-notes-final-title">Final Thoughts</h2><div class="sh-line"></div></div>
+      <div class="glass note-card note-section" style="height:255px">
+        <button class="note-edit-btn" onclick="enterNoteEdit('ig-notes-final')">Edit</button>
+        <div class="note-view" id="ig-notes-final-view"></div>
+        <div class="note-toolbar"><button class="note-toolbar-btn" title="Bold" onclick="noteFormat(this,'bold')"><b>B</b></button><button class="note-toolbar-btn" title="Italic" onclick="noteFormat(this,'italic')"><i>I</i></button><button class="note-toolbar-btn" title="Bullet list" onclick="noteFormat(this,'bullet')">&#8226;</button><button class="note-toolbar-btn" title="Numbered list" onclick="noteFormat(this,'number')">1.</button></div>
+        <textarea class="note-textarea" id="ig-notes-final" placeholder="Add notes here..."></textarea>
+        <div class="note-actions"><button class="note-cancel-btn" onclick="cancelNoteEdit('ig-notes-final')">Cancel</button><button class="note-save-btn" onclick="saveNoteEdit('ig-notes-final')">Save</button></div>
+      </div>
+    </div>
+    </div><!-- /tmpl-instagram-ads -->
+
+    <!-- ── DISPLAY ADS TEMPLATE ── -->
+    <div class="tmpl-content" id="tmpl-display-ads">
+
+    <!-- DISPLAY ADS KPIs — 3x2 grid -->
+    <div>
+      <div class="sh"><div class="sh-bar"></div><h2>Top Line Campaign Performance</h2><div class="sh-line"></div></div>
+      <div class="kpi-grid kpi-grid-3" id="disp-kpi-grid">
+        <div class="glass kpi">
+          <div class="kpi-tag">Ad Clicks</div>
+          <div class="kpi-val" id="disp-kpi-clicks">—</div>
+          <div class="kpi-trend"><span id="disp-kpi-clicks-trend" class="tup" style="display:none"></span><span class="tlbl" id="disp-kpi-clicks-tlbl"></span></div>
+        </div>
+        <div class="glass kpi">
+          <div class="kpi-tag">Reach</div>
+          <div class="kpi-val" id="disp-kpi-reach">—</div>
+          <div class="kpi-trend"><span id="disp-kpi-reach-trend" class="tup" style="display:none"></span><span class="tlbl" id="disp-kpi-reach-tlbl"></span></div>
+        </div>
+        <div class="glass kpi">
+          <div class="kpi-tag">Impressions</div>
+          <div class="kpi-val" id="disp-kpi-impr">—</div>
+          <div class="kpi-trend"><span id="disp-kpi-impr-trend" class="tup" style="display:none"></span><span class="tlbl" id="disp-kpi-impr-tlbl"></span></div>
+        </div>
+        <div class="glass kpi">
+          <div class="kpi-tag">Avg. Click-Through Rate (CTR)</div>
+          <div class="kpi-val" id="disp-kpi-ctr">—</div>
+          <div class="kpi-trend"><span id="disp-kpi-ctr-trend" class="tdn" style="display:none"></span><span class="tlbl" id="disp-kpi-ctr-tlbl"></span></div>
+        </div>
+        <div class="glass kpi">
+          <div class="kpi-tag">Avg. Cost-Per-Click (CPC)</div>
+          <div class="kpi-val" id="disp-kpi-cpc">—</div>
+          <div class="kpi-trend"><span id="disp-kpi-cpc-trend" class="tup" style="display:none"></span><span class="tlbl" id="disp-kpi-cpc-tlbl"></span></div>
+        </div>
+        <div class="glass kpi">
+          <div class="kpi-tag">Avg. Frequency</div>
+          <div class="kpi-val" id="disp-kpi-freq">—</div>
+          <div class="kpi-trend"><span id="disp-kpi-freq-trend" class="tneutral" style="display:none"></span><span class="tlbl" id="disp-kpi-freq-tlbl"></span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DISPLAY ADS PERFORMANCE NOTES (conditional) -->
+    <div id="disp-notes-performance-section" style="display:none">
+      <div class="sh"><div class="sh-bar"></div><h2 id="disp-notes-performance-title">Performance Notes</h2><div class="sh-line"></div></div>
+      <div class="glass note-card note-section" style="height:188px">
+        <button class="note-edit-btn" onclick="enterNoteEdit('disp-notes-performance')">Edit</button>
+        <div class="note-view" id="disp-notes-performance-view"></div>
+        <div class="note-toolbar">
+          <button class="note-toolbar-btn" title="Bold" onclick="noteFormat(this,'bold')"><b>B</b></button>
+          <button class="note-toolbar-btn" title="Italic" onclick="noteFormat(this,'italic')"><i>I</i></button>
+          <button class="note-toolbar-btn" title="Bullet list" onclick="noteFormat(this,'bullet')">&#8226;</button>
+          <button class="note-toolbar-btn" title="Numbered list" onclick="noteFormat(this,'number')">1.</button>
+        </div>
+        <textarea class="note-textarea" id="disp-notes-performance" placeholder="Add notes here…"></textarea>
+        <div class="note-actions">
+          <button class="note-cancel-btn" onclick="cancelNoteEdit('disp-notes-performance')">Cancel</button>
+          <button class="note-save-btn" onclick="saveNoteEdit('disp-notes-performance')">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- DISPLAY ADS AUDIENCE SEGMENTATION (conditional) -->
+    <div id="disp-audience-section" style="display:none">
+      <div class="sh"><div class="sh-bar"></div><h2>Audience Segmentation</h2><div class="sh-line"></div></div>
+      <div class="glass card card-auto">
+        <div class="ctitle">Audience Performance</div>
+        <div class="audience-table-wrap" id="disp-audience-table-wrap">
+          <div class="audience-empty">No audience data configured</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DISPLAY ADS AUDIENCE INSIGHTS (conditional) -->
+    <div id="disp-audience-notes-section" style="display:none">
+      <div class="sh"><div class="sh-bar"></div><h2 id="disp-notes-audience-title">Audience Insights</h2><div class="sh-line"></div></div>
+      <div class="glass note-card note-section" style="height:188px">
+        <button class="note-edit-btn" onclick="enterNoteEdit('disp-notes-audience')">Edit</button>
+        <div class="note-view" id="disp-notes-audience-view"></div>
+        <div class="note-toolbar">
+          <button class="note-toolbar-btn" title="Bold" onclick="noteFormat(this,'bold')"><b>B</b></button>
+          <button class="note-toolbar-btn" title="Italic" onclick="noteFormat(this,'italic')"><i>I</i></button>
+          <button class="note-toolbar-btn" title="Bullet list" onclick="noteFormat(this,'bullet')">&#8226;</button>
+          <button class="note-toolbar-btn" title="Numbered list" onclick="noteFormat(this,'number')">1.</button>
+        </div>
+        <textarea class="note-textarea" id="disp-notes-audience" placeholder="Add notes here…"></textarea>
+        <div class="note-actions">
+          <button class="note-cancel-btn" onclick="cancelNoteEdit('disp-notes-audience')">Cancel</button>
+          <button class="note-save-btn" onclick="saveNoteEdit('disp-notes-audience')">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- DISPLAY ADS TOP CONTENT (conditional) -->
+    <div id="disp-content-section" style="display:none">
+      <div class="sh"><div class="sh-bar"></div><h2>Top Content</h2><div class="sh-line"></div></div>
+      <div class="content-grid" id="disp-content-grid"></div>
+    </div>
+
+    <!-- DISPLAY ADS GEOGRAPHIC PERFORMANCE (conditional) -->
+    <div id="disp-geo-section" style="display:none">
+      <div class="sh"><div class="sh-bar"></div><h2>Geographic Performance</h2><div class="sh-line"></div></div>
+      <div class="glass geo-card">
+        <div class="geo-header-row">
+          <div class="ctitle" id="disp-geo-map-title" style="margin-bottom:0">Ad Clicks By Zip Code</div>
+          <div class="geo-pill-toggle" id="disp-geo-toggle-bar">
+            <button class="geo-pill-btn active" id="disp-geo-toggle-clicks" onclick="toggleGeoView('disp','clicks')">Clicks</button>
+            <button class="geo-pill-btn" id="disp-geo-toggle-impressions" onclick="toggleGeoView('disp','impressions')">Impressions</button>
+          </div>
+        </div>
+        <div class="geo-map-body map-placeholder fade-target" id="disp-geo-map">
+          <div class="map-placeholder-icon">🗺</div>
+          <div class="map-placeholder-text">Mapbox · Clicks Heat</div>
+        </div>
+        <div class="ctitle" id="disp-geo-bar-title">Top Zip Codes — Clicks</div>
+        <div class="bar-list geo-bars fade-target" id="disp-geo-bars">
+          <div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--text-faint)">No data</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DISPLAY ADS DEMOGRAPHICS — 3 donuts -->
+    <div id="disp-demo-section" style="display:none">
+      <div class="sh"><div class="sh-bar"></div><h2>Campaign Demographic Data</h2><div class="sh-line"></div></div>
+      <div class="row-3">
+        <div class="glass card" style="height:320px;padding:16px 16px 12px">
+          <div class="ctitle ctitle-center">Gender Distribution</div>
+          <div class="donut-body">
+            <div class="dnut-wrap" id="disp-donut-gender"></div>
+            <div class="dleg dleg-fixed" id="disp-dleg-gender"></div>
+          </div>
+        </div>
+        <div class="glass card" style="height:320px;padding:16px 16px 12px">
+          <div class="ctitle ctitle-center">Age Distribution</div>
+          <div class="donut-body">
+            <div class="dnut-wrap" id="disp-donut-age"></div>
+            <div class="dleg dleg-fixed" id="disp-dleg-age"></div>
+          </div>
+        </div>
+        <div class="glass card" style="height:320px;padding:16px 16px 12px">
+          <div class="ctitle ctitle-center">Income Distribution</div>
+          <div class="donut-body">
+            <div class="dnut-wrap" id="disp-donut-income"></div>
+            <div class="dleg dleg-fixed" id="disp-dleg-income"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DISPLAY ADS FINAL THOUGHTS (conditional) -->
+    <div id="disp-notes-final-section" style="display:none">
+      <div class="sh"><div class="sh-bar"></div><h2 id="disp-notes-final-title">Final Thoughts</h2><div class="sh-line"></div></div>
+      <div class="glass note-card note-section" style="height:255px">
+        <button class="note-edit-btn" onclick="enterNoteEdit('disp-notes-final')">Edit</button>
+        <div class="note-view" id="disp-notes-final-view"></div>
+        <div class="note-toolbar">
+          <button class="note-toolbar-btn" title="Bold" onclick="noteFormat(this,'bold')"><b>B</b></button>
+          <button class="note-toolbar-btn" title="Italic" onclick="noteFormat(this,'italic')"><i>I</i></button>
+          <button class="note-toolbar-btn" title="Bullet list" onclick="noteFormat(this,'bullet')">&#8226;</button>
+          <button class="note-toolbar-btn" title="Numbered list" onclick="noteFormat(this,'number')">1.</button>
+        </div>
+        <textarea class="note-textarea" id="disp-notes-final" placeholder="Add notes here…"></textarea>
+        <div class="note-actions">
+          <button class="note-cancel-btn" onclick="cancelNoteEdit('disp-notes-final')">Cancel</button>
+          <button class="note-save-btn" onclick="saveNoteEdit('disp-notes-final')">Save</button>
+        </div>
+      </div>
+    </div>
+
+    </div><!-- /tmpl-display-ads -->
+
+    <!-- ── YOUTUBE ADS TEMPLATE ── -->
+    <div class="tmpl-content" id="tmpl-youtube-ads">
+
+    <!-- YOUTUBE ADS KPIs — 3x2 grid -->
+    <div>
+      <div class="sh"><div class="sh-bar"></div><h2>Top Line Campaign Performance</h2><div class="sh-line"></div></div>
+      <div class="kpi-grid kpi-grid-3" id="yt-kpi-grid">
+        <div class="glass kpi">
+          <div class="kpi-tag">Ad Clicks</div>
+          <div class="kpi-val" id="yt-kpi-clicks">—</div>
+          <div class="kpi-trend"><span id="yt-kpi-clicks-trend" class="tup" style="display:none"></span><span class="tlbl" id="yt-kpi-clicks-tlbl"></span></div>
+        </div>
+        <div class="glass kpi">
+          <div class="kpi-tag">Reach</div>
+          <div class="kpi-val" id="yt-kpi-reach">—</div>
+          <div class="kpi-trend"><span id="yt-kpi-reach-trend" class="tup" style="display:none"></span><span class="tlbl" id="yt-kpi-reach-tlbl"></span></div>
+        </div>
+        <div class="glass kpi">
+          <div class="kpi-tag">Impressions</div>
+          <div class="kpi-val" id="yt-kpi-impr">—</div>
+          <div class="kpi-trend"><span id="yt-kpi-impr-trend" class="tup" style="display:none"></span><span class="tlbl" id="yt-kpi-impr-tlbl"></span></div>
+        </div>
+        <div class="glass kpi">
+          <div class="kpi-tag">Avg. Click-Through Rate (CTR)</div>
+          <div class="kpi-val" id="yt-kpi-ctr">—</div>
+          <div class="kpi-trend"><span id="yt-kpi-ctr-trend" class="tdn" style="display:none"></span><span class="tlbl" id="yt-kpi-ctr-tlbl"></span></div>
+        </div>
+        <div class="glass kpi">
+          <div class="kpi-tag">Avg. Cost-Per-Click (CPC)</div>
+          <div class="kpi-val" id="yt-kpi-cpc">—</div>
+          <div class="kpi-trend"><span id="yt-kpi-cpc-trend" class="tup" style="display:none"></span><span class="tlbl" id="yt-kpi-cpc-tlbl"></span></div>
+        </div>
+        <div class="glass kpi">
+          <div class="kpi-tag">Avg. Frequency</div>
+          <div class="kpi-val" id="yt-kpi-freq">—</div>
+          <div class="kpi-trend"><span id="yt-kpi-freq-trend" class="tneutral" style="display:none"></span><span class="tlbl" id="yt-kpi-freq-tlbl"></span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- YOUTUBE ADS PERFORMANCE NOTES (conditional) -->
+    <div id="yt-notes-performance-section" style="display:none">
+      <div class="sh"><div class="sh-bar"></div><h2 id="yt-notes-performance-title">Performance Notes</h2><div class="sh-line"></div></div>
+      <div class="glass note-card note-section" style="height:188px">
+        <button class="note-edit-btn" onclick="enterNoteEdit('yt-notes-performance')">Edit</button>
+        <div class="note-view" id="yt-notes-performance-view"></div>
+        <div class="note-toolbar">
+          <button class="note-toolbar-btn" title="Bold" onclick="noteFormat(this,'bold')"><b>B</b></button>
+          <button class="note-toolbar-btn" title="Italic" onclick="noteFormat(this,'italic')"><i>I</i></button>
+          <button class="note-toolbar-btn" title="Bullet list" onclick="noteFormat(this,'bullet')">&#8226;</button>
+          <button class="note-toolbar-btn" title="Numbered list" onclick="noteFormat(this,'number')">1.</button>
+        </div>
+        <textarea class="note-textarea" id="yt-notes-performance" placeholder="Add notes here…"></textarea>
+        <div class="note-actions">
+          <button class="note-cancel-btn" onclick="cancelNoteEdit('yt-notes-performance')">Cancel</button>
+          <button class="note-save-btn" onclick="saveNoteEdit('yt-notes-performance')">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- YOUTUBE ADS AUDIENCE SEGMENTATION (conditional) -->
+    <div id="yt-audience-section" style="display:none">
+      <div class="sh"><div class="sh-bar"></div><h2>Audience Segmentation</h2><div class="sh-line"></div></div>
+      <div class="glass card card-auto">
+        <div class="ctitle">Audience Performance</div>
+        <div class="audience-table-wrap" id="yt-audience-table-wrap">
+          <div class="audience-empty">No audience data configured</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- YOUTUBE ADS AUDIENCE INSIGHTS (conditional) -->
+    <div id="yt-audience-notes-section" style="display:none">
+      <div class="sh"><div class="sh-bar"></div><h2 id="yt-notes-audience-title">Audience Insights</h2><div class="sh-line"></div></div>
+      <div class="glass note-card note-section" style="height:188px">
+        <button class="note-edit-btn" onclick="enterNoteEdit('yt-notes-audience')">Edit</button>
+        <div class="note-view" id="yt-notes-audience-view"></div>
+        <div class="note-toolbar">
+          <button class="note-toolbar-btn" title="Bold" onclick="noteFormat(this,'bold')"><b>B</b></button>
+          <button class="note-toolbar-btn" title="Italic" onclick="noteFormat(this,'italic')"><i>I</i></button>
+          <button class="note-toolbar-btn" title="Bullet list" onclick="noteFormat(this,'bullet')">&#8226;</button>
+          <button class="note-toolbar-btn" title="Numbered list" onclick="noteFormat(this,'number')">1.</button>
+        </div>
+        <textarea class="note-textarea" id="yt-notes-audience" placeholder="Add notes here…"></textarea>
+        <div class="note-actions">
+          <button class="note-cancel-btn" onclick="cancelNoteEdit('yt-notes-audience')">Cancel</button>
+          <button class="note-save-btn" onclick="saveNoteEdit('yt-notes-audience')">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- YOUTUBE ADS TOP CONTENT (conditional) -->
+    <div id="yt-content-section" style="display:none">
+      <div class="sh"><div class="sh-bar"></div><h2>Top Content</h2><div class="sh-line"></div></div>
+      <div class="content-grid" id="yt-content-grid"></div>
+    </div>
+
+    <!-- YOUTUBE ADS GEOGRAPHIC PERFORMANCE (conditional) -->
+    <div id="yt-geo-section" style="display:none">
+      <div class="sh"><div class="sh-bar"></div><h2>Geographic Performance</h2><div class="sh-line"></div></div>
+      <div class="glass geo-card">
+        <div class="geo-header-row">
+          <div class="ctitle" id="yt-geo-map-title" style="margin-bottom:0">Ad Clicks By Zip Code</div>
+          <div class="geo-pill-toggle" id="yt-geo-toggle-bar">
+            <button class="geo-pill-btn active" id="yt-geo-toggle-clicks" onclick="toggleGeoView('yt','clicks')">Clicks</button>
+            <button class="geo-pill-btn" id="yt-geo-toggle-impressions" onclick="toggleGeoView('yt','impressions')">Impressions</button>
+          </div>
+        </div>
+        <div class="geo-map-body map-placeholder fade-target" id="yt-geo-map">
+          <div class="map-placeholder-icon">🗺</div>
+          <div class="map-placeholder-text">Mapbox · Clicks Heat</div>
+        </div>
+        <div class="ctitle" id="yt-geo-bar-title">Top Zip Codes — Clicks</div>
+        <div class="bar-list geo-bars fade-target" id="yt-geo-bars">
+          <div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--text-faint)">No data</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- YOUTUBE ADS DEMOGRAPHICS — 3 donuts -->
+    <div id="yt-demo-section" style="display:none">
+      <div class="sh"><div class="sh-bar"></div><h2>Campaign Demographic Data</h2><div class="sh-line"></div></div>
+      <div class="row-3">
+        <div class="glass card" style="height:320px;padding:16px 16px 12px">
+          <div class="ctitle ctitle-center">Gender Distribution</div>
+          <div class="donut-body">
+            <div class="dnut-wrap" id="yt-donut-gender"></div>
+            <div class="dleg dleg-fixed" id="yt-dleg-gender"></div>
+          </div>
+        </div>
+        <div class="glass card" style="height:320px;padding:16px 16px 12px">
+          <div class="ctitle ctitle-center">Age Distribution</div>
+          <div class="donut-body">
+            <div class="dnut-wrap" id="yt-donut-age"></div>
+            <div class="dleg dleg-fixed" id="yt-dleg-age"></div>
+          </div>
+        </div>
+        <div class="glass card" style="height:320px;padding:16px 16px 12px">
+          <div class="ctitle ctitle-center">Income Distribution</div>
+          <div class="donut-body">
+            <div class="dnut-wrap" id="yt-donut-income"></div>
+            <div class="dleg dleg-fixed" id="yt-dleg-income"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- YOUTUBE ADS FINAL THOUGHTS (conditional) -->
+    <div id="yt-notes-final-section" style="display:none">
+      <div class="sh"><div class="sh-bar"></div><h2 id="yt-notes-final-title">Final Thoughts</h2><div class="sh-line"></div></div>
+      <div class="glass note-card note-section" style="height:255px">
+        <button class="note-edit-btn" onclick="enterNoteEdit('yt-notes-final')">Edit</button>
+        <div class="note-view" id="yt-notes-final-view"></div>
+        <div class="note-toolbar">
+          <button class="note-toolbar-btn" title="Bold" onclick="noteFormat(this,'bold')"><b>B</b></button>
+          <button class="note-toolbar-btn" title="Italic" onclick="noteFormat(this,'italic')"><i>I</i></button>
+          <button class="note-toolbar-btn" title="Bullet list" onclick="noteFormat(this,'bullet')">&#8226;</button>
+          <button class="note-toolbar-btn" title="Numbered list" onclick="noteFormat(this,'number')">1.</button>
+        </div>
+        <textarea class="note-textarea" id="yt-notes-final" placeholder="Add notes here…"></textarea>
+        <div class="note-actions">
+          <button class="note-cancel-btn" onclick="cancelNoteEdit('yt-notes-final')">Cancel</button>
+          <button class="note-save-btn" onclick="saveNoteEdit('yt-notes-final')">Save</button>
+        </div>
+      </div>
+    </div>
+
+    </div><!-- /tmpl-youtube-ads -->
 
     <!-- ── LINKEDIN ADS TEMPLATE ── -->
     <div class="tmpl-content" id="tmpl-linkedin-ads">
@@ -2042,7 +2527,7 @@ const FIELD_DEFS = [
 ];
 
 // ── VERSION ──
-const APP_VERSION = '2.15.2';
+const APP_VERSION = '2.17.0';
 
 // ── STATE ──
 let currentClient = null;
@@ -2056,6 +2541,18 @@ const NOTE_KEYS = {
   'meta-notes-performance':'meta_performance',
   'meta-notes-audience':   'meta_audience',
   'meta-notes-final':      'meta_final',
+  'fb-notes-performance':  'fb_performance',
+  'fb-notes-audience':     'fb_audience',
+  'fb-notes-final':        'fb_final',
+  'ig-notes-performance':  'ig_performance',
+  'ig-notes-audience':     'ig_audience',
+  'ig-notes-final':        'ig_final',
+  'disp-notes-performance':'disp_performance',
+  'disp-notes-audience':   'disp_audience',
+  'disp-notes-final':      'disp_final',
+  'yt-notes-performance':  'yt_performance',
+  'yt-notes-audience':     'yt_audience',
+  'yt-notes-final':        'yt_final',
   'li-notes-performance':  'li_performance',
   'li-notes-audience':     'li_audience',
   'li-notes-final':        'li_final',
@@ -2179,8 +2676,14 @@ const CLOUDINARY_CLOUD_NAME   = 'dpvpyevam';
 const CLOUDINARY_UPLOAD_PRESET = 'link-reports-creatives';
 let sheetsApiKey = '';
 let mapboxToken = '';
-let mapImpressions = null;
-let mapClicks = null;
+
+// Geo redesign (v2.17.0): one Mapbox instance + one active toggle state per geo-enabled template,
+// replacing the old shared mapClicks/mapImpressions pair. Keyed by template prefix: gs, disp, yt.
+const GEO_TEMPLATES = {
+  gs:   { map: null, mapContainerId: 'gs-geo-map',   barsId: 'gs-geo-bars',   mapTitleId: 'gs-geo-map-title',   barTitleId: 'gs-geo-bar-title',   toggleClicksId: 'gs-geo-toggle-clicks',   toggleImprId: 'gs-geo-toggle-impressions',   sectionId: 'gs-geo-section',   active: 'clicks', data: null },
+  disp: { map: null, mapContainerId: 'disp-geo-map', barsId: 'disp-geo-bars', mapTitleId: 'disp-geo-map-title', barTitleId: 'disp-geo-bar-title', toggleClicksId: 'disp-geo-toggle-clicks', toggleImprId: 'disp-geo-toggle-impressions', sectionId: 'disp-geo-section', active: 'clicks', data: null },
+  yt:   { map: null, mapContainerId: 'yt-geo-map',   barsId: 'yt-geo-bars',   mapTitleId: 'yt-geo-map-title',   barTitleId: 'yt-geo-bar-title',   toggleClicksId: 'yt-geo-toggle-clicks',   toggleImprId: 'yt-geo-toggle-impressions',   sectionId: 'yt-geo-section',   active: 'clicks', data: null },
+};
 
 let isAdminMode = false;
 
@@ -2350,6 +2853,186 @@ const META_MAPPING_FIELDS = new Set([
   'kpi_cpc','kpi_cpc_trend','kpi_freq','kpi_freq_trend',
   'audience_range','content1_range','content2_range','content3_range',
   'demo_gender','demo_age',
+]);
+
+// ── FACEBOOK ADS CONFIG FIELD MAP ──
+const FB_CONFIG_FIELD_MAP = {
+  'Report tab title':                               'reportTabTitle',
+  'KPI - ad clicks (value)':                       'kpi_clicks',
+  'KPI - ad clicks (trend)':                       'kpi_clicks_trend',
+  'KPI - reach (value)':                           'kpi_reach',
+  'KPI - reach (trend)':                           'kpi_reach_trend',
+  'KPI - impressions (value)':                     'kpi_impr',
+  'KPI - impressions (trend)':                     'kpi_impr_trend',
+  'KPI - CTR (value)':                             'kpi_ctr',
+  'KPI - CTR (trend)':                             'kpi_ctr_trend',
+  'KPI - CPC (value)':                             'kpi_cpc',
+  'KPI - CPC (trend)':                             'kpi_cpc_trend',
+  'KPI - frequency (value)':                       'kpi_freq',
+  'KPI - frequency (trend)':                       'kpi_freq_trend',
+  'KPI - trend label (all)':                       'kpi_tlbl',
+  'Top content 1 label':                           'content1_label',
+  'Top content 2 label':                           'content2_label',
+  'Top content 3 label':                           'content3_label',
+  'Top content metric labels':                     'content_metric_labels',
+  'Audience segmentation range':                   'audience_range',
+  'Top content 1 metrics range':                   'content1_range',
+  'Top content 2 metrics range':                   'content2_range',
+  'Top content 3 metrics range':                   'content3_range',
+  'Gender demo range (col A: label, col B: pct)':  'demo_gender',
+  'Age demo range (col A: label, col B: pct)':     'demo_age',
+  'Performance notes label':                       'notes_performance_label',
+  'Audience insights label':                       'notes_audience_label',
+  'Final thoughts label':                          'notes_final_label',
+};
+const FB_VALUE_FIELDS = new Set([
+  'reportTabTitle','kpi_tlbl',
+  'content1_label','content2_label','content3_label','content_metric_labels',
+  'notes_performance_label','notes_audience_label','notes_final_label',
+]);
+const FB_MAPPING_FIELDS = new Set([
+  'kpi_clicks','kpi_clicks_trend','kpi_reach','kpi_reach_trend',
+  'kpi_impr','kpi_impr_trend','kpi_ctr','kpi_ctr_trend',
+  'kpi_cpc','kpi_cpc_trend','kpi_freq','kpi_freq_trend',
+  'audience_range','content1_range','content2_range','content3_range',
+  'demo_gender','demo_age',
+]);
+
+// ── INSTAGRAM ADS CONFIG FIELD MAP ──
+const IG_CONFIG_FIELD_MAP = {
+  'Report tab title':                               'reportTabTitle',
+  'KPI - ad clicks (value)':                       'kpi_clicks',
+  'KPI - ad clicks (trend)':                       'kpi_clicks_trend',
+  'KPI - reach (value)':                           'kpi_reach',
+  'KPI - reach (trend)':                           'kpi_reach_trend',
+  'KPI - impressions (value)':                     'kpi_impr',
+  'KPI - impressions (trend)':                     'kpi_impr_trend',
+  'KPI - CTR (value)':                             'kpi_ctr',
+  'KPI - CTR (trend)':                             'kpi_ctr_trend',
+  'KPI - CPC (value)':                             'kpi_cpc',
+  'KPI - CPC (trend)':                             'kpi_cpc_trend',
+  'KPI - frequency (value)':                       'kpi_freq',
+  'KPI - frequency (trend)':                       'kpi_freq_trend',
+  'KPI - trend label (all)':                       'kpi_tlbl',
+  'Top content 1 label':                           'content1_label',
+  'Top content 2 label':                           'content2_label',
+  'Top content 3 label':                           'content3_label',
+  'Top content metric labels':                     'content_metric_labels',
+  'Audience segmentation range':                   'audience_range',
+  'Top content 1 metrics range':                   'content1_range',
+  'Top content 2 metrics range':                   'content2_range',
+  'Top content 3 metrics range':                   'content3_range',
+  'Gender demo range (col A: label, col B: pct)':  'demo_gender',
+  'Age demo range (col A: label, col B: pct)':     'demo_age',
+  'Performance notes label':                       'notes_performance_label',
+  'Audience insights label':                       'notes_audience_label',
+  'Final thoughts label':                          'notes_final_label',
+};
+const IG_VALUE_FIELDS = new Set([
+  'reportTabTitle','kpi_tlbl',
+  'content1_label','content2_label','content3_label','content_metric_labels',
+  'notes_performance_label','notes_audience_label','notes_final_label',
+]);
+const IG_MAPPING_FIELDS = new Set([
+  'kpi_clicks','kpi_clicks_trend','kpi_reach','kpi_reach_trend',
+  'kpi_impr','kpi_impr_trend','kpi_ctr','kpi_ctr_trend',
+  'kpi_cpc','kpi_cpc_trend','kpi_freq','kpi_freq_trend',
+  'audience_range','content1_range','content2_range','content3_range',
+  'demo_gender','demo_age',
+]);
+
+// ── DISPLAY ADS CONFIG FIELD MAP (_config_display-ads tab) ──
+const DISP_CONFIG_FIELD_MAP = {
+  'Report tab title':                               'reportTabTitle',
+  'KPI - ad clicks (value)':                       'kpi_clicks',
+  'KPI - ad clicks (trend)':                       'kpi_clicks_trend',
+  'KPI - reach (value)':                           'kpi_reach',
+  'KPI - reach (trend)':                           'kpi_reach_trend',
+  'KPI - impressions (value)':                     'kpi_impr',
+  'KPI - impressions (trend)':                     'kpi_impr_trend',
+  'KPI - CTR (value)':                             'kpi_ctr',
+  'KPI - CTR (trend)':                             'kpi_ctr_trend',
+  'KPI - CPC (value)':                             'kpi_cpc',
+  'KPI - CPC (trend)':                             'kpi_cpc_trend',
+  'KPI - frequency (value)':                       'kpi_freq',
+  'KPI - frequency (trend)':                       'kpi_freq_trend',
+  'KPI - trend label (all)':                       'kpi_tlbl',
+  'Top content 1 label':                           'content1_label',
+  'Top content 2 label':                           'content2_label',
+  'Top content 3 label':                           'content3_label',
+  'Top content metric labels':                     'content_metric_labels',
+  'Audience segmentation range':                   'audience_range',
+  'Top content 1 metrics range':                   'content1_range',
+  'Top content 2 metrics range':                   'content2_range',
+  'Top content 3 metrics range':                   'content3_range',
+  'Zip impressions range (col A: zip, col B: value)': 'zip_impr_range',
+  'Zip clicks range (col A: zip, col B: value)':      'zip_clicks_range',
+  'Gender demo range (col A: label, col B: pct)':  'demo_gender',
+  'Age demo range (col A: label, col B: pct)':     'demo_age',
+  'Income demo range (col A: label, col B: pct)':  'demo_income',
+  'Performance notes label':                       'notes_performance_label',
+  'Audience insights label':                       'notes_audience_label',
+  'Final thoughts label':                          'notes_final_label',
+};
+const DISP_VALUE_FIELDS = new Set([
+  'reportTabTitle','kpi_tlbl',
+  'content1_label','content2_label','content3_label','content_metric_labels',
+  'notes_performance_label','notes_audience_label','notes_final_label',
+]);
+const DISP_MAPPING_FIELDS = new Set([
+  'kpi_clicks','kpi_clicks_trend','kpi_reach','kpi_reach_trend',
+  'kpi_impr','kpi_impr_trend','kpi_ctr','kpi_ctr_trend',
+  'kpi_cpc','kpi_cpc_trend','kpi_freq','kpi_freq_trend',
+  'audience_range','content1_range','content2_range','content3_range',
+  'zip_impr_range','zip_clicks_range',
+  'demo_gender','demo_age','demo_income',
+]);
+
+// ── YOUTUBE ADS CONFIG FIELD MAP (_config_youtubeads tab) ──
+const YT_CONFIG_FIELD_MAP = {
+  'Report tab title':                               'reportTabTitle',
+  'KPI - ad clicks (value)':                       'kpi_clicks',
+  'KPI - ad clicks (trend)':                       'kpi_clicks_trend',
+  'KPI - reach (value)':                           'kpi_reach',
+  'KPI - reach (trend)':                           'kpi_reach_trend',
+  'KPI - impressions (value)':                     'kpi_impr',
+  'KPI - impressions (trend)':                     'kpi_impr_trend',
+  'KPI - CTR (value)':                             'kpi_ctr',
+  'KPI - CTR (trend)':                             'kpi_ctr_trend',
+  'KPI - CPC (value)':                             'kpi_cpc',
+  'KPI - CPC (trend)':                             'kpi_cpc_trend',
+  'KPI - frequency (value)':                       'kpi_freq',
+  'KPI - frequency (trend)':                       'kpi_freq_trend',
+  'KPI - trend label (all)':                       'kpi_tlbl',
+  'Top content 1 label':                           'content1_label',
+  'Top content 2 label':                           'content2_label',
+  'Top content 3 label':                           'content3_label',
+  'Top content metric labels':                     'content_metric_labels',
+  'Audience segmentation range':                   'audience_range',
+  'Top content 1 metrics range':                   'content1_range',
+  'Top content 2 metrics range':                   'content2_range',
+  'Top content 3 metrics range':                   'content3_range',
+  'Zip impressions range (col A: zip, col B: value)': 'zip_impr_range',
+  'Zip clicks range (col A: zip, col B: value)':      'zip_clicks_range',
+  'Gender demo range (col A: label, col B: pct)':  'demo_gender',
+  'Age demo range (col A: label, col B: pct)':     'demo_age',
+  'Income demo range (col A: label, col B: pct)':  'demo_income',
+  'Performance notes label':                       'notes_performance_label',
+  'Audience insights label':                       'notes_audience_label',
+  'Final thoughts label':                          'notes_final_label',
+};
+const YT_VALUE_FIELDS = new Set([
+  'reportTabTitle','kpi_tlbl',
+  'content1_label','content2_label','content3_label','content_metric_labels',
+  'notes_performance_label','notes_audience_label','notes_final_label',
+]);
+const YT_MAPPING_FIELDS = new Set([
+  'kpi_clicks','kpi_clicks_trend','kpi_reach','kpi_reach_trend',
+  'kpi_impr','kpi_impr_trend','kpi_ctr','kpi_ctr_trend',
+  'kpi_cpc','kpi_cpc_trend','kpi_freq','kpi_freq_trend',
+  'audience_range','content1_range','content2_range','content3_range',
+  'zip_impr_range','zip_clicks_range',
+  'demo_gender','demo_age','demo_income',
 ]);
 
 // ── LINKEDIN CONFIG FIELD MAP (_config_linkedin tab) ──
@@ -2841,6 +3524,26 @@ async function bootClientWithLoad(client) {
           META_CONFIG_FIELD_MAP, META_VALUE_FIELDS, META_MAPPING_FIELDS);
         return { ...cfg, _reportType: 'meta-ads' };
       }
+      if (r.type === 'facebook-ads') {
+        const cfg = await fetchClientConfig(client.sheetId, r.configTab,
+          FB_CONFIG_FIELD_MAP, FB_VALUE_FIELDS, FB_MAPPING_FIELDS);
+        return { ...cfg, _reportType: 'facebook-ads' };
+      }
+      if (r.type === 'instagram-ads') {
+        const cfg = await fetchClientConfig(client.sheetId, r.configTab,
+          IG_CONFIG_FIELD_MAP, IG_VALUE_FIELDS, IG_MAPPING_FIELDS);
+        return { ...cfg, _reportType: 'instagram-ads' };
+      }
+      if (r.type === 'display-ads') {
+        const cfg = await fetchClientConfig(client.sheetId, r.configTab,
+          DISP_CONFIG_FIELD_MAP, DISP_VALUE_FIELDS, DISP_MAPPING_FIELDS);
+        return { ...cfg, _reportType: 'display-ads' };
+      }
+      if (r.type === 'youtube-ads') {
+        const cfg = await fetchClientConfig(client.sheetId, r.configTab,
+          YT_CONFIG_FIELD_MAP, YT_VALUE_FIELDS, YT_MAPPING_FIELDS);
+        return { ...cfg, _reportType: 'youtube-ads' };
+      }
       if (r.type === 'linkedin-ads') {
         const cfg = await fetchClientConfig(client.sheetId, r.configTab,
           LI_CONFIG_FIELD_MAP, LI_VALUE_FIELDS, LI_MAPPING_FIELDS);
@@ -2884,6 +3587,28 @@ async function bootClientWithLoad(client) {
     }
   }
 
+  // Store Facebook config on client object
+  const fbCfg = configs.find(c => c && c._reportType === 'facebook-ads');
+  if (fbCfg) {
+    client._fbConfig = fbCfg;
+    client._fbLoaded = false;
+    if (fbCfg.reportTabTitle) {
+      const fbReport = reports.find(r => r.type === 'facebook-ads');
+      if (fbReport) fbReport.label = fbCfg.reportTabTitle;
+    }
+  }
+
+  // Store Instagram config on client object
+  const igCfg = configs.find(c => c && c._reportType === 'instagram-ads');
+  if (igCfg) {
+    client._igConfig = igCfg;
+    client._igLoaded = false;
+    if (igCfg.reportTabTitle) {
+      const igReport = reports.find(r => r.type === 'instagram-ads');
+      if (igReport) igReport.label = igCfg.reportTabTitle;
+    }
+  }
+
   // Store overview config on client object
   const ovCfg = configs.find(c => c && c._reportType === 'overview');
   if (ovCfg) {
@@ -2906,6 +3631,28 @@ async function bootClientWithLoad(client) {
     }
   }
 
+  // Store Display Ads config on client object
+  const dispCfg = configs.find(c => c && c._reportType === 'display-ads');
+  if (dispCfg) {
+    client._dispConfig = dispCfg;
+    client._dispLoaded = false;
+    if (dispCfg.reportTabTitle) {
+      const dispReport = reports.find(r => r.type === 'display-ads');
+      if (dispReport) dispReport.label = dispCfg.reportTabTitle;
+    }
+  }
+
+  // Store YouTube Ads config on client object
+  const ytCfg = configs.find(c => c && c._reportType === 'youtube-ads');
+  if (ytCfg) {
+    client._ytConfig = ytCfg;
+    client._ytLoaded = false;
+    if (ytCfg.reportTabTitle) {
+      const ytReport = reports.find(r => r.type === 'youtube-ads');
+      if (ytReport) ytReport.label = ytCfg.reportTabTitle;
+    }
+  }
+
   // Boot the client UI — await so Firestore notes/creatives are loaded before data renders
   await bootClient(client);
 
@@ -2921,6 +3668,30 @@ async function bootClientWithLoad(client) {
   // Meta data (if applicable)
   if (metaCfg) {
     dataPromises.push(fetchMetaDataAsync(client, metaCfg));
+  }
+
+  // Facebook data (if applicable)
+  const fbCfgBoot = client._fbConfig;
+  if (fbCfgBoot) {
+    dataPromises.push(fetchFacebookDataAsync(client, fbCfgBoot));
+  }
+
+  // Instagram data (if applicable)
+  const igCfgBoot = client._igConfig;
+  if (igCfgBoot) {
+    dataPromises.push(fetchInstagramDataAsync(client, igCfgBoot));
+  }
+
+  // Display Ads data (if applicable)
+  const dispCfgBoot = client._dispConfig;
+  if (dispCfgBoot) {
+    dataPromises.push(fetchDisplayDataAsync(client, dispCfgBoot));
+  }
+
+  // YouTube Ads data (if applicable)
+  const ytCfgBoot = client._ytConfig;
+  if (ytCfgBoot) {
+    dataPromises.push(fetchYouTubeDataAsync(client, ytCfgBoot));
   }
 
   // LinkedIn data (if applicable)
@@ -3033,6 +3804,522 @@ async function fetchMetaDataAsync(client, metaCfg) {
     console.error('[Load] Meta data fetch failed:', e.message);
     client._metaLoaded = true;
   }
+}
+
+async function fetchFacebookDataAsync(client, fbCfg) {
+  if (!sheetsApiKey || !client.sheetId) return;
+  const RANGE_FIELDS = [
+    'kpi_clicks','kpi_clicks_trend','kpi_reach','kpi_reach_trend',
+    'kpi_impr','kpi_impr_trend','kpi_ctr','kpi_ctr_trend',
+    'kpi_cpc','kpi_cpc_trend','kpi_freq','kpi_freq_trend',
+    'audience_range','content1_range','content2_range','content3_range',
+    'demo_gender','demo_age',
+  ];
+  const rangesToFetch = [];
+  RANGE_FIELDS.forEach(function(f) { if (fbCfg[f]) rangesToFetch.push(fbCfg[f]); });
+  if (!rangesToFetch.length) {
+    applyFacebookData(fbCfg, {});
+    client._fbLoaded = true;
+    return;
+  }
+  try {
+    const uniqueRanges = [...new Set(rangesToFetch)];
+    const rangeIndex = await resilientBatchFetch(client.sheetId, uniqueRanges);
+    client._fbConfig = fbCfg;
+    currentClient._fbConfig = fbCfg;
+    applyFacebookData(fbCfg, rangeIndex);
+    client._fbLoaded = true;
+  } catch(e) {
+    console.error('[Load] Facebook data fetch failed:', e.message);
+    client._fbLoaded = true;
+  }
+}
+
+async function fetchInstagramDataAsync(client, igCfg) {
+  if (!sheetsApiKey || !client.sheetId) return;
+  const RANGE_FIELDS = [
+    'kpi_clicks','kpi_clicks_trend','kpi_reach','kpi_reach_trend',
+    'kpi_impr','kpi_impr_trend','kpi_ctr','kpi_ctr_trend',
+    'kpi_cpc','kpi_cpc_trend','kpi_freq','kpi_freq_trend',
+    'audience_range','content1_range','content2_range','content3_range',
+    'demo_gender','demo_age',
+  ];
+  const rangesToFetch = [];
+  RANGE_FIELDS.forEach(function(f) { if (igCfg[f]) rangesToFetch.push(igCfg[f]); });
+  if (!rangesToFetch.length) {
+    applyInstagramData(igCfg, {});
+    client._igLoaded = true;
+    return;
+  }
+  try {
+    const uniqueRanges = [...new Set(rangesToFetch)];
+    const rangeIndex = await resilientBatchFetch(client.sheetId, uniqueRanges);
+    client._igConfig = igCfg;
+    currentClient._igConfig = igCfg;
+    applyInstagramData(igCfg, rangeIndex);
+    client._igLoaded = true;
+  } catch(e) {
+    console.error('[Load] Instagram data fetch failed:', e.message);
+    client._igLoaded = true;
+  }
+}
+
+function applyFacebookData(config, rangeIndex) {
+  var val = function(fieldId) {
+    var range = config[fieldId];
+    if (!range) return null;
+    var rows = rangeIndex[range];
+    if (!rows || !rows.length) return null;
+    return rows;
+  };
+  var singleVal = function(fieldId) {
+    var rows = val(fieldId);
+    return rows ? String(rows[0][0] || '').trim() : null;
+  };
+
+  if (config.reportTabTitle) {
+    var fbReport = (currentClient.reports || []).find(function(r) { return r.type === 'facebook-ads'; });
+    if (fbReport) {
+      fbReport.label = config.reportTabTitle;
+      document.querySelectorAll('.tmpl-btn').forEach(function(btn) {
+        if (btn.dataset.type === 'facebook-ads') btn.textContent = config.reportTabTitle;
+      });
+      var sel = document.querySelector('.tmpl-select');
+      if (sel) {
+        Array.from(sel.options).forEach(function(opt) {
+          if (opt.value === 'facebook-ads') opt.textContent = config.reportTabTitle;
+        });
+      }
+    }
+  }
+
+  var kpiDefs = [
+    { id: 'clicks', el: 'fb-kpi-clicks', trendEl: 'fb-kpi-clicks-trend', tlblEl: 'fb-kpi-clicks-tlbl', invert: false },
+    { id: 'reach',  el: 'fb-kpi-reach',  trendEl: 'fb-kpi-reach-trend',  tlblEl: 'fb-kpi-reach-tlbl',  invert: false },
+    { id: 'impr',   el: 'fb-kpi-impr',   trendEl: 'fb-kpi-impr-trend',   tlblEl: 'fb-kpi-impr-tlbl',   invert: false },
+    { id: 'ctr',    el: 'fb-kpi-ctr',    trendEl: 'fb-kpi-ctr-trend',    tlblEl: 'fb-kpi-ctr-tlbl',    invert: false },
+    { id: 'cpc',    el: 'fb-kpi-cpc',    trendEl: 'fb-kpi-cpc-trend',    tlblEl: 'fb-kpi-cpc-tlbl',    invert: true  },
+    { id: 'freq',   el: 'fb-kpi-freq',   trendEl: 'fb-kpi-freq-trend',   tlblEl: 'fb-kpi-freq-tlbl',   invert: false, neutral: true },
+  ];
+  var tlbl = config.kpi_tlbl || '';
+  kpiDefs.forEach(function(k) {
+    var v = singleVal('kpi_' + k.id);
+    var t = singleVal('kpi_' + k.id + '_trend');
+    if (v) document.getElementById(k.el).textContent = v;
+    if (t) setKpiTrend(k.trendEl, k.tlblEl, t, tlbl, k.invert, k.neutral);
+  });
+
+  var audienceRows = val('audience_range');
+  var audienceSection = document.getElementById('fb-audience-section');
+  if (audienceRows && audienceRows.length > 1) {
+    audienceSection.style.display = '';
+    var wrap = document.getElementById('fb-audience-table-wrap');
+    if (wrap) renderAudienceTable(audienceRows, wrap);
+  } else {
+    audienceSection.style.display = 'none';
+  }
+
+  var contentDefs = [
+    { rangeField: 'content1_range', labelField: 'content1_label', slot: 1 },
+    { rangeField: 'content2_range', labelField: 'content2_label', slot: 2 },
+    { rangeField: 'content3_range', labelField: 'content3_label', slot: 3 },
+  ];
+  var contentSection = document.getElementById('fb-content-section');
+  var contentGrid = document.getElementById('fb-content-grid');
+  contentGrid.innerHTML = '';
+  var contentCount = 0;
+  contentDefs.forEach(function(c) {
+    var rows = val(c.rangeField);
+    var label = config[c.labelField] || ('Top Creative #' + c.slot);
+    var hasStoredImg = !!localStorage.getItem('link_v2_creative_fb_' + currentClient.id + '_' + c.slot);
+    if ((rows && rows.length) || hasStoredImg) {
+      contentCount++;
+      contentGrid.appendChild(buildContentCard(c.slot, label, rows || [], currentClient.id, 'fb'));
+    }
+  });
+  contentSection.style.display = contentCount > 0 ? '' : 'none';
+
+  var genderRows = val('demo_gender');
+  var ageRows = val('demo_age');
+  currentClient._fbDemoData = {
+    gender: genderRows ? parseDemo(genderRows) : null,
+    age:    ageRows    ? parseDemo(ageRows)    : null
+  };
+  var fbDemoSection = document.getElementById('fb-demo-section');
+  if (fbDemoSection) fbDemoSection.style.display = (genderRows || ageRows) ? '' : 'none';
+
+  applyNotesSection('fb-notes-performance-section', 'fb-notes-performance-title', config.notes_performance_label);
+  applyNotesSection('fb-audience-notes-section', 'fb-notes-audience-title', config.notes_audience_label);
+  applyNotesSection('fb-notes-final-section', 'fb-notes-final-title', config.notes_final_label);
+}
+
+function applyInstagramData(config, rangeIndex) {
+  var val = function(fieldId) {
+    var range = config[fieldId];
+    if (!range) return null;
+    var rows = rangeIndex[range];
+    if (!rows || !rows.length) return null;
+    return rows;
+  };
+  var singleVal = function(fieldId) {
+    var rows = val(fieldId);
+    return rows ? String(rows[0][0] || '').trim() : null;
+  };
+
+  if (config.reportTabTitle) {
+    var igReport = (currentClient.reports || []).find(function(r) { return r.type === 'instagram-ads'; });
+    if (igReport) {
+      igReport.label = config.reportTabTitle;
+      document.querySelectorAll('.tmpl-btn').forEach(function(btn) {
+        if (btn.dataset.type === 'instagram-ads') btn.textContent = config.reportTabTitle;
+      });
+      var sel = document.querySelector('.tmpl-select');
+      if (sel) {
+        Array.from(sel.options).forEach(function(opt) {
+          if (opt.value === 'instagram-ads') opt.textContent = config.reportTabTitle;
+        });
+      }
+    }
+  }
+
+  var kpiDefs = [
+    { id: 'clicks', el: 'ig-kpi-clicks', trendEl: 'ig-kpi-clicks-trend', tlblEl: 'ig-kpi-clicks-tlbl', invert: false },
+    { id: 'reach',  el: 'ig-kpi-reach',  trendEl: 'ig-kpi-reach-trend',  tlblEl: 'ig-kpi-reach-tlbl',  invert: false },
+    { id: 'impr',   el: 'ig-kpi-impr',   trendEl: 'ig-kpi-impr-trend',   tlblEl: 'ig-kpi-impr-tlbl',   invert: false },
+    { id: 'ctr',    el: 'ig-kpi-ctr',    trendEl: 'ig-kpi-ctr-trend',    tlblEl: 'ig-kpi-ctr-tlbl',    invert: false },
+    { id: 'cpc',    el: 'ig-kpi-cpc',    trendEl: 'ig-kpi-cpc-trend',    tlblEl: 'ig-kpi-cpc-tlbl',    invert: true  },
+    { id: 'freq',   el: 'ig-kpi-freq',   trendEl: 'ig-kpi-freq-trend',   tlblEl: 'ig-kpi-freq-tlbl',   invert: false, neutral: true },
+  ];
+  var tlbl = config.kpi_tlbl || '';
+  kpiDefs.forEach(function(k) {
+    var v = singleVal('kpi_' + k.id);
+    var t = singleVal('kpi_' + k.id + '_trend');
+    if (v) document.getElementById(k.el).textContent = v;
+    if (t) setKpiTrend(k.trendEl, k.tlblEl, t, tlbl, k.invert, k.neutral);
+  });
+
+  var audienceRows = val('audience_range');
+  var audienceSection = document.getElementById('ig-audience-section');
+  if (audienceRows && audienceRows.length > 1) {
+    audienceSection.style.display = '';
+    var wrap = document.getElementById('ig-audience-table-wrap');
+    if (wrap) renderAudienceTable(audienceRows, wrap);
+  } else {
+    audienceSection.style.display = 'none';
+  }
+
+  var contentDefs = [
+    { rangeField: 'content1_range', labelField: 'content1_label', slot: 1 },
+    { rangeField: 'content2_range', labelField: 'content2_label', slot: 2 },
+    { rangeField: 'content3_range', labelField: 'content3_label', slot: 3 },
+  ];
+  var contentSection = document.getElementById('ig-content-section');
+  var contentGrid = document.getElementById('ig-content-grid');
+  contentGrid.innerHTML = '';
+  var contentCount = 0;
+  contentDefs.forEach(function(c) {
+    var rows = val(c.rangeField);
+    var label = config[c.labelField] || ('Top Creative #' + c.slot);
+    var hasStoredImg = !!localStorage.getItem('link_v2_creative_ig_' + currentClient.id + '_' + c.slot);
+    if ((rows && rows.length) || hasStoredImg) {
+      contentCount++;
+      contentGrid.appendChild(buildContentCard(c.slot, label, rows || [], currentClient.id, 'ig'));
+    }
+  });
+  contentSection.style.display = contentCount > 0 ? '' : 'none';
+
+  var genderRows = val('demo_gender');
+  var ageRows = val('demo_age');
+  currentClient._igDemoData = {
+    gender: genderRows ? parseDemo(genderRows) : null,
+    age:    ageRows    ? parseDemo(ageRows)    : null
+  };
+  var igDemoSection = document.getElementById('ig-demo-section');
+  if (igDemoSection) igDemoSection.style.display = (genderRows || ageRows) ? '' : 'none';
+
+  applyNotesSection('ig-notes-performance-section', 'ig-notes-performance-title', config.notes_performance_label);
+  applyNotesSection('ig-audience-notes-section', 'ig-notes-audience-title', config.notes_audience_label);
+  applyNotesSection('ig-notes-final-section', 'ig-notes-final-title', config.notes_final_label);
+}
+
+async function fetchDisplayDataAsync(client, dispCfg) {
+  if (!sheetsApiKey || !client.sheetId) return;
+  const RANGE_FIELDS = [
+    'kpi_clicks','kpi_clicks_trend','kpi_reach','kpi_reach_trend',
+    'kpi_impr','kpi_impr_trend','kpi_ctr','kpi_ctr_trend',
+    'kpi_cpc','kpi_cpc_trend','kpi_freq','kpi_freq_trend',
+    'audience_range','content1_range','content2_range','content3_range',
+    'zip_impr_range','zip_clicks_range',
+    'demo_gender','demo_age','demo_income',
+  ];
+  const rangesToFetch = [];
+  RANGE_FIELDS.forEach(f => { if (dispCfg[f]) rangesToFetch.push(dispCfg[f]); });
+  if (!rangesToFetch.length) {
+    applyDisplayData(dispCfg, {});
+    client._dispLoaded = true;
+    return;
+  }
+  try {
+    const uniqueRanges = [...new Set(rangesToFetch)];
+    const rangeIndex = await resilientBatchFetch(client.sheetId, uniqueRanges);
+    client._dispConfig = dispCfg;
+    currentClient._dispConfig = dispCfg;
+    applyDisplayData(dispCfg, rangeIndex);
+    client._dispLoaded = true;
+    setConnStatus(true, 'Data Connection');
+  } catch(e) {
+    console.error('[Load] Display Ads data fetch failed:', e.message);
+    client._dispLoaded = true;
+  }
+}
+
+function applyDisplayData(config, rangeIndex) {
+  function val(fieldId) {
+    const range = config[fieldId];
+    if (!range) return null;
+    const rows = rangeIndex[range];
+    if (!rows || !rows.length) return null;
+    return rows;
+  }
+  function singleVal(fieldId) {
+    const r = val(fieldId);
+    return r ? String(r[0][0] || '').trim() : null;
+  }
+
+  // Tab title
+  if (config.reportTabTitle) {
+    const dispReport = (currentClient.reports || []).find(r => r.type === 'display-ads');
+    if (dispReport) {
+      dispReport.label = config.reportTabTitle;
+      document.querySelectorAll('.tmpl-btn').forEach(btn => {
+        if (btn.dataset.type === 'display-ads') btn.textContent = config.reportTabTitle;
+      });
+      const sel = document.querySelector('.tmpl-select');
+      if (sel) {
+        Array.from(sel.options).forEach(opt => {
+          if (opt.value === 'display-ads') opt.textContent = config.reportTabTitle;
+        });
+      }
+    }
+  }
+
+  // KPIs
+  const kpiDefs = [
+    { id: 'clicks', el: 'disp-kpi-clicks', trendEl: 'disp-kpi-clicks-trend', tlblEl: 'disp-kpi-clicks-tlbl', invert: false },
+    { id: 'reach',  el: 'disp-kpi-reach',  trendEl: 'disp-kpi-reach-trend',  tlblEl: 'disp-kpi-reach-tlbl',  invert: false },
+    { id: 'impr',   el: 'disp-kpi-impr',   trendEl: 'disp-kpi-impr-trend',   tlblEl: 'disp-kpi-impr-tlbl',   invert: false },
+    { id: 'ctr',    el: 'disp-kpi-ctr',    trendEl: 'disp-kpi-ctr-trend',    tlblEl: 'disp-kpi-ctr-tlbl',    invert: false },
+    { id: 'cpc',    el: 'disp-kpi-cpc',    trendEl: 'disp-kpi-cpc-trend',    tlblEl: 'disp-kpi-cpc-tlbl',    invert: true  },
+    { id: 'freq',   el: 'disp-kpi-freq',   trendEl: 'disp-kpi-freq-trend',   tlblEl: 'disp-kpi-freq-tlbl',   invert: false, neutral: true },
+  ];
+  const tlbl = config.kpi_tlbl || '';
+  kpiDefs.forEach(k => {
+    const v = singleVal('kpi_' + k.id);
+    const t = singleVal('kpi_' + k.id + '_trend');
+    if (v) document.getElementById(k.el).textContent = v;
+    if (t) setKpiTrend(k.trendEl, k.tlblEl, t, tlbl, k.invert, k.neutral);
+  });
+
+  // Audience segmentation
+  const audienceRows = val('audience_range');
+  const audienceSection = document.getElementById('disp-audience-section');
+  if (audienceRows && audienceRows.length > 1) {
+    audienceSection.style.display = '';
+    const wrap = document.getElementById('disp-audience-table-wrap');
+    if (wrap) renderAudienceTable(audienceRows, wrap);
+  } else {
+    audienceSection.style.display = 'none';
+  }
+
+  // Top content
+  const contentDefs = [
+    { rangeField: 'content1_range', labelField: 'content1_label', slot: 1 },
+    { rangeField: 'content2_range', labelField: 'content2_label', slot: 2 },
+    { rangeField: 'content3_range', labelField: 'content3_label', slot: 3 },
+  ];
+  const contentSection = document.getElementById('disp-content-section');
+  const contentGrid = document.getElementById('disp-content-grid');
+  contentGrid.innerHTML = '';
+  let contentCount = 0;
+  contentDefs.forEach(c => {
+    const rows = val(c.rangeField);
+    const label = config[c.labelField] || ('Top Creative #' + c.slot);
+    const hasStoredImg = !!localStorage.getItem('link_v2_creative_disp_' + currentClient.id + '_' + c.slot);
+    if ((rows && rows.length) || hasStoredImg) {
+      contentCount++;
+      contentGrid.appendChild(buildContentCard(c.slot, label, rows || [], currentClient.id, 'disp'));
+    }
+  });
+  contentSection.style.display = contentCount > 0 ? '' : 'none';
+
+  // Geographic — gate section visibility first, then store data + render active view
+  const zipImpr   = val('zip_impr_range');
+  const zipClicks = val('zip_clicks_range');
+  const dispGeoSection = document.getElementById('disp-geo-section');
+  const dispHasGeoData = (zipImpr && zipImpr.length) || (zipClicks && zipClicks.length);
+  if (dispGeoSection) dispGeoSection.style.display = dispHasGeoData ? '' : 'none';
+  if (dispHasGeoData) {
+    setGeoData('disp', zipImpr, zipClicks);
+  } else {
+    renderZipBars('disp-geo-bars', null);
+  }
+
+  // Demographics — store for rendering on tab activation
+  const genderRows = val('demo_gender');
+  const ageRows    = val('demo_age');
+  const incomeRows = val('demo_income');
+  currentClient._dispDemoData = {
+    gender: genderRows ? parseDemo(genderRows) : null,
+    age:    ageRows    ? parseDemo(ageRows)    : null,
+    income: incomeRows ? parseDemo(incomeRows) : null,
+  };
+  const dispDemoSection = document.getElementById('disp-demo-section');
+  if (dispDemoSection) dispDemoSection.style.display = (genderRows || ageRows || incomeRows) ? '' : 'none';
+
+  // Notes sections
+  applyNotesSection('disp-notes-performance-section', 'disp-notes-performance-title', config.notes_performance_label);
+  applyNotesSection('disp-audience-notes-section',    'disp-notes-audience-title',    config.notes_audience_label);
+  applyNotesSection('disp-notes-final-section',       'disp-notes-final-title',       config.notes_final_label);
+}
+
+async function fetchYouTubeDataAsync(client, ytCfg) {
+  if (!sheetsApiKey || !client.sheetId) return;
+  const RANGE_FIELDS = [
+    'kpi_clicks','kpi_clicks_trend','kpi_reach','kpi_reach_trend',
+    'kpi_impr','kpi_impr_trend','kpi_ctr','kpi_ctr_trend',
+    'kpi_cpc','kpi_cpc_trend','kpi_freq','kpi_freq_trend',
+    'audience_range','content1_range','content2_range','content3_range',
+    'zip_impr_range','zip_clicks_range',
+    'demo_gender','demo_age','demo_income',
+  ];
+  const rangesToFetch = [];
+  RANGE_FIELDS.forEach(f => { if (ytCfg[f]) rangesToFetch.push(ytCfg[f]); });
+  if (!rangesToFetch.length) {
+    applyYouTubeData(ytCfg, {});
+    client._ytLoaded = true;
+    return;
+  }
+  try {
+    const uniqueRanges = [...new Set(rangesToFetch)];
+    const rangeIndex = await resilientBatchFetch(client.sheetId, uniqueRanges);
+    client._ytConfig = ytCfg;
+    currentClient._ytConfig = ytCfg;
+    applyYouTubeData(ytCfg, rangeIndex);
+    client._ytLoaded = true;
+    setConnStatus(true, 'Data Connection');
+  } catch(e) {
+    console.error('[Load] YouTube Ads data fetch failed:', e.message);
+    client._ytLoaded = true;
+  }
+}
+
+function applyYouTubeData(config, rangeIndex) {
+  function val(fieldId) {
+    const range = config[fieldId];
+    if (!range) return null;
+    const rows = rangeIndex[range];
+    if (!rows || !rows.length) return null;
+    return rows;
+  }
+  function singleVal(fieldId) {
+    const r = val(fieldId);
+    return r ? String(r[0][0] || '').trim() : null;
+  }
+
+  // Tab title
+  if (config.reportTabTitle) {
+    const ytReport = (currentClient.reports || []).find(r => r.type === 'youtube-ads');
+    if (ytReport) {
+      ytReport.label = config.reportTabTitle;
+      document.querySelectorAll('.tmpl-btn').forEach(btn => {
+        if (btn.dataset.type === 'youtube-ads') btn.textContent = config.reportTabTitle;
+      });
+      const sel = document.querySelector('.tmpl-select');
+      if (sel) {
+        Array.from(sel.options).forEach(opt => {
+          if (opt.value === 'youtube-ads') opt.textContent = config.reportTabTitle;
+        });
+      }
+    }
+  }
+
+  // KPIs
+  const kpiDefs = [
+    { id: 'clicks', el: 'yt-kpi-clicks', trendEl: 'yt-kpi-clicks-trend', tlblEl: 'yt-kpi-clicks-tlbl', invert: false },
+    { id: 'reach',  el: 'yt-kpi-reach',  trendEl: 'yt-kpi-reach-trend',  tlblEl: 'yt-kpi-reach-tlbl',  invert: false },
+    { id: 'impr',   el: 'yt-kpi-impr',   trendEl: 'yt-kpi-impr-trend',   tlblEl: 'yt-kpi-impr-tlbl',   invert: false },
+    { id: 'ctr',    el: 'yt-kpi-ctr',    trendEl: 'yt-kpi-ctr-trend',    tlblEl: 'yt-kpi-ctr-tlbl',    invert: false },
+    { id: 'cpc',    el: 'yt-kpi-cpc',    trendEl: 'yt-kpi-cpc-trend',    tlblEl: 'yt-kpi-cpc-tlbl',    invert: true  },
+    { id: 'freq',   el: 'yt-kpi-freq',   trendEl: 'yt-kpi-freq-trend',   tlblEl: 'yt-kpi-freq-tlbl',   invert: false, neutral: true },
+  ];
+  const tlbl = config.kpi_tlbl || '';
+  kpiDefs.forEach(k => {
+    const v = singleVal('kpi_' + k.id);
+    const t = singleVal('kpi_' + k.id + '_trend');
+    if (v) document.getElementById(k.el).textContent = v;
+    if (t) setKpiTrend(k.trendEl, k.tlblEl, t, tlbl, k.invert, k.neutral);
+  });
+
+  // Audience segmentation
+  const audienceRows = val('audience_range');
+  const audienceSection = document.getElementById('yt-audience-section');
+  if (audienceRows && audienceRows.length > 1) {
+    audienceSection.style.display = '';
+    const wrap = document.getElementById('yt-audience-table-wrap');
+    if (wrap) renderAudienceTable(audienceRows, wrap);
+  } else {
+    audienceSection.style.display = 'none';
+  }
+
+  // Top content
+  const contentDefs = [
+    { rangeField: 'content1_range', labelField: 'content1_label', slot: 1 },
+    { rangeField: 'content2_range', labelField: 'content2_label', slot: 2 },
+    { rangeField: 'content3_range', labelField: 'content3_label', slot: 3 },
+  ];
+  const contentSection = document.getElementById('yt-content-section');
+  const contentGrid = document.getElementById('yt-content-grid');
+  contentGrid.innerHTML = '';
+  let contentCount = 0;
+  contentDefs.forEach(c => {
+    const rows = val(c.rangeField);
+    const label = config[c.labelField] || ('Top Creative #' + c.slot);
+    const hasStoredImg = !!localStorage.getItem('link_v2_creative_yt_' + currentClient.id + '_' + c.slot);
+    if ((rows && rows.length) || hasStoredImg) {
+      contentCount++;
+      contentGrid.appendChild(buildContentCard(c.slot, label, rows || [], currentClient.id, 'yt'));
+    }
+  });
+  contentSection.style.display = contentCount > 0 ? '' : 'none';
+
+  // Geographic — gate section visibility first, then store data + render active view
+  const zipImpr   = val('zip_impr_range');
+  const zipClicks = val('zip_clicks_range');
+  const ytGeoSection = document.getElementById('yt-geo-section');
+  const ytHasGeoData = (zipImpr && zipImpr.length) || (zipClicks && zipClicks.length);
+  if (ytGeoSection) ytGeoSection.style.display = ytHasGeoData ? '' : 'none';
+  if (ytHasGeoData) {
+    setGeoData('yt', zipImpr, zipClicks);
+  } else {
+    renderZipBars('yt-geo-bars', null);
+  }
+
+  // Demographics — store for rendering on tab activation
+  const genderRows = val('demo_gender');
+  const ageRows    = val('demo_age');
+  const incomeRows = val('demo_income');
+  currentClient._ytDemoData = {
+    gender: genderRows ? parseDemo(genderRows) : null,
+    age:    ageRows    ? parseDemo(ageRows)    : null,
+    income: incomeRows ? parseDemo(incomeRows) : null,
+  };
+  const ytDemoSection = document.getElementById('yt-demo-section');
+  if (ytDemoSection) ytDemoSection.style.display = (genderRows || ageRows || incomeRows) ? '' : 'none';
+
+  // Notes sections
+  applyNotesSection('yt-notes-performance-section', 'yt-notes-performance-title', config.notes_performance_label);
+  applyNotesSection('yt-audience-notes-section',    'yt-notes-audience-title',    config.notes_audience_label);
+  applyNotesSection('yt-notes-final-section',       'yt-notes-final-title',       config.notes_final_label);
 }
 
 async function fetchLinkedInDataAsync(client, liCfg) {
@@ -3314,6 +4601,14 @@ function resetClientUI() {
    'gs-keyword-section','gs-geo-section','gs-demo-section',
    'meta-notes-performance-section','meta-audience-notes-section','meta-notes-final-section',
    'meta-audience-section','meta-content-section','meta-demo-section',
+   'fb-notes-performance-section','fb-audience-notes-section','fb-notes-final-section',
+   'fb-audience-section','fb-content-section','fb-demo-section',
+   'ig-notes-performance-section','ig-audience-notes-section','ig-notes-final-section',
+   'ig-audience-section','ig-content-section','ig-demo-section',
+   'disp-notes-performance-section','disp-audience-notes-section','disp-notes-final-section',
+   'disp-audience-section','disp-content-section','disp-geo-section','disp-demo-section',
+   'yt-notes-performance-section','yt-audience-notes-section','yt-notes-final-section',
+   'yt-audience-section','yt-content-section','yt-geo-section','yt-demo-section',
    'li-notes-performance-section','li-audience-notes-section','li-notes-final-section',
    'li-audience-section','li-content-section'].forEach(id => {
     const el = document.getElementById(id);
@@ -3325,15 +4620,34 @@ function resetClientUI() {
   if (gsAudWrap) gsAudWrap.innerHTML = '<div class="audience-empty">No audience data configured</div>';
   const metaAudWrap = document.getElementById('meta-audience-table-wrap');
   if (metaAudWrap) metaAudWrap.innerHTML = '<div class="audience-empty">No audience data configured</div>';
+  const fbAudWrap = document.getElementById('fb-audience-table-wrap');
+  if (fbAudWrap) fbAudWrap.innerHTML = '<div class="audience-empty">No audience data configured</div>';
+  const igAudWrap = document.getElementById('ig-audience-table-wrap');
+  if (igAudWrap) igAudWrap.innerHTML = '<div class="audience-empty">No audience data configured</div>';
+  const dispAudWrap = document.getElementById('disp-audience-table-wrap');
+  if (dispAudWrap) dispAudWrap.innerHTML = '<div class="audience-empty">No audience data configured</div>';
+  const ytAudWrap = document.getElementById('yt-audience-table-wrap');
+  if (ytAudWrap) ytAudWrap.innerHTML = '<div class="audience-empty">No audience data configured</div>';
 
-  // Reset top content grid
-  const contentGrid = document.getElementById('meta-content-grid');
-  if (contentGrid) contentGrid.innerHTML = '';
+  // Reset top content grids
+  ['meta-content-grid','fb-content-grid','ig-content-grid','disp-content-grid','yt-content-grid'].forEach(id => {
+    const grid = document.getElementById(id);
+    if (grid) grid.innerHTML = '';
+  });
 
   // Reset donut divs
-  ['donut-gender','donut-age','donut-income','meta-donut-gender','meta-donut-age'].forEach(id => {
+  ['donut-gender','donut-age','donut-income','meta-donut-gender','meta-donut-age','fb-donut-gender','fb-donut-age','ig-donut-gender','ig-donut-age','disp-donut-gender','disp-donut-age','disp-donut-income','yt-donut-gender','yt-donut-age','yt-donut-income'].forEach(id => {
     disposeDonut(id);
   });
+  // Clear cached demo data
+  if (currentClient) {
+    currentClient._gsDemoData = null;
+    currentClient._metaDemoData = null;
+    currentClient._fbDemoData = null;
+    currentClient._igDemoData = null;
+    currentClient._dispDemoData = null;
+    currentClient._ytDemoData = null;
+  }
   // Restore income body if missing
   const incomeBody = document.getElementById('donut-income-body');
   if (incomeBody && !document.getElementById('donut-income')) {
@@ -3424,25 +4738,14 @@ async function bootClient(client) {
   // Template navigation
   initTemplateNav(client.reports || []);
 
-  // Render placeholder donuts for Google Search — deferred so containers have dimensions
-  setTimeout(() => renderDonuts(
-    [{label:'Male',pct:52},{label:'Female',pct:46}],
-    [{label:'25–34',pct:28},{label:'35–44',pct:24},{label:'45–54',pct:18},{label:'18–24',pct:15},{label:'55+',pct:15}],
-    [{label:'60–80th',pct:28},{label:'40–60th',pct:25},{label:'20–40th',pct:18},{label:'0–20th',pct:12},{label:'Top 10%',pct:17}]
-  ), 100);
-
   setConnStatus(false, 'Loading…');
 
-  // Init maps
-  if (mapboxToken) {
-    if (!mapImpressions || !mapClicks) {
-      initMaps();
-    } else {
-      setTimeout(() => {
-        if (mapClicks) mapClicks.resize();
-        if (mapImpressions) mapImpressions.resize();
-      }, 100);
-    }
+  // Geo maps now initialize lazily from setGeoData (called once each template's
+  // sheet data confirms geo rows exist and the section is already visible) —
+  // not eagerly here, to avoid constructing the Mapbox canvas against a
+  // display:none container (which locks the canvas in at zero height).
+  if (GEO_TEMPLATES.gs.map) {
+    setTimeout(() => { if (GEO_TEMPLATES.gs.map) GEO_TEMPLATES.gs.map.resize(); }, 100);
   }
 }
 
@@ -3453,14 +4756,18 @@ function logout() {
   setAdminMode(false);
   if (_navResizeObserver) { _navResizeObserver.disconnect(); _navResizeObserver = null; }
 
-  // Reset map state so next client gets fresh maps
-  if (mapImpressions) { try { mapImpressions.remove(); } catch(e){} mapImpressions = null; }
-  if (mapClicks)      { try { mapClicks.remove();      } catch(e){} mapClicks = null; }
-  mapsInitialized = false;
-  pendingMapData = null;
+  // Reset map state so next client gets fresh maps — dispose all geo-template instances
+  Object.keys(GEO_TEMPLATES).forEach(tpl => {
+    const g = GEO_TEMPLATES[tpl];
+    if (g.resizeObserver) { try { g.resizeObserver.disconnect(); } catch(e){} g.resizeObserver = null; }
+    if (g.map) { try { g.map.remove(); } catch(e){} g.map = null; }
+    g.mapLoaded = false;
+    g.data = null;
+    g.active = 'clicks';
+  });
 
-  // Dispose donut charts
-  ['donut-gender','donut-age','donut-income','meta-donut-gender','meta-donut-age'].forEach(id => disposeDonut(id));
+  // Dispose donut charts and clear cached demo data
+  ['donut-gender','donut-age','donut-income','meta-donut-gender','meta-donut-age','fb-donut-gender','fb-donut-age','ig-donut-gender','ig-donut-age','disp-donut-gender','disp-donut-age','disp-donut-income','yt-donut-gender','yt-donut-age','yt-donut-income'].forEach(id => disposeDonut(id));
 
   document.getElementById('auth-screen').style.display = 'flex';
   document.getElementById('app').classList.remove('visible');
@@ -3694,6 +5001,26 @@ function switchTemplate(type, reports) {
     loadMetaTemplate();
   }
 
+  if (type === 'facebook-ads' && currentClient && !currentClient._fbLoaded) {
+    const fbCfg = currentClient._fbConfig;
+    if (fbCfg) fetchFacebookDataAsync(currentClient, fbCfg);
+  }
+
+  if (type === 'instagram-ads' && currentClient && !currentClient._igLoaded) {
+    const igCfg = currentClient._igConfig;
+    if (igCfg) fetchInstagramDataAsync(currentClient, igCfg);
+  }
+
+  if (type === 'display-ads' && currentClient && !currentClient._dispLoaded) {
+    const dispCfg = currentClient._dispConfig;
+    if (dispCfg) fetchDisplayDataAsync(currentClient, dispCfg);
+  }
+
+  if (type === 'youtube-ads' && currentClient && !currentClient._ytLoaded) {
+    const ytCfg = currentClient._ytConfig;
+    if (ytCfg) fetchYouTubeDataAsync(currentClient, ytCfg);
+  }
+
   if (type === 'linkedin-ads' && currentClient && !currentClient._liLoaded) {
     const liCfg = currentClient._liConfig;
     if (liCfg) fetchLinkedInDataAsync(currentClient, liCfg);
@@ -3704,24 +5031,68 @@ function switchTemplate(type, reports) {
     if (ovCfg) fetchOverviewDataAsync(currentClient, ovCfg);
   }
 
+  if (type === 'youtube-ads') {
+    if (mapboxToken && document.getElementById('yt-geo-section') && document.getElementById('yt-geo-section').style.display !== 'none') {
+      if (!GEO_TEMPLATES.yt.map) initGeoMap('yt');
+      else setTimeout(() => GEO_TEMPLATES.yt.map.resize(), 100);
+    }
+    if (currentClient && currentClient._ytDemoData) {
+      const d = currentClient._ytDemoData;
+      renderDonuts(d.gender, d.age, d.income,
+        'yt-donut-gender', 'yt-dleg-gender',
+        'yt-donut-age',    'yt-dleg-age',
+        'yt-donut-income', 'yt-dleg-income');
+    }
+  }
+  if (type === 'display-ads') {
+    if (mapboxToken && document.getElementById('disp-geo-section') && document.getElementById('disp-geo-section').style.display !== 'none') {
+      if (!GEO_TEMPLATES.disp.map) initGeoMap('disp');
+      else setTimeout(() => GEO_TEMPLATES.disp.map.resize(), 100);
+    }
+    if (currentClient && currentClient._dispDemoData) {
+      const d = currentClient._dispDemoData;
+      renderDonuts(d.gender, d.age, d.income,
+        'disp-donut-gender', 'disp-dleg-gender',
+        'disp-donut-age',    'disp-dleg-age',
+        'disp-donut-income', 'disp-dleg-income');
+    }
+  }
   if (type === 'google-search') {
-    if (mapClicks) setTimeout(() => mapClicks.resize(), 100);
-    if (mapImpressions) setTimeout(() => mapImpressions.resize(), 100);
-    // Resize ECharts donuts after tab becomes visible
-    setTimeout(() => {
-      ['donut-gender','donut-age','donut-income'].forEach(id => {
-        const inst = echarts.getInstanceByDom(document.getElementById(id));
-        if (inst) inst.resize();
-      });
-    }, 50);
+    if (mapboxToken && document.getElementById('gs-geo-section') && document.getElementById('gs-geo-section').style.display !== 'none') {
+      if (!GEO_TEMPLATES.gs.map) initGeoMap('gs');
+      else setTimeout(() => GEO_TEMPLATES.gs.map.resize(), 100);
+    }
+    if (currentClient && currentClient._gsDemoData) {
+      const d = currentClient._gsDemoData;
+      renderDonuts(d.gender, d.age, d.income);
+    }
   }
   if (type === 'meta-ads') {
-    setTimeout(() => {
-      ['meta-donut-gender','meta-donut-age'].forEach(id => {
-        const inst = echarts.getInstanceByDom(document.getElementById(id));
-        if (inst) inst.resize();
-      });
-    }, 50);
+    if (currentClient && currentClient._metaDemoData) {
+      const d = currentClient._metaDemoData;
+      renderDonuts(d.gender, d.age, null,
+        'meta-donut-gender', 'meta-dleg-gender',
+        'meta-donut-age',    'meta-dleg-age',
+        null, null);
+    }
+  }
+  if (type === 'facebook-ads') {
+    if (currentClient && currentClient._fbDemoData) {
+      const d = currentClient._fbDemoData;
+      renderDonuts(d.gender, d.age, null,
+        'fb-donut-gender', 'fb-dleg-gender',
+        'fb-donut-age',    'fb-dleg-age',
+        null, null);
+    }
+  }
+  if (type === 'instagram-ads') {
+    if (currentClient && currentClient._igDemoData) {
+      const d = currentClient._igDemoData;
+      renderDonuts(d.gender, d.age, null,
+        'ig-donut-gender', 'ig-dleg-gender',
+        'ig-donut-age',    'ig-dleg-age',
+        null, null);
+    }
   }
 }
 
@@ -3760,26 +5131,27 @@ function applySheetData(mapping, rangeIndex) {
   const gsKeywordSection = document.getElementById('gs-keyword-section');
   if (gsKeywordSection) gsKeywordSection.style.display = validKwRows.length ? '' : 'none';
 
-  // Zip bars — renderZipBars handles null/empty internally
+  // Geographic — gate section visibility first, then store data + render active view (lazy via setGeoData)
   const zipImpr = rows('zip_impr_range');
   const zipClicks = rows('zip_clicks_range');
-  renderZipBars('zip-impressions-bars', zipImpr);
-  renderZipBars('zip-clicks-bars', zipClicks);
-  if ((zipImpr && zipImpr.length) || (zipClicks && zipClicks.length)) {
-    if (mapboxToken) updateMaps(zipImpr, zipClicks);
-  }
   const gsGeoSection = document.getElementById('gs-geo-section');
-  if (gsGeoSection) gsGeoSection.style.display = ((zipImpr && zipImpr.length) || (zipClicks && zipClicks.length)) ? '' : 'none';
+  const gsHasGeoData = (zipImpr && zipImpr.length) || (zipClicks && zipClicks.length);
+  if (gsGeoSection) gsGeoSection.style.display = gsHasGeoData ? '' : 'none';
+  if (gsHasGeoData) {
+    setGeoData('gs', zipImpr, zipClicks);
+  } else {
+    renderZipBars('gs-geo-bars', null);
+  }
 
-  // Demographics — renderDonuts handles null per-chart internally
+  // Demographics — store parsed data for rendering on tab activation
   const genderRows = rows('demo_gender');
   const ageRows = rows('demo_age');
   const incomeRows = rows('demo_income');
-  renderDonuts(
-    genderRows ? parseDemo(genderRows) : null,
-    ageRows    ? parseDemo(ageRows)    : null,
-    incomeRows ? parseDemo(incomeRows) : null
-  );
+  currentClient._gsDemoData = {
+    gender: genderRows ? parseDemo(genderRows) : null,
+    age:    ageRows    ? parseDemo(ageRows)    : null,
+    income: incomeRows ? parseDemo(incomeRows) : null
+  };
   const gsDemoSection = document.getElementById('gs-demo-section');
   if (gsDemoSection) gsDemoSection.style.display = (genderRows || ageRows || incomeRows) ? '' : 'none';
 
@@ -4365,10 +5737,10 @@ function applyMetaData(config, rangeIndex) {
   contentDefs.forEach(c => {
     const rows = val(c.rangeField);
     const label = config[c.labelField] || ('Top Creative #' + c.slot);
-    const hasStoredImg = !!localStorage.getItem('link_v2_creative_' + currentClient.id + '_' + c.slot);
+    const hasStoredImg = !!localStorage.getItem('link_v2_creative_meta_' + currentClient.id + '_' + c.slot);
     if ((rows && rows.length) || hasStoredImg) {
       contentCount++;
-      contentGrid.appendChild(buildContentCard(c.slot, label, rows || [], currentClient.id));
+      contentGrid.appendChild(buildContentCard(c.slot, label, rows || [], currentClient.id, 'meta'));
     }
   });
 
@@ -4377,14 +5749,10 @@ function applyMetaData(config, rangeIndex) {
   // ── DEMOGRAPHICS ──
   const genderRows = val('demo_gender');
   const ageRows    = val('demo_age');
-  renderDonuts(
-    genderRows ? parseDemo(genderRows) : null,
-    ageRows    ? parseDemo(ageRows)    : null,
-    null,
-    'meta-donut-gender', 'meta-dleg-gender',
-    'meta-donut-age',    'meta-dleg-age',
-    'meta-donut-income', 'meta-dleg-income'
-  );
+  currentClient._metaDemoData = {
+    gender: genderRows ? parseDemo(genderRows) : null,
+    age:    ageRows    ? parseDemo(ageRows)    : null
+  };
   const metaDemoSection = document.getElementById('meta-demo-section');
   if (metaDemoSection) metaDemoSection.style.display = (genderRows || ageRows) ? '' : 'none';
 
@@ -4428,14 +5796,23 @@ function renderAudienceTable(rows, wrap) {
   wrap.innerHTML = `<table class="audience-table"><thead><tr>${thead}</tr></thead><tbody>${tbody}</tbody></table>`;
 }
 
-function buildContentCard(slot, label, rows, clientId) {
-  const storedImg = localStorage.getItem('link_v2_creative_' + clientId + '_' + slot) || '';
+function buildContentCard(slot, label, rows, clientId, tmplPrefix) {
+  const imgKey = tmplPrefix
+    ? 'link_v2_creative_' + tmplPrefix + '_' + clientId + '_' + slot
+    : 'link_v2_creative_' + clientId + '_' + slot;
+  const storedImg = localStorage.getItem(imgKey) || '';
 
   // Parse metrics using explicit labels from config (comma-separated)
   // Each creative range is a single data row: [val1, val2, val3, ...]
-  // Labels come from 'Top Content Metric Labels' in _config_meta
+  // Labels come from 'Top Content Metric Labels' in the relevant template config
   let metrics = [];
-  const labelStr = (currentClient && currentClient._metaConfig && currentClient._metaConfig.content_metric_labels) || '';
+  const cfgKey = tmplPrefix === 'fb' ? '_fbConfig'
+    : tmplPrefix === 'ig'   ? '_igConfig'
+    : tmplPrefix === 'disp' ? '_dispConfig'
+    : tmplPrefix === 'yt'   ? '_ytConfig'
+    : tmplPrefix === 'li'   ? '_liConfig'
+    : '_metaConfig';
+  const labelStr = (currentClient && currentClient[cfgKey] && currentClient[cfgKey].content_metric_labels) || '';
   const explicitLabels = labelStr.split(',').map(l => l.trim()).filter(Boolean);
 
   if (explicitLabels.length && rows && rows.length) {
@@ -4504,25 +5881,28 @@ function buildContentCard(slot, label, rows, clientId) {
     const replaceBtn = card.querySelector('.replace-btn');
     if (replaceBtn) replaceBtn.addEventListener('click', (e) => {
       e.stopPropagation();
-      triggerCreativeUpload(slot, clientId, card);
+      triggerCreativeUpload(slot, clientId, card, tmplPrefix);
     });
     const removeBtn = card.querySelector('.remove-btn');
     if (removeBtn) removeBtn.addEventListener('click', (e) => {
       e.stopPropagation();
-      removeCreativeImage(slot, clientId, card);
+      removeCreativeImage(slot, clientId, card, tmplPrefix);
     });
   } else {
     // No image — click anywhere on wrap to upload (admin only)
     if (isAdminMode) {
-      wrap.addEventListener('click', () => triggerCreativeUpload(slot, clientId, card));
+      wrap.addEventListener('click', () => triggerCreativeUpload(slot, clientId, card, tmplPrefix));
     }
   }
 
   return card;
 }
 
-function triggerCreativeUpload(slot, clientId, card) {
+function triggerCreativeUpload(slot, clientId, card, tmplPrefix) {
   if (!isAdminMode) return;
+  const imgKey = tmplPrefix
+    ? 'link_v2_creative_' + tmplPrefix + '_' + clientId + '_' + slot
+    : 'link_v2_creative_' + clientId + '_' + slot;
   const input = document.createElement('input');
   input.type = 'file';
   input.accept = 'image/*';
@@ -4552,8 +5932,9 @@ function triggerCreativeUpload(slot, clientId, card) {
       const imageUrl = data.secure_url;
 
       // Store URL in localStorage and Firestore
-      localStorage.setItem('link_v2_creative_' + clientId + '_' + slot, imageUrl);
-      fsSetCreative(clientId, String(slot), imageUrl);
+      localStorage.setItem(imgKey, imageUrl);
+      const fsKey = imgKey.replace('link_v2_creative_' + clientId + '_', '');
+      fsSetCreative(clientId, fsKey, imageUrl);
 
       // Re-render the creative wrap with new image
       wrap.innerHTML = `
@@ -4564,8 +5945,8 @@ function triggerCreativeUpload(slot, clientId, card) {
         <button class="remove-btn">✕ Remove</button>`;
       wrap.onclick = null;
       wrap.querySelector('.expand-btn').onclick = (ev) => { ev.stopPropagation(); openLightboxSrc(imageUrl); };
-      wrap.querySelector('.replace-btn').onclick = (ev) => { ev.stopPropagation(); triggerCreativeUpload(slot, clientId, card); };
-      wrap.querySelector('.remove-btn').onclick = (ev) => { ev.stopPropagation(); removeCreativeImage(slot, clientId, card); };
+      wrap.querySelector('.replace-btn').onclick = (ev) => { ev.stopPropagation(); triggerCreativeUpload(slot, clientId, card, tmplPrefix); };
+      wrap.querySelector('.remove-btn').onclick = (ev) => { ev.stopPropagation(); removeCreativeImage(slot, clientId, card, tmplPrefix); };
       toast('Image uploaded', 'success');
 
     } catch (err) {
@@ -4577,12 +5958,16 @@ function triggerCreativeUpload(slot, clientId, card) {
   input.click();
 }
 
-function removeCreativeImage(slot, clientId, card) {
+function removeCreativeImage(slot, clientId, card, tmplPrefix) {
   if (!isAdminMode) return;
   if (!confirm('Remove this image?')) return;
 
+  const imgKey = tmplPrefix
+    ? 'link_v2_creative_' + tmplPrefix + '_' + clientId + '_' + slot
+    : 'link_v2_creative_' + clientId + '_' + slot;
+
   // Clear from localStorage and Firestore
-  localStorage.removeItem('link_v2_creative_' + clientId + '_' + slot);
+  localStorage.removeItem(imgKey);
   fsDeleteCreative(clientId, String(slot));
 
   // Revert card to empty placeholder
@@ -4599,7 +5984,7 @@ function removeCreativeImage(slot, clientId, card) {
       <span class="creative-ph-text">Click to upload</span>
     </div>
     <div class="rank-badge">#${slot}</div>`;
-  wrap.onclick = () => triggerCreativeUpload(slot, clientId, card);
+  wrap.onclick = () => triggerCreativeUpload(slot, clientId, card, tmplPrefix);
   toast('Image removed', 'success');
 }
 
@@ -4860,8 +6245,6 @@ async function fetchZipGeoJSON(zips) {
     if (!res.ok) throw new Error('Census TIGERweb error (' + res.status + ')');
     const data = await res.json();
     if (data.features && data.features.length > 0) {
-      // Log first feature's properties so we know the exact field names
-      console.log('[TIGERweb] First feature properties:', JSON.stringify(data.features[0].properties));
       allFeatures.push(...data.features);
     } else {
       console.warn('[TIGERweb] No features returned for batch:', zipsFormatted, 'Response:', JSON.stringify(data).slice(0,300));
@@ -4881,122 +6264,129 @@ function filterGeoJSON(geojson, zipSet) {
       const p = f.properties || {};
       const z = p.ZCTA5 || p.GEOID || p.ZCTA5CE || p.ZCTA5CE10 || p.ZIP || p.zip || '';
       const match = zipSet.has(String(z).padStart(5,'0'));
-      if (!match && z) console.log('[filterGeoJSON] No match for:', z, '| Props:', JSON.stringify(p));
       return match;
     })
   };
 }
 
-let mapsInitialized = false;
-let pendingMapData = null; // {zipImprRows, zipClickRows} — stored if maps not ready yet
+/* ══════════════════════════════════════
+   GEO MAPS — per-template instances (v2.17.0 redesign)
+   One Mapbox instance per geo-enabled template (gs/disp/yt), each showing
+   whichever dataset (clicks/impressions) is currently toggled on, repainted
+   via setData() rather than maintaining two separate maps.
+══════════════════════════════════════ */
 
-function initMaps() {
+// Initialize the Mapbox instance for a given template, if not already created
+// and if mapboxToken is available. Safe to call repeatedly — no-ops if already initialized.
+function initGeoMap(tpl) {
+  const g = GEO_TEMPLATES[tpl];
+  if (!g || g.map) return; // already initialized
   if (!mapboxToken || !window.mapboxgl) return;
   mapboxgl.accessToken = mapboxToken;
 
-  const commonOpts = {
+  const el = document.getElementById(g.mapContainerId);
+  if (!el) return;
+  el.innerHTML = '';
+  el.classList.remove('map-placeholder');
+
+  g.map = new mapboxgl.Map({
+    container: g.mapContainerId,
     style: 'mapbox://styles/mapbox/light-v11',
     center: [-77.0369, 38.9072],
     zoom: 10,
     attributionControl: false,
-  };
-
-  // Clear placeholders
-  ['map-impressions','map-clicks'].forEach(id => {
-    const el = document.getElementById(id);
-    el.innerHTML = '';
-    el.classList.remove('map-placeholder');
   });
+  g.map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right');
 
-  mapImpressions = new mapboxgl.Map({ container: 'map-impressions', ...commonOpts });
-  mapClicks      = new mapboxgl.Map({ container: 'map-clicks',      ...commonOpts });
-
-  [mapImpressions, mapClicks].forEach(m => {
-    m.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right');
-  });
-
-  // Wait for both maps to be ready
-  let loadedCount = 0;
-  [mapImpressions, mapClicks].forEach(m => {
-    m.on('load', () => {
-      loadedCount++;
-      if (loadedCount === 2) {
-        mapsInitialized = true;
-        if (pendingMapData) {
-          const {zipImprRows, zipClickRows} = pendingMapData;
-          pendingMapData = null;
-          _paintBothMaps(zipImprRows, zipClickRows);
-        }
-      }
-    });
-  });
-}
-
-async function updateMaps(zipImprRows, zipClickRows) {
-  if (!mapboxToken || !window.mapboxgl) return;
-  if (!mapsInitialized) {
-    // Maps not ready yet — store data and paint once they load
-    pendingMapData = {zipImprRows, zipClickRows};
-    return;
+  // Keep canvas in sync with container size — covers late-loading fonts shifting
+  // layout, aspect-ratio settling, and any other post-construction size changes.
+  if (window.ResizeObserver) {
+    const ro = new ResizeObserver(() => { if (g.map) g.map.resize(); });
+    ro.observe(el);
+    g.resizeObserver = ro;
   }
-  _paintBothMaps(zipImprRows, zipClickRows);
-}
 
-function _setMapLoading(on) {
-  ['map-impressions','map-clicks'].forEach(id => {
-    const el = document.getElementById(id);
-    const existing = el.querySelector('.map-loading');
-    if (on && !existing) {
-      const div = document.createElement('div');
-      div.className = 'map-loading';
-      div.innerHTML = '<span class="spinner" style="border-top-color:var(--red);border-color:rgba(232,56,45,0.2);border-top-color:var(--red)"></span> Loading boundaries…';
-      el.appendChild(div);
-    } else if (!on && existing) {
-      existing.remove();
-    }
+  g.map.on('load', () => {
+    g.mapLoaded = true;
+    // Force canvas to match the final flex-resolved container size — Mapbox
+    // sizes its canvas at construction time and won't auto-track layout
+    // changes (e.g. aspect-ratio settling, fonts loading) without this.
+    g.map.resize();
+    // If geo data already arrived before the map finished loading, paint now
+    if (g.data) renderGeoView(tpl, g.active, { skipFade: true });
   });
 }
 
-async function _paintBothMaps(zipImprRows, zipClickRows) {
-  _setMapLoading(true);
+function _setGeoMapLoading(tpl, on) {
+  const g = GEO_TEMPLATES[tpl];
+  if (!g) return;
+  const el = document.getElementById(g.mapContainerId);
+  if (!el) return;
+  const existing = el.querySelector('.map-loading');
+  if (on && !existing) {
+    const div = document.createElement('div');
+    div.className = 'map-loading';
+    div.innerHTML = '<span class="spinner" style="border-top-color:var(--red);border-color:rgba(232,56,45,0.2);border-top-color:var(--red)"></span> Loading boundaries…';
+    el.appendChild(div);
+  } else if (!on && existing) {
+    existing.remove();
+  }
+}
 
-  // Fetch boundaries separately for each dataset so each map only shows its own zips
-  const fetchFor = async (rows) => {
-    if (!rows || !rows.length) return null;
-    const zips = new Set(rows.map(r => String(r[0]).padStart(5,'0')));
-    try {
-      const geojson = await fetchZipGeoJSON([...zips]);
-      return filterGeoJSON(geojson, zips);
-    } catch(err) {
-      console.error('GeoJSON fetch failed:', err);
-      return null;
-    }
-  };
+// Store zip data on the template's geo state, initialize the map if needed, and
+// render the currently-active view. Called from each template's apply*Data
+// function only when geo data is confirmed present — i.e. only after the
+// section's display has already been set to visible, so the map container has
+// a real, non-zero size when Mapbox constructs its canvas (constructing while
+// display:none would lock the canvas in at zero height).
+async function setGeoData(tpl, zipImprRows, zipClickRows) {
+  const g = GEO_TEMPLATES[tpl];
+  if (!g) return;
+  g.data = { impressions: zipImprRows, clicks: zipClickRows };
+  if (!g.map) requestAnimationFrame(() => initGeoMap(tpl));
+  if (g.map && g.mapLoaded) {
+    await renderGeoView(tpl, g.active, { skipFade: true });
+  }
+}
 
-  const [clicksGeo, imprGeo] = await Promise.all([
-    fetchFor(zipClickRows),
-    fetchFor(zipImprRows),
-  ]);
+// Render one dataset (clicks or impressions) for a given template: fetch boundaries,
+// paint the map, rebuild the bar list, update titles. Used both for the initial
+// data-load render and for toggleGeoView's post-fade swap.
+async function renderGeoView(tpl, which, opts) {
+  opts = opts || {};
+  const g = GEO_TEMPLATES[tpl];
+  if (!g || !g.data) return;
+  const rows = which === 'clicks' ? g.data.clicks : g.data.impressions;
+  const label = which === 'clicks' ? 'Ad Clicks' : 'Ad Impressions';
 
-  _setMapLoading(false);
+  // Bars + titles update regardless of whether boundary fetch succeeds
+  renderZipBars(g.barsId, rows);
+  const mapTitleEl = document.getElementById(g.mapTitleId);
+  const barTitleEl = document.getElementById(g.barTitleId);
+  if (mapTitleEl) mapTitleEl.textContent = label + ' By Zip Code';
+  if (barTitleEl) barTitleEl.textContent = 'Top Zip Codes — ' + (which === 'clicks' ? 'Clicks' : 'Impressions');
 
-  if (!clicksGeo && !imprGeo) {
+  if (!g.map || !mapboxToken) return;
+  if (!rows || !rows.length) return;
+
+  if (!opts.skipFade) _setGeoMapLoading(tpl, true);
+  const zips = new Set(rows.map(r => String(r[0]).padStart(5,'0')));
+  let geo;
+  try {
+    const geojson = await fetchZipGeoJSON([...zips]);
+    geo = filterGeoJSON(geojson, zips);
+  } catch (err) {
+    console.error('GeoJSON fetch failed:', err);
+    _setGeoMapLoading(tpl, false);
     toast('Map boundary data unavailable', 'error');
     return;
   }
+  _setGeoMapLoading(tpl, false);
+  if (!geo || !geo.features.length) return;
 
-  // Paint each map with only its own boundaries
-  if (clicksGeo && clicksGeo.features.length) {
-    _paintMap(mapClicks, clicksGeo, zipClickRows, 'clicks', 'Ad Clicks');
-    const bbox = getBbox(clicksGeo) || getCenterBbox(clicksGeo);
-    if (bbox) mapClicks.fitBounds(bbox, { padding: 28, duration: 800 });
-  }
-
-  if (imprGeo && imprGeo.features.length) {
-    _paintMap(mapImpressions, imprGeo, zipImprRows, 'impressions', 'Ad Impressions');
-    const bbox = getBbox(imprGeo) || getCenterBbox(imprGeo);
-    if (bbox) mapImpressions.fitBounds(bbox, { padding: 28, duration: 800 });
-  }
+  _paintMap(g.map, geo, rows, label);
+  const bbox = getBbox(geo) || getCenterBbox(geo);
+  if (bbox) g.map.fitBounds(bbox, { padding: 28, duration: 800 });
 }
 
 function getCenterBbox(geojson) {
@@ -5009,8 +6399,9 @@ function getCenterBbox(geojson) {
   return [[Math.min(...lngs), Math.min(...lats)], [Math.max(...lngs), Math.max(...lats)]];
 }
 
-function _paintMap(map, geojson, rows, sourceId, labelPrefix) {
+function _paintMap(map, geojson, rows, labelPrefix) {
   if (!map || !rows) return;
+  const sourceId = 'zip';
 
   // Build value lookup: zip → numeric value
   const cleanNum = v => parseFloat(String(v).replace(/[$,\s]/g, '')) || 0;
@@ -5021,7 +6412,6 @@ function _paintMap(map, geojson, rows, sourceId, labelPrefix) {
     valMap[zip] = val;
   });
   const max = Math.max(...Object.values(valMap)) || 1;
-  console.log('[Map ' + sourceId + '] valMap zips:', Object.keys(valMap), '| max:', max);
 
   // Attach value to each feature as a property
   const painted = {
@@ -5029,7 +6419,6 @@ function _paintMap(map, geojson, rows, sourceId, labelPrefix) {
     features: geojson.features.map(f => {
       const zip = String(f.properties.ZCTA5 || f.properties.GEOID || f.properties.ZCTA5CE || f.properties.zip || '').padStart(5,'0');
       const val = valMap[zip] || 0;
-      if (val === 0 && Object.keys(valMap).length > 0) console.log('[Map ' + sourceId + '] zip', zip, 'not in valMap — available:', Object.keys(valMap).slice(0,3));
       return { ...f, properties: { ...f.properties, _zip: zip, _val: val } };
     })
   };
@@ -5224,41 +6613,6 @@ document.querySelectorAll('.sp-tab').forEach(tab => {
   });
 });
 
-// ── REGISTRY LIST — shows CLIENT_REGISTRY entries + current config ──
-function renderRegistryList() {
-  const list = document.getElementById('registry-list');
-  list.innerHTML = '';
-  CLIENT_REGISTRY.forEach(entry => {
-    const isActive = currentClient && currentClient.sheetId === entry.sheetId;
-    const item = document.createElement('div');
-    item.className = 'client-item' + (isActive ? ' active' : '');
-    item.innerHTML = `
-      <div>
-        <div class="client-item-name">${escHtml(entry.displayName)}</div>
-        <div class="client-item-meta">Sheet ID: ${entry.sheetId.substring(0,24)}…</div>
-      </div>
-      <div style="font-size:9px;color:rgba(255,255,255,0.3);font-weight:600;letter-spacing:.8px;text-transform:uppercase">
-        ${isActive ? '● Active' : ''}
-      </div>`;
-    list.appendChild(item);
-  });
-
-  // Show current config fields if logged in
-  const section = document.getElementById('current-config-section');
-  const display = document.getElementById('current-config-display');
-  if (currentClient) {
-    section.style.display = '';
-    const fields = ['name','reportTitle','reportDate','period_text','author1Name','author1Title','author2Name','author2Title'];
-    display.innerHTML = fields.map(f => currentClient[f] ? `
-      <div style="display:flex;gap:12px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.05)">
-        <span style="font-size:10px;color:rgba(255,255,255,0.35);width:120px;flex-shrink:0">${escHtml(f)}</span>
-        <span style="font-size:11px;color:rgba(255,255,255,0.7)">${escHtml(currentClient[f])}</span>
-      </div>` : '').join('');
-  } else {
-    section.style.display = 'none';
-  }
-}
-
 // ── API KEYS TAB ──
 function populateApiKeys() {
   const stored = LS.get('link_v2_api_keys') || {};
@@ -5277,8 +6631,9 @@ document.getElementById('api-save').addEventListener('click', () => {
   mapboxToken = keys.mapboxToken;
   toast('API keys saved', 'success');
 
-  // Re-init maps if token added
-  if (mapboxToken && !mapImpressions) initMaps();
+  // Re-init geo map (GS, default active template) if token added and section is visible
+  const gsGeoEl = document.getElementById('gs-geo-section');
+  if (mapboxToken && !GEO_TEMPLATES.gs.map && gsGeoEl && gsGeoEl.style.display !== 'none') initGeoMap('gs');
 });
 
 /* ══════════════════════════════════════
@@ -5316,6 +6671,22 @@ document.getElementById('refresh-btn').addEventListener('click', async () => {
           const cfg = await fetchClientConfig(currentClient.sheetId, r.configTab, META_CONFIG_FIELD_MAP, META_VALUE_FIELDS, META_MAPPING_FIELDS);
           return { ...cfg, _reportType: 'meta-ads' };
         }
+        if (r.type === 'facebook-ads') {
+          const cfg = await fetchClientConfig(currentClient.sheetId, r.configTab, FB_CONFIG_FIELD_MAP, FB_VALUE_FIELDS, FB_MAPPING_FIELDS);
+          return { ...cfg, _reportType: 'facebook-ads' };
+        }
+        if (r.type === 'instagram-ads') {
+          const cfg = await fetchClientConfig(currentClient.sheetId, r.configTab, IG_CONFIG_FIELD_MAP, IG_VALUE_FIELDS, IG_MAPPING_FIELDS);
+          return { ...cfg, _reportType: 'instagram-ads' };
+        }
+        if (r.type === 'display-ads') {
+          const cfg = await fetchClientConfig(currentClient.sheetId, r.configTab, DISP_CONFIG_FIELD_MAP, DISP_VALUE_FIELDS, DISP_MAPPING_FIELDS);
+          return { ...cfg, _reportType: 'display-ads' };
+        }
+        if (r.type === 'youtube-ads') {
+          const cfg = await fetchClientConfig(currentClient.sheetId, r.configTab, YT_CONFIG_FIELD_MAP, YT_VALUE_FIELDS, YT_MAPPING_FIELDS);
+          return { ...cfg, _reportType: 'youtube-ads' };
+        }
         if (r.type === 'linkedin-ads') {
           const cfg = await fetchClientConfig(currentClient.sheetId, r.configTab, LI_CONFIG_FIELD_MAP, LI_VALUE_FIELDS, LI_MAPPING_FIELDS);
           return { ...cfg, _reportType: 'linkedin-ads' };
@@ -5334,11 +6705,19 @@ document.getElementById('refresh-btn').addEventListener('click', async () => {
     // 5. Merge fresh configs back onto currentClient
     const gsCfg   = configs.find(c => c && c._reportType === 'google-search');
     const metaCfg = configs.find(c => c && c._reportType === 'meta-ads');
+    const fbCfg   = configs.find(c => c && c._reportType === 'facebook-ads');
+    const igCfg   = configs.find(c => c && c._reportType === 'instagram-ads');
+    const dispCfg = configs.find(c => c && c._reportType === 'display-ads');
+    const ytCfg   = configs.find(c => c && c._reportType === 'youtube-ads');
     const liCfg   = configs.find(c => c && c._reportType === 'linkedin-ads');
     const ovCfg   = configs.find(c => c && c._reportType === 'overview');
 
     if (gsCfg)   { [...CONFIG_VALUE_FIELDS, ...CONFIG_MAPPING_FIELDS].forEach(f => { if (gsCfg[f] !== undefined) currentClient[f] = gsCfg[f]; }); }
     if (metaCfg) { currentClient._metaConfig = metaCfg; currentClient._metaLoaded = false; }
+    if (fbCfg)   { currentClient._fbConfig = fbCfg; currentClient._fbLoaded = false; }
+    if (igCfg)   { currentClient._igConfig = igCfg; currentClient._igLoaded = false; }
+    if (dispCfg) { currentClient._dispConfig = dispCfg; currentClient._dispLoaded = false; }
+    if (ytCfg)   { currentClient._ytConfig = ytCfg;   currentClient._ytLoaded = false; }
     if (liCfg)   { currentClient._liConfig = liCfg; currentClient._liLoaded = false; }
     if (ovCfg)   { currentClient._overviewConfig = ovCfg; currentClient._overviewLoaded = false; }
 
@@ -5346,6 +6725,10 @@ document.getElementById('refresh-btn').addEventListener('click', async () => {
     const dataPromises = [];
     if (gsCfg)   dataPromises.push(fetchSheetDataAsync(currentClient));
     if (metaCfg) dataPromises.push(fetchMetaDataAsync(currentClient, metaCfg));
+    if (fbCfg)   dataPromises.push(fetchFacebookDataAsync(currentClient, fbCfg));
+    if (igCfg)   dataPromises.push(fetchInstagramDataAsync(currentClient, igCfg));
+    if (dispCfg) dataPromises.push(fetchDisplayDataAsync(currentClient, dispCfg));
+    if (ytCfg)   dataPromises.push(fetchYouTubeDataAsync(currentClient, ytCfg));
     if (liCfg)   dataPromises.push(fetchLinkedInDataAsync(currentClient, liCfg));
     if (ovCfg)   dataPromises.push(fetchOverviewDataAsync(currentClient, ovCfg));
     await Promise.all(dataPromises);
@@ -5407,38 +6790,30 @@ window.addEventListener('afterprint', () => {
 });
 
 /* ══════════════════════════════════════
-   MOBILE MAP TOGGLE
+   GEO VIEW TOGGLE (clicks/impressions) — all breakpoints
 ══════════════════════════════════════ */
-function showMap(which) {
-  const isMobile = window.innerWidth <= 768;
-  if (!isMobile) return; // no-op on desktop — both rows always visible
-  ['clicks','impressions'].forEach(type => {
-    const panel = document.getElementById('map-panel-' + type);
-    const btn = document.getElementById('map-toggle-' + type);
-    if (panel) panel.classList.toggle('hidden', type !== which);
-    if (btn) btn.classList.toggle('active', type === which);
-  });
-  // Resize the visible map so tiles fill the container correctly
-  const map = which === 'clicks' ? mapClicks : mapImpressions;
-  if (map) setTimeout(() => map.resize(), 80);
-}
+function toggleGeoView(tpl, which) {
+  const g = GEO_TEMPLATES[tpl];
+  if (!g || g.active === which) return;
+  g.active = which;
 
-// On resize, reset both panels to visible if returning to desktop
-window.addEventListener('resize', () => {
-  if (window.innerWidth > 768) {
-    ['clicks','impressions'].forEach(type => {
-      const panel = document.getElementById('map-panel-' + type);
-      if (panel) panel.classList.remove('hidden');
-    });
-  } else {
-    // Re-apply current toggle state
-    const activeBtn = document.querySelector('.map-toggle-btn.active');
-    if (activeBtn) {
-      const which = activeBtn.id.replace('map-toggle-','');
-      showMap(which);
-    }
-  }
-});
+  const clicksBtn = document.getElementById(g.toggleClicksId);
+  const imprBtn = document.getElementById(g.toggleImprId);
+  if (clicksBtn) clicksBtn.classList.toggle('active', which === 'clicks');
+  if (imprBtn) imprBtn.classList.toggle('active', which === 'impressions');
+
+  const mapEl = document.getElementById(g.mapContainerId);
+  const barsEl = document.getElementById(g.barsId);
+  if (mapEl) mapEl.classList.add('fading');
+  if (barsEl) barsEl.classList.add('fading');
+
+  setTimeout(async () => {
+    await renderGeoView(tpl, which, { skipFade: true });
+    if (g.map) setTimeout(() => g.map.resize(), 20);
+    if (mapEl) mapEl.classList.remove('fading');
+    if (barsEl) barsEl.classList.remove('fading');
+  }, 120);
+}
 
 /* ══════════════════════════════════════
    UTILS
