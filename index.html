@@ -2527,7 +2527,7 @@ const FIELD_DEFS = [
 ];
 
 // ── VERSION ──
-const APP_VERSION = '2.17.0';
+const APP_VERSION = '2.17.1';
 
 // ── STATE ──
 let currentClient = null;
@@ -4760,6 +4760,9 @@ function logout() {
   Object.keys(GEO_TEMPLATES).forEach(tpl => {
     const g = GEO_TEMPLATES[tpl];
     if (g.resizeObserver) { try { g.resizeObserver.disconnect(); } catch(e){} g.resizeObserver = null; }
+    if (g.hoverPopup) { try { g.hoverPopup.remove(); } catch(e){} g.hoverPopup = null; }
+    g.hoverMoveHandler = null;
+    g.hoverLeaveHandler = null;
     if (g.map) { try { g.map.remove(); } catch(e){} g.map = null; }
     g.mapLoaded = false;
     g.data = null;
@@ -6384,7 +6387,7 @@ async function renderGeoView(tpl, which, opts) {
   _setGeoMapLoading(tpl, false);
   if (!geo || !geo.features.length) return;
 
-  _paintMap(g.map, geo, rows, label);
+  _paintMap(g, geo, rows, label);
   const bbox = getBbox(geo) || getCenterBbox(geo);
   if (bbox) g.map.fitBounds(bbox, { padding: 28, duration: 800 });
 }
@@ -6399,7 +6402,8 @@ function getCenterBbox(geojson) {
   return [[Math.min(...lngs), Math.min(...lats)], [Math.max(...lngs), Math.max(...lats)]];
 }
 
-function _paintMap(map, geojson, rows, labelPrefix) {
+function _paintMap(g, geojson, rows, labelPrefix) {
+  const map = g && g.map;
   if (!map || !rows) return;
   const sourceId = 'zip';
 
@@ -6431,6 +6435,14 @@ function _paintMap(map, geojson, rows, labelPrefix) {
     });
     if (map.getSource(sourceId)) map.removeSource(sourceId);
 
+    // Tear down the previous popup + hover listeners — Mapbox layer-scoped
+    // listeners aren't automatically removed when the layer is removed/re-added,
+    // so without this, every toggle/repaint stacks another popup + listener pair
+    // (symptom: multiple overlapping popups showing on hover).
+    if (g.hoverPopup) { try { g.hoverPopup.remove(); } catch(e){} g.hoverPopup = null; }
+    if (g.hoverMoveHandler) { try { map.off('mousemove', 'zip-fill-' + sourceId, g.hoverMoveHandler); } catch(e){} g.hoverMoveHandler = null; }
+    if (g.hoverLeaveHandler) { try { map.off('mouseleave', 'zip-fill-' + sourceId, g.hoverLeaveHandler); } catch(e){} g.hoverLeaveHandler = null; }
+
     map.addSource(sourceId, { type: 'geojson', data: painted });
 
     map.addLayer({
@@ -6460,10 +6472,11 @@ function _paintMap(map, geojson, rows, labelPrefix) {
       }
     });
 
-    // Hover popup
+    // Hover popup — refs stored on the template state so the next paint can tear them down
     const popup = new mapboxgl.Popup({ closeButton: false, closeOnClick: false, className: 'map-popup' });
+    g.hoverPopup = popup;
 
-    map.on('mousemove', 'zip-fill-' + sourceId, e => {
+    g.hoverMoveHandler = e => {
       map.getCanvas().style.cursor = 'pointer';
       const props = e.features[0].properties;
       const zip = props._zip || '';
@@ -6474,11 +6487,13 @@ function _paintMap(map, geojson, rows, labelPrefix) {
           <span style="font-size:9px;font-weight:500;color:#6b7080;margin-left:2px">${labelPrefix}</span>
         </div>`)
         .addTo(map);
-    });
-    map.on('mouseleave', 'zip-fill-' + sourceId, () => {
+    };
+    g.hoverLeaveHandler = () => {
       map.getCanvas().style.cursor = '';
       popup.remove();
-    });
+    };
+    map.on('mousemove', 'zip-fill-' + sourceId, g.hoverMoveHandler);
+    map.on('mouseleave', 'zip-fill-' + sourceId, g.hoverLeaveHandler);
   }; // end applyLayers
 
   // Run now if style loaded, otherwise wait
